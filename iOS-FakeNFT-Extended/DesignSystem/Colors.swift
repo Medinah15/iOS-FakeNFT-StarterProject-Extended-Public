@@ -64,4 +64,7 @@ extension UIColor {
         ? .yaBlackDark
         : .yaBlackLight
     }
+    
+    static let universalGreen = UIColor(hexString: "#1C9F00")
+    static let actionSheetGray = UIColor(hexString: "#F5F5F5")
 }
