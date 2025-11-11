@@ -112,8 +112,10 @@ struct TabBarView: View {
                     DeleteFromCartView(
                         item: item,
                         onConfirm: {
-                            print("Удалён: \(item.title)")
                             withAnimation(.easeInOut) { deleteItem = nil }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                NotificationCenter.default.post(name: .deleteNFTItem, object: item)
+                            }
                         },
                         onCancel: {
                             withAnimation(.easeInOut) { deleteItem = nil }

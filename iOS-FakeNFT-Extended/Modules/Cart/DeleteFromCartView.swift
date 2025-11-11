@@ -10,7 +10,11 @@ struct DeleteFromCartView: View {
             VisualEffectBlur(blurStyle: .systemUltraThinMaterialDark)
                 .ignoresSafeArea()
                 .overlay(Color.white.opacity(0.05))
-                .onTapGesture { onCancel() }
+                .onTapGesture {
+                    withAnimation(.easeInOut) {
+                        onCancel()
+                    }
+                }
 
             VStack(spacing: 20) {
                 // NFT иконка

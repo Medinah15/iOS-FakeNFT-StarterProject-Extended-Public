@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct CartView: View {
     @Binding var isSortMenuPresented: Bool
@@ -15,7 +16,7 @@ struct CartView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // === Навбар ===
+            // Навбар
             HStack {
                 Spacer()
                 Button {
@@ -33,24 +34,19 @@ struct CartView: View {
             .background(Color.background)
             .padding(.top, 2)
 
-            // === Контент ===
+            // Контент
             if viewModel.items.isEmpty {
-                VStack {
-                    Spacer()
-                    Text("Корзина пуста")
-                        .font(.customFont(.bodyBold))
-                        .foregroundColor(.textPrimary)
-                    Spacer()
-                }
+                Spacer()
+                Text("Корзина пуста")
+                    .font(.customFont(.bodyBold))
+                    .foregroundColor(.textPrimary)
+                Spacer()
             } else {
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(viewModel.sortedItems(by: sortOption)) { item in
                             CartCellView(item: item) {
-                                withAnimation(.easeInOut) {
-                                    viewModel.delete(item)
-                                    onDeleteRequest(item)
-                                }
+                                onDeleteRequest(item)
                             }
                             .padding(.horizontal, 16)
                         }
@@ -60,7 +56,6 @@ struct CartView: View {
 
                 Divider()
 
-                // === Нижняя панель ===
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(viewModel.items.count) NFT")
@@ -92,8 +87,15 @@ struct CartView: View {
             }
         }
         .background(Color.background.ignoresSafeArea())
+        .onReceive(NotificationCenter.default.publisher(for: .deleteNFTItem)) { note in
+            guard let item = note.object as? NFTItem else { return }
+            withAnimation(.easeInOut) {
+                viewModel.delete(item)
+            }
+        }
     }
 }
+
 
 #Preview("CartView") {
     CartView(
