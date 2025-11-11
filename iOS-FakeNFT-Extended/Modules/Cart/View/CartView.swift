@@ -5,7 +5,7 @@ struct CartView: View {
     @Binding var sortOption: SortOption
     let onDeleteRequest: (NFTItem) -> Void
 
-    @State private var items: [NFTItem] = NFTItem.mock
+    @StateObject private var viewModel = CartViewModel()
 
     enum SortOption: String, CaseIterable {
         case byPrice = "По цене"
@@ -34,8 +34,7 @@ struct CartView: View {
             .padding(.top, 2)
 
             // === Контент ===
-            if items.isEmpty {
-                // Пустое состояние
+            if viewModel.items.isEmpty {
                 VStack {
                     Spacer()
                     Text("Корзина пуста")
@@ -44,13 +43,13 @@ struct CartView: View {
                     Spacer()
                 }
             } else {
-                // Список товаров
                 ScrollView {
                     VStack(spacing: 0) {
-                        ForEach(sortedItems) { item in
+                        ForEach(viewModel.sortedItems(by: sortOption)) { item in
                             CartCellView(item: item) {
                                 withAnimation(.easeInOut) {
-                                    deleteItem(item)
+                                    viewModel.delete(item)
+                                    onDeleteRequest(item)
                                 }
                             }
                             .padding(.horizontal, 16)
@@ -64,11 +63,11 @@ struct CartView: View {
                 // === Нижняя панель ===
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("\(items.count) NFT")
+                        Text("\(viewModel.items.count) NFT")
                             .font(.customFont(.caption2))
                             .foregroundColor(.textPrimary)
 
-                        Text(String(format: "%.2f ETH", items.reduce(0) { $0 + $1.price }))
+                        Text(String(format: "%.2f ETH", viewModel.totalPrice))
                             .font(.customFont(.bodyBold))
                             .foregroundColor(.priceGreen)
                     }
@@ -93,27 +92,6 @@ struct CartView: View {
             }
         }
         .background(Color.background.ignoresSafeArea())
-    }
-
-    // MARK: - Helpers
-    private var sortedItems: [NFTItem] {
-        switch sortOption {
-        case .byPrice:
-            return items.sorted { $0.price > $1.price }
-        case .byRating:
-            return items.sorted { $0.rating > $1.rating }
-        case .byName:
-            return items.sorted {
-                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
-            }
-        }
-    }
-
-    private func deleteItem(_ item: NFTItem) {
-        if let index = items.firstIndex(where: { $0.id == item.id }) {
-            items.remove(at: index)
-            onDeleteRequest(item)
-        }
     }
 }
 
