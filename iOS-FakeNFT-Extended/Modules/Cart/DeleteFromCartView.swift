@@ -2,21 +2,16 @@ import SwiftUI
 
 struct DeleteFromCartView: View {
     let item: NFTItem
-    @Binding var isPresented: Bool
-    
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+
     var body: some View {
         ZStack {
-            // Затемнение и размытие фона
             VisualEffectBlur(blurStyle: .systemUltraThinMaterialDark)
-                .opacity(0.4)
                 .ignoresSafeArea()
-                .onTapGesture {
-                    withAnimation(.easeInOut) {
-                        isPresented = false
-                    }
-                }
-            
-            // Контент диалога
+                .overlay(Color.white.opacity(0.05))
+                .onTapGesture { onCancel() }
+
             VStack(spacing: 20) {
                 // NFT иконка
                 Image(item.imageName)
@@ -24,21 +19,16 @@ struct DeleteFromCartView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 120, height: 120)
                     .cornerRadius(16)
-                
+
                 // Текст
                 Text("Вы уверены, что хотите\nудалить объект из корзины?")
                     .multilineTextAlignment(.center)
                     .font(.customFont(.caption2))
                     .foregroundColor(.textPrimary)
-                
+
                 // Кнопки
                 HStack(spacing: 16) {
-                    Button {
-                        print("Удалить NFT \(item.title)")
-                        withAnimation(.easeInOut) {
-                            isPresented = false
-                        }
-                    } label: {
+                    Button(action: onConfirm) {
                         Text("Удалить")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.red)
@@ -46,12 +36,8 @@ struct DeleteFromCartView: View {
                             .background(Color.black)
                             .cornerRadius(12)
                     }
-                    
-                    Button {
-                        withAnimation(.easeInOut) {
-                            isPresented = false
-                        }
-                    } label: {
+
+                    Button(action: onCancel) {
                         Text("Вернуться")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.white)
@@ -64,22 +50,21 @@ struct DeleteFromCartView: View {
             .padding(24)
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.white)
-                    .opacity(0.9)
+                    .fill(Color.white.opacity(0.9))
             )
             .padding(.horizontal, 40)
         }
-        .transition(.opacity.combined(with: .scale))
-        .animation(.easeInOut(duration: 0.25), value: isPresented)
     }
 }
 
-// MARK: - Вспомогательный блюр
+// MARK: - VisualEffectBlur helper
 struct VisualEffectBlur: UIViewRepresentable {
     var blurStyle: UIBlurEffect.Style
 
     func makeUIView(context: Context) -> UIVisualEffectView {
-        UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
+        view.backgroundColor = .clear
+        return view
     }
 
     func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
@@ -87,6 +72,10 @@ struct VisualEffectBlur: UIViewRepresentable {
     }
 }
 
-#Preview("DeleteFromCartView") {
-    DeleteFromCartView(item: .mock.first!, isPresented: .constant(true))
+#Preview {
+    DeleteFromCartView(
+        item: .mock.first!,
+        onConfirm: {},
+        onCancel: {}
+    )
 }

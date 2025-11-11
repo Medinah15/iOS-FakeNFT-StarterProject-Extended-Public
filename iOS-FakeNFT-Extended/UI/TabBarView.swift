@@ -3,6 +3,7 @@ import SwiftUI
 struct TabBarView: View {
     @State private var isSortMenuPresented = false
     @State private var cartSort: CartView.SortOption = .byName
+    @State private var deleteItem: NFTItem? = nil
 
     init() {
         let appearance = UITabBarAppearance()
@@ -22,71 +23,106 @@ struct TabBarView: View {
     }
 
     var body: some View {
-        ZStack {
-            // Основной TabView
-            TabView {
-                // Профиль
-                TestCatalogView()
-                    .tabItem {
-                        VStack {
-                            Image("profile").renderingMode(.template).resizable().frame(width: 30, height: 30)
-                            Text("Профиль")
-                        }
-                    }
-
-                // Каталог
-                TestCatalogView()
-                    .tabItem {
-                        VStack {
-                            Image("catalog").renderingMode(.template).resizable().frame(width: 30, height: 30)
-                            Text("Каталог")
-                        }
-                    }
-
-                // Корзина — передаем биндинги
-                CartView(isSortMenuPresented: $isSortMenuPresented, sortOption: $cartSort)
-                    .tabItem {
-                        VStack {
-                            Image("cart").renderingMode(.template).resizable().frame(width: 30, height: 30)
-                            Text("Корзина")
-                        }
-                    }
-
-                // Статистика
-                TestCatalogView()
-                    .tabItem {
-                        VStack {
-                            Image("statistic").renderingMode(.template).resizable().frame(width: 30, height: 30)
-                            Text("Статистика")
-                        }
-                    }
-            }
-            .background(Color.background.ignoresSafeArea())
-
-            // === ВСПЛЫВАЮЩЕЕ МЕНЮ НА УРОВНЕ ВЫШЕ TAB BAR ===
-            if isSortMenuPresented {
-                // затемнение
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut) { isSortMenuPresented = false }
-                    }
-
-                // само меню
-                GeometryReader { geo in
+        TabView {
+            // === Профиль ===
+            TestCatalogView()
+                .tabItem {
                     VStack {
-                        Spacer()
-                        SortMenuView(
-                            selectedOption: $cartSort,
-                            isPresented: $isSortMenuPresented
-                        )
-                        .position(x: geo.size.width / 2, y: geo.size.height - 143)
+                        Image("profile")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                        Text("Профиль")
                     }
                 }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .animation(.easeInOut(duration: 0.25), value: isSortMenuPresented)
-                .zIndex(10)
+
+            // === Каталог ===
+            TestCatalogView()
+                .tabItem {
+                    VStack {
+                        Image("catalog")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                        Text("Каталог")
+                    }
+                }
+
+            // === Корзина ===
+            CartView(
+                isSortMenuPresented: $isSortMenuPresented,
+                sortOption: $cartSort,
+                onDeleteRequest: { item in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        deleteItem = item
+                    }
+                }
+            )
+            .tabItem {
+                VStack {
+                    Image("cart")
+                        .renderingMode(.template)
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                    Text("Корзина")
+                }
             }
+
+            // === Статистика ===
+            TestCatalogView()
+                .tabItem {
+                    VStack {
+                        Image("statistic")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                        Text("Статистика")
+                    }
+                }
         }
+        .background(Color.background.ignoresSafeArea())
+
+        // === Overlay на уровне всей TabView ===
+        .overlay(
+            ZStack {
+                // Меню сортировки
+                if isSortMenuPresented {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.easeInOut) { isSortMenuPresented = false }
+                        }
+
+                    GeometryReader { geo in
+                        VStack {
+                            Spacer()
+                            SortMenuView(
+                                selectedOption: $cartSort,
+                                isPresented: $isSortMenuPresented
+                            )
+                            .position(x: geo.size.width / 2, y: geo.size.height - 143)
+                        }
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .zIndex(10)
+                }
+
+                // Окно удаления NFT
+                if let item = deleteItem {
+                    DeleteFromCartView(
+                        item: item,
+                        onConfirm: {
+                            print("Удалён: \(item.title)")
+                            withAnimation(.easeInOut) { deleteItem = nil }
+                        },
+                        onCancel: {
+                            withAnimation(.easeInOut) { deleteItem = nil }
+                        }
+                    )
+                    .transition(.opacity.combined(with: .scale))
+                    .zIndex(20)
+                }
+            }
+        )
     }
 }
