@@ -5,7 +5,7 @@ struct CartView: View {
     @Binding var sortOption: SortOption
     let onDeleteRequest: (NFTItem) -> Void
 
-    private let items: [NFTItem] = NFTItem.mock
+    @State private var items: [NFTItem] = NFTItem.mock
 
     enum SortOption: String, CaseIterable {
         case byPrice = "По цене"
@@ -33,50 +33,64 @@ struct CartView: View {
             .background(Color.background)
             .padding(.top, 2)
 
-            // === Список NFT ===
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(sortedItems) { item in
-                        CartCellView(item: item) {
-                            onDeleteRequest(item)
+            // === Контент ===
+            if items.isEmpty {
+                // Пустое состояние
+                VStack {
+                    Spacer()
+                    Text("Корзина пуста")
+                        .font(.customFont(.bodyBold))
+                        .foregroundColor(.textPrimary)
+                    Spacer()
+                }
+            } else {
+                // Список товаров
+                ScrollView {
+                    VStack(spacing: 0) {
+                        ForEach(sortedItems) { item in
+                            CartCellView(item: item) {
+                                withAnimation(.easeInOut) {
+                                    deleteItem(item)
+                                }
+                            }
+                            .padding(.horizontal, 16)
                         }
-                        .padding(.horizontal, 16)
+                    }
+                    .padding(.top, 4)
+                }
+
+                Divider()
+
+                // === Нижняя панель ===
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(items.count) NFT")
+                            .font(.customFont(.caption2))
+                            .foregroundColor(.textPrimary)
+
+                        Text(String(format: "%.2f ETH", items.reduce(0) { $0 + $1.price }))
+                            .font(.customFont(.bodyBold))
+                            .foregroundColor(.priceGreen)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        print("Оплата")
+                    } label: {
+                        Text("К оплате")
+                            .font(.customFont(.bodyBold))
+                            .foregroundColor(.textOnPrimary)
+                            .frame(height: 44)
+                            .frame(minWidth: 240)
+                            .background(Color.segmentActive)
+                            .cornerRadius(12)
                     }
                 }
-                .padding(.top, 4)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+                .background(Color.segmentInactive)
             }
-
-            Divider()
-
-            // === Нижняя панель ===
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("\(items.count) NFT")
-                        .font(.customFont(.caption2))
-                        .foregroundColor(.textPrimary)
-
-                    Text(String(format: "%.2f ETH", items.reduce(0) { $0 + $1.price }))
-                        .font(.customFont(.bodyBold))
-                        .foregroundColor(.priceGreen)
-                }
-
-                Spacer()
-
-                Button {
-                    print("Оплата")
-                } label: {
-                    Text("К оплате")
-                        .font(.customFont(.bodyBold))
-                        .foregroundColor(.textOnPrimary)
-                        .frame(height: 44)
-                        .frame(minWidth: 240)
-                        .background(Color.segmentActive)
-                        .cornerRadius(12)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
-            .background(Color.segmentInactive)
         }
         .background(Color.background.ignoresSafeArea())
     }
@@ -94,13 +108,21 @@ struct CartView: View {
             }
         }
     }
+
+    private func deleteItem(_ item: NFTItem) {
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            items.remove(at: index)
+            onDeleteRequest(item)
+        }
+    }
 }
 
-// MARK: - Preview
 #Preview("CartView") {
     CartView(
         isSortMenuPresented: .constant(false),
         sortOption: .constant(.byName),
-        onDeleteRequest: { _ in }
+        onDeleteRequest: { item in
+            print("Удалено из превью: \(item.title)")
+        }
     )
 }
