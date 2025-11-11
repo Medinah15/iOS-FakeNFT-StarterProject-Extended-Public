@@ -52,9 +52,11 @@ struct CartCellView: View {
                 }
             }) {
                 Image("trashX")
+                    .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 40, height: 40)
+                    .foregroundColor(.textPrimary)
                     .padding(4)
             }
             .buttonStyle(.plain)

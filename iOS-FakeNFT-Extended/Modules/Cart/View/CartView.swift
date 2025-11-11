@@ -25,9 +25,11 @@ struct CartView: View {
                     }
                 } label: {
                     Image("menu")
+                        .renderingMode(.template)
                         .resizable()
                         .frame(width: 42, height: 42)
                         .padding(.trailing, 9)
+                        .foregroundColor(.textPrimary)
                 }
             }
             .frame(height: 42)
@@ -74,10 +76,10 @@ struct CartView: View {
                     } label: {
                         Text("К оплате")
                             .font(.customFont(.bodyBold))
-                            .foregroundColor(.textOnPrimary)
+                            .foregroundColor(.textButton)
                             .frame(height: 44)
                             .frame(minWidth: 240)
-                            .background(Color.segmentActive)
+                            .background(Color.textPrimary)
                             .cornerRadius(12)
                     }
                 }

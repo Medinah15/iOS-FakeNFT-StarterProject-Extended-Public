@@ -34,28 +34,24 @@ struct DeleteFromCartView: View {
                 HStack(spacing: 16) {
                     Button(action: onConfirm) {
                         Text("Удалить")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.customFont(.bodyRegular))
                             .foregroundColor(.red)
                             .frame(width: 127, height: 44)
-                            .background(Color.black)
+                            .background(Color.textPrimary)
                             .cornerRadius(12)
                     }
 
                     Button(action: onCancel) {
                         Text("Вернуться")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.white)
+                            .font(.customFont(.bodyRegular))
+                            .foregroundColor(.textButton)
                             .frame(width: 127, height: 44)
-                            .background(Color.black)
+                            .background(Color.textPrimary)
                             .cornerRadius(12)
                     }
                 }
             }
             .padding(24)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.white.opacity(0.9))
-            )
             .padding(.horizontal, 40)
         }
     }
