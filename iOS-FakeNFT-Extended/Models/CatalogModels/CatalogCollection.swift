@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CatalogCollection: Codable, Sendable, Hashable {
+struct CatalogCollection: Codable, Sendable, Hashable {
     public let id: String
     public let title: String
     public let description: String?
@@ -15,24 +15,6 @@ public struct CatalogCollection: Codable, Sendable, Hashable {
     public let authorName: String?
     public let authorURL: URL?
     public let nftCount: Int?
-    
-    public init(
-        id: String,
-        title: String,
-        description: String?,
-        coverURL: URL?,
-        authorName: String?,
-        authorURL: URL?,
-        nftCount: Int?
-    ) {
-        self.id = id
-        self.title = title
-        self.description = description
-        self.coverURL = coverURL
-        self.authorName = authorName
-        self.authorURL = authorURL
-        self.nftCount = nftCount
-    }
 }
 
 extension CatalogCollection {

@@ -14,22 +14,6 @@ public struct CatalogItem: Codable, Sendable, Hashable {
     public let previewImageURL: URL?
     public let rating: Double?
     public let priceETH: Decimal?
-    
-    public init(
-        id: String,
-        title: String,
-        images: [URL],
-        previewImageURL: URL?,
-        rating: Double?,
-        priceETH: Decimal?
-    ) {
-        self.id = id
-        self.title = title
-        self.images = images
-        self.previewImageURL = previewImageURL
-        self.rating = rating
-        self.priceETH = priceETH
-    }
 }
 
 extension CatalogItem {
