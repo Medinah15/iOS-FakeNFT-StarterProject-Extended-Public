@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -100,6 +100,21 @@
 		ABC5E1EA2C32084F002B4068 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3A115B1B2ECB5F2E00253FAD /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ProfileView.swift,
+				ProfileViewModel.swift,
+			);
+			target = ABC5E1672C31F5AF002B4068 /* iOS-FakeNFT-Extended */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3A115B182ECB5F1100253FAD /* Profile */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (3A115B1B2ECB5F2E00253FAD /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Profile; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		ABC5E1652C31F5AF002B4068 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -130,6 +145,7 @@
 		ABC5E15F2C31F5AF002B4068 = {
 			isa = PBXGroup;
 			children = (
+				3A115B182ECB5F1100253FAD /* Profile */,
 				ABC5E16A2C31F5AF002B4068 /* iOS-FakeNFT-Extended */,
 				ABC5E17B2C31F5B0002B4068 /* iOS-FakeNFT-ExtendedTests */,
 				ABC5E1852C31F5B0002B4068 /* iOS-FakeNFT-ExtendedUITests */,
