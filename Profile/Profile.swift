@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct Profile {
+struct Profile: Codable {
     let id: String
     let name: String
     let avatar: String
@@ -16,9 +16,11 @@ struct Profile {
     let website: String
     let nftCount: Int
     let favoriteCount: Int
+    
 }
 
 extension Profile {
+    static let userDefaultsKey = "savedProfile"
     static let mock = Profile(
         id: "1",
         name: "Joaquin Phoenix",
@@ -28,4 +30,18 @@ extension Profile {
         nftCount: 112,
         favoriteCount: 11
     )
+    
+    func save() {
+        if let encoded = try? JSONEncoder().encode(self) {
+            UserDefaults.standard.set(encoded, forKey: Self.userDefaultsKey)
+        }
+    }
+    
+    static func load() -> Profile? {
+        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey),
+              let profile = try? JSONDecoder().decode(Profile.self, from: data) else {
+            return nil
+        }
+        return profile
+    }
 }

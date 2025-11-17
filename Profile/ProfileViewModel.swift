@@ -14,6 +14,12 @@ class ProfileViewModel {
     var menuItems: [ProfileMenuItem] = []
     
     init() {
+        // Загружаем сохраненный профиль или используем мок
+        if let savedProfile = Profile.load() {
+            profile = savedProfile
+        } else {
+            profile = .mock
+        }
         setupMenuItems()
     }
     
@@ -63,6 +69,20 @@ class ProfileViewModel {
         if let url = URL(string: "https://\(profile.website)") {
             UIApplication.shared.open(url)
         }
+    }
+    
+    func updateProfile(name: String, description: String, website: String, avatar: String) {
+        profile = Profile(
+            id: profile.id,
+            name: name,
+            avatar: avatar,
+            description: description,
+            website: website,
+            nftCount: profile.nftCount,
+            favoriteCount: profile.favoriteCount
+        )
+        profile.save()
+        updateMenuItemsCounts()
     }
     
     func openMyNFTs() {

@@ -104,6 +104,7 @@
 		3A115B1B2ECB5F2E00253FAD /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				EditProfileView.swift,
 				Profile.swift,
 				ProfileMenuItem.swift,
 				ProfileMenuRow.swift,
