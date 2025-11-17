@@ -10,7 +10,11 @@ struct TabBarView: View {
                         systemImage: "square.stack.3d.up.fill"
                     )
                 }
-                .backgroundStyle(.background)
+            ProfileView()
+                .tabItem {
+                    Label( "Профиль", systemImage: "person.crop.circle.fill")
+                }
+            
         }
     }
 }

@@ -104,6 +104,9 @@
 		3A115B1B2ECB5F2E00253FAD /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Profile.swift,
+				ProfileMenuItem.swift,
+				ProfileMenuRow.swift,
 				ProfileView.swift,
 				ProfileViewModel.swift,
 			);
@@ -113,6 +116,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3A115B182ECB5F1100253FAD /* Profile */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (3A115B1B2ECB5F2E00253FAD /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Profile; sourceTree = "<group>"; };
+		3A115B252ECB7A1600253FAD /* WebView */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = WebView; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -258,6 +262,7 @@
 		ABC5E1A92C31FABA002B4068 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				3A115B252ECB7A1600253FAD /* WebView */,
 				ABC5E1AC2C31FB6C002B4068 /* Requests */,
 				ABC5E1AA2C31FACD002B4068 /* NftService.swift */,
 				ABC5E1B62C31FC70002B4068 /* ServicesAssembly.swift */,
@@ -335,6 +340,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3A115B252ECB7A1600253FAD /* WebView */,
 			);
 			name = "iOS-FakeNFT-Extended";
 			packageProductDependencies = (
