@@ -2,6 +2,8 @@ import SwiftUI
 
 struct TabBarView: View {
     
+    @Environment(ServicesAssembly.self) private var servicesAssembly
+    
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -15,9 +17,9 @@ struct TabBarView: View {
         UITabBar.appearance().scrollEdgeAppearance = appearance
         UITabBar.appearance().isTranslucent = true
     }
+    
     var body: some View {
         TabView {
-            
             TestCatalogView()
                 .tabItem {
                     VStack {
@@ -29,16 +31,20 @@ struct TabBarView: View {
                     }
                 }
             
-            CatalogView()
-                .tabItem {
-                    VStack {
-                        Image("catalog")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                        Text("Каталог")
-                    }
+            CatalogView(
+                viewModel: CatalogViewModel(
+                    catalogService: servicesAssembly.catalogService
+                )
+            )
+            .tabItem {
+                VStack {
+                    Image("catalog")
+                        .renderingMode(.template)
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                    Text("Каталог")
                 }
+            }
             
             TestCatalogView()
                 .tabItem {
@@ -59,7 +65,6 @@ struct TabBarView: View {
                             .resizable()
                             .frame(width: 30, height: 30)
                         Text("Статистика")
-                        
                     }
                 }
         }
