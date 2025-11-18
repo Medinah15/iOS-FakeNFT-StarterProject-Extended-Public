@@ -29,22 +29,28 @@ struct PaymentMethodView: View {
                     }
                 }
                 .padding(.top, 24)
-                .padding(.bottom, 120)
+                .padding(.bottom, 16)
             }
         }
         .safeAreaInset(edge: .bottom) {
-            PaymentBottomSection(
-                isPaymentEnabled: viewModel.selectedMethod != nil,
-                isPaymentInProgress: viewModel.isPaymentInProgress,
-                onAgreementTap: { isAgreementPresented = true },
-                onPayTap: { viewModel.startPayment() }
-            )
+            VStack(spacing: 0) {
+                
+                PaymentBottomSection(
+                    isPaymentEnabled: viewModel.selectedMethod != nil,
+                    isPaymentInProgress: viewModel.isPaymentInProgress,
+                    onAgreementTap: { isAgreementPresented = true },
+                    onPayTap: { viewModel.startPayment() }
+                )
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+            }
+            .frame(maxWidth: .infinity)
             .background(
-                Color(UIColor.segmentInactive)
+                Color.segmentInactive
+                    .cornerRadius(12, corners: [.topLeft, .topRight])
                     .ignoresSafeArea(edges: .bottom)
             )
         }
-        .background(Color.background.ignoresSafeArea())
         .sheet(isPresented: $isAgreementPresented) {
             AgreementWebView(
                 url: URL(string: "https://yandex.ru/legal/practicum_termsofuse")!
@@ -112,8 +118,10 @@ private extension PaymentMethodView {
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
+        
     }
 }
+
 
 // MARK: - Preview
 

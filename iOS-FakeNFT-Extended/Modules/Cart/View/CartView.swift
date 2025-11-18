@@ -11,7 +11,6 @@ struct CartView: View {
     @StateObject private var viewModel = CartViewModel()
     @State private var isPaymentPresented = false
     
-    // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
             navigationBar
@@ -28,6 +27,19 @@ struct CartView: View {
             PaymentMethodView {
                 viewModel.clearCart()
                 isPaymentPresented = false
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if case .loaded(let items) = viewModel.state {
+                VStack(spacing: 0) {
+                    cartSummary(items)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 16)
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.segmentInactive)
+                .cornerRadius(12, corners: [.topLeft, .topRight])
+                .ignoresSafeArea(edges: .bottom)
             }
         }
     }
@@ -92,25 +104,17 @@ private extension CartView {
     
     // MARK: Cart content
     func cartContent(_ items: [NFTItem]) -> some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(viewModel.sortedItems(items, by: sortOption)) { item in
-                        CartCellView(item: item) {
-                            onDeleteRequest(item)
-                        }
-                        .padding(.horizontal, 16)
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(viewModel.sortedItems(items, by: sortOption)) { item in
+                    CartCellView(item: item) {
+                        onDeleteRequest(item)
                     }
+                    .padding(.horizontal, 16)
                 }
-                .padding(.top, 4)
             }
-            
-            Divider()
-            
-            cartSummary(items)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .background(Color.segmentInactive)
+            .padding(.top, 4)
+            .padding(.bottom, 120)
         }
     }
     
@@ -146,6 +150,7 @@ private extension CartView {
         }
     }
 }
+
 
 // MARK: - Preview
 
