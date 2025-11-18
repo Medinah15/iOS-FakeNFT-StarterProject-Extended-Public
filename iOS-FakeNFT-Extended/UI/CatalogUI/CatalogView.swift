@@ -4,9 +4,14 @@
 //
 //  Created by Medina Huseynova on 17.11.25.
 //
+
 import SwiftUI
 
 struct CatalogView: View {
+    
+    // MARK: - Dependencies
+    
+    @Environment(ServicesAssembly.self) private var servicesAssembly
     
     // MARK: - Properties
     
@@ -47,7 +52,7 @@ struct CatalogView: View {
             .onAppear {
                 viewModel.onAppear()
             }
-            .onChange(of: viewModel.state) { oldValue, newValue in
+            .onChange(of: viewModel.state) { _, newValue in
                 if case .error = newValue {
                     isErrorAlertPresented = true
                 }
@@ -65,6 +70,18 @@ struct CatalogView: View {
                 } else {
                     Text("")
                 }
+            }
+            
+            .navigationDestination(
+                item: $viewModel.selectedCollection
+            ) { collection in
+                CollectionDetailsView(
+                    viewModel: CollectionDetailsViewModel(
+                        collectionID: collection.id,
+                        title: collection.title,
+                        catalogService: servicesAssembly.catalogService
+                    )
+                )
             }
         }
     }

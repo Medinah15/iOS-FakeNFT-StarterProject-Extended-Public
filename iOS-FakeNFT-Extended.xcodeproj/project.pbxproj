@@ -109,6 +109,7 @@
 		8BAE4CC22EC5343C00606989 /* Catalog */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Catalog; sourceTree = "<group>"; };
 		8BAE4CC52EC5373F00606989 /* CatalogModels */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CatalogModels; sourceTree = "<group>"; };
 		8BAE4CCF2ECA7AA700606989 /* CatalogUI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CatalogUI; sourceTree = "<group>"; };
+		8BAE4CED2ECC161300606989 /* CollectionDetailsUI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CollectionDetailsUI; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +279,7 @@
 		ABC5E1B32C31FC03002B4068 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				8BAE4CED2ECC161300606989 /* CollectionDetailsUI */,
 				8BAE4CCF2ECA7AA700606989 /* CatalogUI */,
 				ABC5E16D2C31F5AF002B4068 /* ContentView.swift */,
 				ABC5E1B42C31FC57002B4068 /* TabBarView.swift */,
@@ -341,6 +343,7 @@
 				8BAE4CC22EC5343C00606989 /* Catalog */,
 				8BAE4CC52EC5373F00606989 /* CatalogModels */,
 				8BAE4CCF2ECA7AA700606989 /* CatalogUI */,
+				8BAE4CED2ECC161300606989 /* CollectionDetailsUI */,
 			);
 			name = "iOS-FakeNFT-Extended";
 			packageProductDependencies = (

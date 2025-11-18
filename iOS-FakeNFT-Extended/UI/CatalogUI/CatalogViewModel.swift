@@ -5,11 +5,6 @@
 //  Created by Medina Huseynova on 17.11.25.
 //
 
-//
-//  CatalogViewModel.swift
-//  iOS-FakeNFT-Extended
-//
-
 import Foundation
 import Observation
 
@@ -36,6 +31,8 @@ final class CatalogViewModel {
     private(set) var collections: [CatalogCollectionViewModel] = []
     private(set) var state: State = .idle
     
+    var selectedCollection: CatalogCollectionViewModel?
+    
     // MARK: - Init (DI)
     
     init(catalogService: CatalogService) {
@@ -54,7 +51,7 @@ final class CatalogViewModel {
     }
     
     func didSelectCollection(_ collection: CatalogCollectionViewModel) {
-        print("Selected collection: \(collection.title)")
+        selectedCollection = collection
     }
     
     // MARK: - Private methods
