@@ -7,14 +7,14 @@ struct CartView: View {
     @Binding var isSortMenuPresented: Bool
     @Binding var sortOption: SortOption
     let onDeleteRequest: (NFTItem) -> Void
-
+    
     @StateObject private var viewModel = CartViewModel()
-
+    @State private var isPaymentPresented = false
+    
     // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
             navigationBar
-
             content
         }
         .background(Color.background.ignoresSafeArea())
@@ -24,13 +24,19 @@ struct CartView: View {
                 viewModel.delete(item)
             }
         }
+        .fullScreenCover(isPresented: $isPaymentPresented) {
+            PaymentMethodView {
+                viewModel.clearCart()
+                isPaymentPresented = false
+            }
+        }
     }
 }
 
 // MARK: - Private Views
 
 private extension CartView {
-
+    
     // MARK: Navigation Bar
     var navigationBar: some View {
         HStack {
@@ -52,7 +58,7 @@ private extension CartView {
         .background(Color.background)
         .padding(.top, 2)
     }
-
+    
     // MARK: Content by state
     @ViewBuilder
     var content: some View {
@@ -60,7 +66,7 @@ private extension CartView {
         case .loading:
             ProgressView("Загрузка…")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+            
         case .empty:
             VStack {
                 Spacer()
@@ -69,10 +75,10 @@ private extension CartView {
                     .foregroundColor(.textPrimary)
                 Spacer()
             }
-
+            
         case .loaded(let items):
             cartContent(items)
-
+            
         case .error(let message):
             VStack {
                 Spacer()
@@ -83,7 +89,7 @@ private extension CartView {
             }
         }
     }
-
+    
     // MARK: Cart content
     func cartContent(_ items: [NFTItem]) -> some View {
         VStack(spacing: 0) {
@@ -98,16 +104,16 @@ private extension CartView {
                 }
                 .padding(.top, 4)
             }
-
+            
             Divider()
-
+            
             cartSummary(items)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
                 .background(Color.segmentInactive)
         }
     }
-
+    
     // MARK: Summary block
     func cartSummary(_ items: [NFTItem]) -> some View {
         HStack {
@@ -115,17 +121,19 @@ private extension CartView {
                 Text("\(items.count) NFT")
                     .font(.customFont(.caption2))
                     .foregroundColor(.textPrimary)
-
+                
                 let totalPrice = items.reduce(0) { $0 + $1.price }
                 Text(String(format: "%.2f ETH", totalPrice))
                     .font(.customFont(.bodyBold))
-                    .foregroundColor(.priceGreen)
+                    .foregroundColor(.universalGreen)
             }
-
+            
             Spacer()
-
+            
             Button {
-                print("Оплата")
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                    isPaymentPresented = true
+                }
             } label: {
                 Text("К оплате")
                     .font(.customFont(.bodyBold))

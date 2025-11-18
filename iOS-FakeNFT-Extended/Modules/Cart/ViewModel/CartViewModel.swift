@@ -5,7 +5,7 @@ import SwiftUI
 final class CartViewModel: ObservableObject {
     
     // MARK: - Published properties
-    @Published var state: CartState = .loading
+    @Published private(set) var state: CartState = .loading
     
     // MARK: - Initialization
     init() {
@@ -27,6 +27,10 @@ final class CartViewModel: ObservableObject {
         items.removeAll { $0.id == item.id }
         
         state = items.isEmpty ? .empty : .loaded(items)
+    }
+    
+    func clearCart() {
+        state = .empty
     }
     
     func sortedItems(_ items: [NFTItem], by sort: SortOption) -> [NFTItem] {

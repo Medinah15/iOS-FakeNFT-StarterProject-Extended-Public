@@ -17,7 +17,7 @@ extension UIColor {
         default:
             (alpha, red, green, blue) = (255, 0, 0, 0)
         }
-
+        
         self.init(
             red: CGFloat(red) / 255,
             green: CGFloat(green) / 255,
@@ -25,31 +25,31 @@ extension UIColor {
             alpha: CGFloat(alpha) / 255
         )
     }
-
+    
     // MARK: - Base palette
-    private static let yaBlackLight = UIColor(hexString: "#1A1B22")
-    private static let yaBlackDark = UIColor.white
-    private static let yaLightGrayLight = UIColor(hexString: "#F7F7F8")
-    private static let yaLightGrayDark = UIColor(hexString: "#2C2C2E")
-
+    static let yaBlackLight = UIColor(hexString: "#1A1B22")
+    static let yaBlackDark = UIColor.white
+    static let yaLightGrayLight = UIColor(hexString: "#F7F7F8")
+    static let yaLightGrayDark = UIColor(hexString: "#2C2C2E")
+    
     // MARK: - Primary & Secondary
     static let primary = UIColor { traits in
         traits.userInterfaceStyle == .dark
         ? UIColor(hexString: "#0A84FF")
         : UIColor(hexString: "#007AFF")
     }
-
+    
     static let secondary = UIColor { traits in
         traits.userInterfaceStyle == .dark
         ? UIColor(hexString: "#30D158")
         : UIColor(hexString: "#34C759")
     }
-
+    
     // MARK: - Background
     static let background = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .yaBlackLight : .white
     }
-
+    
     // MARK: - Text
     static let textPrimary = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .white : .black
@@ -58,23 +58,23 @@ extension UIColor {
     static let textButton = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .black : .white
     }
-
+    
     static let textSecondary = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .lightGray : .gray
     }
-
+    
     static let textOnPrimary = UIColor.white
     static let textOnSecondary = UIColor.black
-
+    
     // MARK: - Segments
     static let segmentActive = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .yaBlackLight : .yaBlackLight
     }
-
+    
     static let segmentInactive = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .yaLightGrayDark : .yaLightGrayLight
     }
-
+    
     // MARK: - Accent / Buttons
     static let universalGreen = UIColor(hexString: "#1C9F00")
     static let actionSheetGray = UIColor(hexString: "#F5F5F5")
