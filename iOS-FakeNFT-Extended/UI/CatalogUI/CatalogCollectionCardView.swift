@@ -47,3 +47,41 @@ struct CatalogCollectionCardView: View {
         }
     }
 }
+#Preview("Success") {
+    CatalogCollectionCardView(
+        model: CatalogCollectionViewModel(
+            id: "1",
+            title: "Смешарики",
+            itemsCountText: "(12)",
+            coverURL: URL(string: "https://picsum.photos/400/200")
+        )
+    )
+    .padding()
+    .background(Color.background)
+}
+
+#Preview("Failure") {
+    CatalogCollectionCardView(
+        model: CatalogCollectionViewModel(
+            id: "2",
+            title: "Ошибка загрузки",
+            itemsCountText: "(0)",
+            coverURL: URL(string: "https://invalid-url") 
+        )
+    )
+    .padding()
+    .background(Color.background)
+}
+
+#Preview("Empty") {
+    CatalogCollectionCardView(
+        model: CatalogCollectionViewModel(
+            id: "3",
+            title: "Без изображения",
+            itemsCountText: "(5)",
+            coverURL: nil
+        )
+    )
+    .padding()
+    .background(Color.background)
+}
