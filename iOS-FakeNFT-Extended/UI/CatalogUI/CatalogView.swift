@@ -94,7 +94,7 @@ struct CatalogView: View {
         case .idle, .loading:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .tint(.primary)
+                .tint(.textPrimary)
             
         case .data:
             ScrollView {
