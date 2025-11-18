@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SortMenuView: View {
-    @Binding var selectedOption: CartView.SortOption
+    @Binding var selectedOption: SortOption
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -20,7 +20,7 @@ struct SortMenuView: View {
                 Divider()
 
                 // Пункты меню
-                ForEach(Array(CartView.SortOption.allCases.enumerated()), id: \.offset) { index, option in
+                ForEach(Array(SortOption.allCases.enumerated()), id: \.offset) { index, option in
                     Button {
                         selectedOption = option
                         isPresented = false
@@ -33,7 +33,7 @@ struct SortMenuView: View {
                             .background(Color.gray.opacity(0.1))
                     }
 
-                    if index < CartView.SortOption.allCases.count - 1 {
+                    if index < SortOption.allCases.count - 1 {
                         Divider()
                             .background(Color.gray.opacity(0.3))
                             .padding(.horizontal, 16)
