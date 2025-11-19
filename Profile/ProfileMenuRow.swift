@@ -23,7 +23,7 @@ struct ProfileMenuRow: View {
                     .foregroundColor(Color(UIColor.textPrimary))
                     .font(.system(size: 14, weight: .regular))
             }
-            .padding(.horizontal, 16)
+         
             .padding(.vertical, 16)
         }
         .buttonStyle(PlainButtonStyle())

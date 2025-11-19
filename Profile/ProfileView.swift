@@ -64,10 +64,10 @@ struct ProfileView: View {
     // MARK: - Description Section
     private var descriptionSection: some View {
         Text(viewModel.profile.description)
-            .font(.system(size: 13, weight: .regular))
+            .font(.system(size: 15, weight: .regular))
             .foregroundColor(.primary)
-            .lineSpacing(5)
-            .lineLimit(4)
+            .lineSpacing(4)
+            .fixedSize(horizontal: false, vertical: true)
     }
     
     // MARK: - Website Button
@@ -96,7 +96,7 @@ struct ProfileView: View {
                 ProfileMenuRow(item: item)
             }
         }
-        .padding(.top, 8)
+        .padding(.top, 40)
     }
     
     // MARK: - Edit Button
@@ -121,4 +121,8 @@ struct ProfileView: View {
             )
         }
     }
+}
+
+#Preview {
+    ProfileView()
 }
