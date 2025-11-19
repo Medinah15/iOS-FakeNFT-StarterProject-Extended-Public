@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct SortMenuView: View {
-    @Binding var selectedOption: CartView.SortOption
+struct CartSortMenuView: View {
+    @Binding var selectedOption: CartSortOption
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -20,7 +20,7 @@ struct SortMenuView: View {
                 Divider()
 
                 // Пункты меню
-                ForEach(Array(CartView.SortOption.allCases.enumerated()), id: \.offset) { index, option in
+                ForEach(Array(CartSortOption.allCases.enumerated()), id: \.offset) { index, option in
                     Button {
                         selectedOption = option
                         isPresented = false
@@ -33,7 +33,7 @@ struct SortMenuView: View {
                             .background(Color.gray.opacity(0.1))
                     }
 
-                    if index < CartView.SortOption.allCases.count - 1 {
+                    if index < CartSortOption.allCases.count - 1 {
                         Divider()
                             .background(Color.gray.opacity(0.3))
                             .padding(.horizontal, 16)
@@ -62,28 +62,4 @@ struct SortMenuView: View {
         .padding(.bottom, 16)
         .background(Color.clear.ignoresSafeArea())
     }
-}
-
-// MARK: - Corner Radius Helper
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
-}
-
-struct RoundedCorner: Shape {
-    var radius: CGFloat = 0
-    var corners: UIRectCorner = .allCorners
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(
-            roundedRect: rect,
-            byRoundingCorners: corners,
-            cornerRadii: CGSize(width: radius, height: radius)
-        )
-        return Path(path.cgPath)
-    }
-}
-
-#Preview("SortMenuView") {
-    SortMenuView(selectedOption: .constant(.byPrice), isPresented: .constant(true))
 }

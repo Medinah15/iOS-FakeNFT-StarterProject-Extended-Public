@@ -1,17 +1,44 @@
 import SwiftUI
 
+// MARK: - CartViewModel
+
 final class CartViewModel: ObservableObject {
-    @Published var items: [NFTItem] = NFTItem.mock
-
-    var totalPrice: Double {
-        items.reduce(0) { $0 + $1.price }
+    
+    // MARK: - Published properties
+    @Published private(set) var state: CartState = .loading
+    
+    // MARK: - Initialization
+    init() {
+        loadItems()
     }
-
+    
+    // MARK: - Private methods
+    private func loadItems() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let items = NFTItem.mock
+            self.state = items.isEmpty ? .empty : .loaded(items)
+        }
+    }
+    
+    private func clearCart() {
+        state = .empty
+    }
+    
+    // MARK: - Public methods
     func delete(_ item: NFTItem) {
+        guard case .loaded(var items) = state else { return }
+        
         items.removeAll { $0.id == item.id }
+        
+        state = items.isEmpty ? .empty : .loaded(items)
     }
-
-    func sortedItems(by sort: CartView.SortOption) -> [NFTItem] {
+    
+    /// Вызывается при успешной оплате
+    func handlePaymentSuccess() {
+        clearCart()
+    }
+    
+    func sortedItems(_ items: [NFTItem], by sort: CartSortOption) -> [NFTItem] {
         switch sort {
         case .byPrice:
             return items.sorted { $0.price > $1.price }
