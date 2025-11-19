@@ -15,6 +15,7 @@ struct EditProfileView: View {
     @State private var avatarURL: String
     @State private var showPhotoOptions = false
     @State private var showSaveAlert = false
+    @State private var isSaving = false
     
     private let initialName: String
     private let initialDescription: String
@@ -209,10 +210,13 @@ struct EditProfileView: View {
     
     // MARK: - Actions
     private func saveProfile() {
-        onSave?(name, description, website, avatarURL)
-        showSaveAlert = true
+        isSaving = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            onSave?(name, description, website, avatarURL)
+            showSaveAlert = true
+        }
     }
-    
     private func deletePhoto() {
         // Устанавливаем дефолтное фото или пустую строку
         avatarURL = "https://i.pravatar.cc/150?img=12" // или пустая строка ""
