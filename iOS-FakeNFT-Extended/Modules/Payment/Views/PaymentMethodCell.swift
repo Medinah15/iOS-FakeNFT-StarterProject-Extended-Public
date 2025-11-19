@@ -56,7 +56,7 @@ struct PaymentMethodCell: View {
             method: PaymentMethod(
                 name: "Bitcoin",
                 ticker: "BTC",
-                iconName: "btc"
+                iconName: "bitcoin"
             ),
             isSelected: false,
             onTap: {}

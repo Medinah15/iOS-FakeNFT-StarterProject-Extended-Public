@@ -7,7 +7,7 @@ struct PaymentMethod: Identifiable, Equatable {
     let iconName: String
     
     static let all: [PaymentMethod] = [
-        .init(name: "Bitcoin",   ticker: "BTC",  iconName: "btc"),
+        .init(name: "Bitcoin",   ticker: "BTC",  iconName: "bitcoin"),
         .init(name: "Dogecoin",  ticker: "DOGE", iconName: "doge"),
         .init(name: "Tether",    ticker: "USDT", iconName: "usdt"),
         .init(name: "Apecoin",   ticker: "APE",  iconName: "ape"),
