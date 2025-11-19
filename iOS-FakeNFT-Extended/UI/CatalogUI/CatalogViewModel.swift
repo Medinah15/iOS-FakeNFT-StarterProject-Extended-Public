@@ -86,11 +86,11 @@ final class CatalogViewModel {
     private func makeErrorMessage(from error: Error) -> String {
         switch error {
         case CatalogServiceError.network:
-            return NSLocalizedString("Error.network", comment: "")
+            NSLocalizedString("Error.network", comment: "")
         case CatalogServiceError.decoding:
-            return NSLocalizedString("Error.decoding", comment: "")
+            NSLocalizedString("Error.decoding", comment: "")
         default:
-            return NSLocalizedString("Error.unknown", comment: "")
+            NSLocalizedString("Error.unknown", comment: "")
         }
     }
 }

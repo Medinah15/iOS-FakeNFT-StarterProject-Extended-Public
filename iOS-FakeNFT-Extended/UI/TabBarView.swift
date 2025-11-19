@@ -20,54 +20,55 @@ struct TabBarView: View {
     
     var body: some View {
         TabView {
-            TestCatalogView()
-                .tabItem {
-                    VStack {
-                        Image("profile")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                        Text("Профиль")
-                    }
-                }
+            TabBarItemView(
+                image: .profile,
+                title: "Профиль",
+                content: TestCatalogView()
+            )
             
-            CatalogView(
-                viewModel: CatalogViewModel(
-                    catalogService: servicesAssembly.catalogService
+            TabBarItemView(
+                image: .catalog,
+                title: "Каталог",
+                content: CatalogView(
+                    viewModel: CatalogViewModel(
+                        catalogService: servicesAssembly.catalogService
+                    )
                 )
             )
+            
+            TabBarItemView(
+                image: .cart,
+                title: "Корзина",
+                content: TestCatalogView()
+            )
+            
+            TabBarItemView(
+                image: .statistic,
+                title: "Статистика",
+                content: TestCatalogView()
+            )
+        }
+        .background(Color.background.ignoresSafeArea())
+    }
+}
+
+// MARK: - Reusable tab item
+
+private struct TabBarItemView<Content: View>: View {
+    let image: ImageResource
+    let title: String
+    let content: Content
+    
+    var body: some View {
+        content
             .tabItem {
                 VStack {
-                    Image("catalog")
+                    Image(image)
                         .renderingMode(.template)
                         .resizable()
                         .frame(width: 30, height: 30)
-                    Text("Каталог")
+                    Text(title)
                 }
             }
-            
-            TestCatalogView()
-                .tabItem {
-                    VStack {
-                        Image("cart")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                        Text("Корзина")
-                    }
-                }
-            
-            TestCatalogView()
-                .tabItem {
-                    VStack {
-                        Image("statistic")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                        Text("Статистика")
-                    }
-                }
-        }
-        .background(Color.background.ignoresSafeArea())
     }
 }
