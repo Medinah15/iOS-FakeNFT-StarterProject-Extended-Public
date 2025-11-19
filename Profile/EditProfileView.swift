@@ -79,6 +79,19 @@ struct EditProfileView: View {
                     saveButton
                 }
             }
+            .overlay(alignment: .center) {
+                if isSaving {
+                    ZStack {
+                        Color(UIColor.yaLightGrayLight)
+                            .frame(width: 82, height: 82)
+                            .cornerRadius(12)
+                        
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .tint(.gray)
+                    }
+                }
+            }
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .tabBar)
@@ -214,6 +227,7 @@ struct EditProfileView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             onSave?(name, description, website, avatarURL)
+            isSaving = false
             showSaveAlert = true
         }
     }
