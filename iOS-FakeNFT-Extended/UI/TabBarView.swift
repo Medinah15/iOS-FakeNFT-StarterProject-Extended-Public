@@ -6,7 +6,7 @@ struct TabBarView: View {
     
     // MARK: - State
     @State private var isSortMenuPresented = false
-    @State private var cartSort: SortOption = .byName
+    @State private var cartSort: CartSortOption = .byName
     @State private var deleteItem: NFTItem? = nil
     
     // MARK: - Init
@@ -78,7 +78,7 @@ private extension TabBarView {
                 GeometryReader { geo in
                     VStack {
                         Spacer()
-                        SortMenuView(
+                        CartSortMenuView(
                             selectedOption: $cartSort,
                             isPresented: $isSortMenuPresented
                         )

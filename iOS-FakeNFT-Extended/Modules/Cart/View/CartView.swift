@@ -5,7 +5,7 @@ import Combine
 
 struct CartView: View {
     @Binding var isSortMenuPresented: Bool
-    @Binding var sortOption: SortOption
+    @Binding var sortOption: CartSortOption
     let onDeleteRequest: (NFTItem) -> Void
     
     @StateObject private var viewModel = CartViewModel()
@@ -25,7 +25,7 @@ struct CartView: View {
         }
         .fullScreenCover(isPresented: $isPaymentPresented) {
             PaymentMethodView {
-                viewModel.clearCart()
+                viewModel.handlePaymentSuccess()
                 isPaymentPresented = false
             }
         }

@@ -52,7 +52,7 @@ struct PaymentMethodView: View {
             )
         }
         .sheet(isPresented: $isAgreementPresented) {
-            AgreementWebView(
+            AgreementView(
                 url: URL(string: "https://yandex.ru/legal/practicum_termsofuse")!
             )
         }

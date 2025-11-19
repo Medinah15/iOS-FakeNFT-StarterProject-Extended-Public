@@ -20,6 +20,10 @@ final class CartViewModel: ObservableObject {
         }
     }
     
+    private func clearCart() {
+        state = .empty
+    }
+    
     // MARK: - Public methods
     func delete(_ item: NFTItem) {
         guard case .loaded(var items) = state else { return }
@@ -29,11 +33,12 @@ final class CartViewModel: ObservableObject {
         state = items.isEmpty ? .empty : .loaded(items)
     }
     
-    func clearCart() {
-        state = .empty
+    /// Вызывается при успешной оплате
+    func handlePaymentSuccess() {
+        clearCart()
     }
     
-    func sortedItems(_ items: [NFTItem], by sort: SortOption) -> [NFTItem] {
+    func sortedItems(_ items: [NFTItem], by sort: CartSortOption) -> [NFTItem] {
         switch sort {
         case .byPrice:
             return items.sorted { $0.price > $1.price }

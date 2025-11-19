@@ -1,5 +1,6 @@
 import Foundation
 
+// MARK: - CartState
 enum CartState {
     case loading
     case empty

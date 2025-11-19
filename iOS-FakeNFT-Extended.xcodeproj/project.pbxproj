@@ -119,6 +119,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		7B673EF72ECDACAD00BEE9B8 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
 		7BC21A7B2EC1DE2D00908A74 /* Modules */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Modules; sourceTree = "<group>"; };
 		7BC21A802EC1E41B00908A74 /* Mock */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Mock; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -200,6 +201,7 @@
 		ABC5E16A2C31F5AF002B4068 /* iOS-FakeNFT-Extended */ = {
 			isa = PBXGroup;
 			children = (
+				7B673EF72ECDACAD00BEE9B8 /* Extensions */,
 				7BC21A802EC1E41B00908A74 /* Mock */,
 				7BC21A7B2EC1DE2D00908A74 /* Modules */,
 				ABC5E16B2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift */,
@@ -379,6 +381,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				7B673EF72ECDACAD00BEE9B8 /* Extensions */,
 				7BC21A7B2EC1DE2D00908A74 /* Modules */,
 				7BC21A802EC1E41B00908A74 /* Mock */,
 			);

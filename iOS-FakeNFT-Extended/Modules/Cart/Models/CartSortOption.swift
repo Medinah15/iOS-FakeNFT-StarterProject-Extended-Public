@@ -1,6 +1,6 @@
 import Foundation
 
-enum SortOption: String, CaseIterable {
+enum CartSortOption: String, CaseIterable {
     case byPrice = "По цене"
     case byRating = "По рейтингу"
     case byName   = "По названию"
