@@ -55,6 +55,7 @@ struct MyNFTListView: View {
             }
         }
         .listStyle(.plain)
+        .padding(.top, 20)
     }
     
     // MARK: - Back Button

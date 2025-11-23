@@ -10,6 +10,7 @@ import SwiftUI
 struct NFTListRow: View {
     let nft: NFTModel
     @State private var isFavorite: Bool
+    @State private var isImageLoaded = false
     
     init(nft: NFTModel) {
         self.nft = nft
@@ -20,26 +21,48 @@ struct NFTListRow: View {
         HStack(spacing: 12) {
             // Изображение NFT
             ZStack(alignment: .topTrailing) {
-                AsyncImage(url: URL(string: nft.image)) { image in
+                AsyncImage(url: URL(string: nft.image)) { phase in
+                    switch phase {
+                case .empty:
+                    ProgressView()
+                        .onAppear {
+                            isImageLoaded = false
+                        }
+                case .success(let image):
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                } placeholder: {
+                        .onAppear {
+                            isImageLoaded = true
+                        }
+                case .failure:
+                    Image(systemName: "photo")
+                        .foregroundColor(.gray)
+                        .onAppear {
+                            isImageLoaded = false
+                        }
+                @unknown default:
                     ProgressView()
+                        .onAppear {
+                            isImageLoaded = false
+                        }
                 }
-                .frame(width: 108, height: 108)
-                .cornerRadius(12)
-                
-               
+            }
+            .frame(width: 108, height: 108)
+            .cornerRadius(12)
+            
+            // Иконка сердца (только если изображение загружено)
+            if isImageLoaded {
                 Button(action: {
                     isFavorite.toggle()
                 }) {
                     Image(systemName: "heart.fill")
-                        .font(.system(size: 12))
+                        .font(.system(size: 17))
                         .foregroundColor(isFavorite ? .red : .white)
                 }
-                .padding(6)
+                .padding(12)
             }
+        }
             
             // Информация о NFT
             VStack(alignment: .leading, spacing: 4) {
