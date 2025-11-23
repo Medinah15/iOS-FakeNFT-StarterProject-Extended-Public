@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct Profile: Codable {
+struct ProfileModel: Codable {
     let id: String
     let name: String
     let avatar: String
@@ -19,9 +19,9 @@ struct Profile: Codable {
     
 }
 
-extension Profile {
+extension ProfileModel {
     static let userDefaultsKey = "savedProfile"
-    static let mock = Profile(
+    static let mock = ProfileModel(
         id: "1",
         name: "Joaquin Phoenix",
         avatar: "https://i.pravatar.cc/150?img=12",
@@ -37,9 +37,9 @@ extension Profile {
         }
     }
     
-    static func load() -> Profile? {
+    static func load() -> ProfileModel? {
         guard let data = UserDefaults.standard.data(forKey: userDefaultsKey),
-              let profile = try? JSONDecoder().decode(Profile.self, from: data) else {
+              let profile = try? JSONDecoder().decode(ProfileModel.self, from: data) else {
             return nil
         }
         return profile

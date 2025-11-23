@@ -10,12 +10,12 @@ import SwiftUI
 
 @Observable
 class ProfileViewModel {
-    var profile: Profile = .mock
+    var profile: ProfileModel = .mock
     var menuItems: [ProfileMenuItem] = []
     
     init() {
         // Загружаем сохраненный профиль или используем мок
-        if let savedProfile = Profile.load() {
+        if let savedProfile = ProfileModel.load() {
             profile = savedProfile
         } else {
             profile = .mock
@@ -72,7 +72,7 @@ class ProfileViewModel {
     }
     
     func updateProfile(name: String, description: String, website: String, avatar: String) {
-        profile = Profile(
+        profile = ProfileModel(
             id: profile.id,
             name: name,
             avatar: avatar,
