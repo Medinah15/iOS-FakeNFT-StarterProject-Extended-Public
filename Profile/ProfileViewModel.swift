@@ -10,16 +10,30 @@ import SwiftUI
 
 @Observable
 class ProfileViewModel {
-    var profile: ProfileModel = .mock
+    var profile: ProfileModel
     var menuItems: [ProfileMenuItem] = []
     
     init() {
-        // Загружаем сохраненный профиль или используем мок
-        if let savedProfile = ProfileModel.load() {
-            profile = savedProfile
+        // Создаем профиль с типом real
+        let realProfile = ProfileModel(
+            type: .real,
+            id: "1",
+            name: "",
+            avatar: "",
+            description: "",
+            website: "",
+            nftCount: 0,
+            favoriteCount: 0
+        )
+        
+        // Пытаемся загрузить реальные данные
+        if let loadedProfile = realProfile.load() {
+            profile = loadedProfile
         } else {
-            profile = .mock
+            // Если нет сохраненных данных, используем мок
+            profile = ProfileModel.mock()
         }
+        
         setupMenuItems()
     }
     
@@ -72,7 +86,9 @@ class ProfileViewModel {
     }
     
     func updateProfile(name: String, description: String, website: String, avatar: String) {
+        // Создаем новый профиль с типом real
         profile = ProfileModel(
+            type: .real,
             id: profile.id,
             name: name,
             avatar: avatar,
@@ -81,6 +97,8 @@ class ProfileViewModel {
             nftCount: profile.nftCount,
             favoriteCount: profile.favoriteCount
         )
+        
+        // Сохраняем профиль
         profile.save()
         updateMenuItemsCounts()
     }

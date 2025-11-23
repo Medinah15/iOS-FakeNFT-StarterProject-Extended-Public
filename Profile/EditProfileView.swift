@@ -307,6 +307,7 @@ struct EditProfileView: View {
     }
 }
 
+
 #Preview {
-    EditProfileView(profile: ProfileModel.mock)
+    EditProfileView(profile: ProfileModel.mock())
 }

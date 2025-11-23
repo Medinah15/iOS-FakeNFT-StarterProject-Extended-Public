@@ -12,17 +12,17 @@ struct WebsiteView: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        WebView(url: URL(string: urlString)!)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.primary)
+            WebView(url: URL(string: urlString)!)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.primary)
                     }
                 }
-            }
+        }
     }
 }
