@@ -105,6 +105,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				EditProfileView.swift,
+				MyNFTListView.swift,
+				NFTListRow.swift,
 				NFTModel.swift,
 				Profile.swift,
 				ProfileMenuItem.swift,
