@@ -12,7 +12,7 @@ struct NFTModel: Identifiable, Codable {
     let name: String
     let image: String
     let author: String
-    let price: Double
+    let price: Double 
     let rating: Int
     let isFavorite: Bool
 }

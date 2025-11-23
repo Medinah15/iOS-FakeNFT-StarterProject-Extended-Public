@@ -11,6 +11,7 @@ struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
     @State private var showWebsite = false
     @State private var showEditProfile = false
+    @State private var showMyNFTs = false
     
     var body: some View {
         NavigationStack {
@@ -37,7 +38,25 @@ struct ProfileView: View {
                     editButton
                 }
             }
+            .navigationDestination(isPresented: $showMyNFTs) {
+                MyNFTListView()
+            }
+            .onAppear {
+                setupMenuActions()
+            }
         }
+    }
+    
+    // MARK: - Setup Menu Actions
+    private func setupMenuActions() {
+        viewModel.setupMenuActions(
+            onMyNFTsTap: {
+                showMyNFTs = true
+            },
+            onFavoritesTap: {
+                // TODO: Добавить навигацию к избранным
+            }
+        )
     }
     
     // MARK: - Avatar and Name Section

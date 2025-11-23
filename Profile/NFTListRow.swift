@@ -9,6 +9,12 @@ import SwiftUI
 
 struct NFTListRow: View {
     let nft: NFTModel
+    @State private var isFavorite: Bool
+    
+    init(nft: NFTModel) {
+        self.nft = nft
+        _isFavorite = State(initialValue: nft.isFavorite)
+    }
     
     var body: some View {
         HStack(spacing: 12) {
@@ -24,15 +30,15 @@ struct NFTListRow: View {
                 .frame(width: 108, height: 108)
                 .cornerRadius(12)
                 
-                // Иконка сердца
-                if nft.isFavorite {
+               
+                Button(action: {
+                    isFavorite.toggle()
+                }) {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 12))
-                        .padding(6)
-                        .background(Color.red.opacity(0.8))
-                        .clipShape(Circle())
-                        .padding(6)
+                        .foregroundColor(isFavorite ? .red : .white)
                 }
+                .padding(6)
             }
             
             // Информация о NFT

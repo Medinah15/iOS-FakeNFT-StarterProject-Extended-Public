@@ -43,38 +43,51 @@ class ProfileViewModel {
                 id: "myNFTs",
                 title: "Мои NFT",
                 count: profile.nftCount,
-                action: { [weak self] in
-                    self?.openMyNFTs()
-                }
+                action: {}
             ),
             ProfileMenuItem(
                 id: "favorites",
                 title: "Избранные NFT",
                 count: profile.favoriteCount,
-                action: { [weak self] in
-                    self?.openFavorites()
-                }
+                action: {}
             )
         ]
     }
     
-    func updateMenuItemsCounts() {
+    func setupMenuActions(onMyNFTsTap: @escaping () -> Void, onFavoritesTap: @escaping () -> Void) {
         menuItems = [
             ProfileMenuItem(
                 id: "myNFTs",
                 title: "Мои NFT",
                 count: profile.nftCount,
-                action: { [weak self] in
-                    self?.openMyNFTs()
-                }
+                action: onMyNFTsTap
             ),
             ProfileMenuItem(
                 id: "favorites",
                 title: "Избранные NFT",
                 count: profile.favoriteCount,
-                action: { [weak self] in
-                    self?.openFavorites()
-                }
+                action: onFavoritesTap
+            )
+        ]
+    }
+    
+    func updateMenuItemsCounts() {
+        // Сохраняем текущие actions
+        let myNFTsAction = menuItems.first(where: { $0.id == "myNFTs" })?.action ?? {}
+        let favoritesAction = menuItems.first(where: { $0.id == "favorites" })?.action ?? {}
+        
+        menuItems = [
+            ProfileMenuItem(
+                id: "myNFTs",
+                title: "Мои NFT",
+                count: profile.nftCount,
+                action: myNFTsAction
+            ),
+            ProfileMenuItem(
+                id: "favorites",
+                title: "Избранные NFT",
+                count: profile.favoriteCount,
+                action: favoritesAction
             )
         ]
     }
@@ -103,13 +116,4 @@ class ProfileViewModel {
         updateMenuItemsCounts()
     }
     
-    func openMyNFTs() {
-        // TODO: Навигация к экрану "Мои NFT"
-        print("Открыть Мои NFT")
-    }
-    
-    func openFavorites() {
-        // TODO: Навигация к экрану "Избранные NFT"
-        print("Открыть Избранные NFT")
-    }
 }
