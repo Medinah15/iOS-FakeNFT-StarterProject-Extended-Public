@@ -79,3 +79,12 @@ struct NFTListRow: View {
         .padding(.vertical, 4)
     }
 }
+
+#Preview {
+    List {
+        NFTListRow(nft: NFTModel.mockArray[0])
+        NFTListRow(nft: NFTModel.mockArray[1])
+        NFTListRow(nft: NFTModel.mockArray[2])
+    }
+    .listStyle(.plain)
+}

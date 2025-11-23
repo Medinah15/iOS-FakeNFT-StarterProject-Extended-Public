@@ -73,8 +73,12 @@ struct MyNFTListView: View {
             showSortDialog = true
         }) {
             Image("SortIcon")
+                .resizable()
+                .scaledToFit()
                 .foregroundColor(.primary)
         }
+        .frame(width: 21, height: 21)
+        .contentShape(Rectangle())
     }
     
     // MARK: - Sort Dialog Content
@@ -107,4 +111,8 @@ struct MyNFTListView: View {
     private func sortNFTs() {
         nfts = sortedNFTs
     }
+}
+
+#Preview {
+    MyNFTListView()
 }
