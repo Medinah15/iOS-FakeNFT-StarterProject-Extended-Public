@@ -26,62 +26,84 @@ struct MyNFTListView: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(sortedNFTs) { nft in
-                    NFTListRow(nft: nft)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .listRowSeparator(.hidden)
-                }
-            }
-            .listStyle(.plain)
-            .navigationTitle("Мои NFT")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.primary)
+            nftList
+                .navigationTitle("Мои NFT")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        backButton
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        sortButton
                     }
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showSortDialog = true
-                    }) {
-                        Image("SortIcon")
-                            .foregroundColor(.primary)
-                    }
+                .confirmationDialog("Сортировка", isPresented: $showSortDialog, titleVisibility: .visible) {
+                    sortDialogContent
                 }
-            }
-            .confirmationDialog("Сортировка", isPresented: $showSortDialog, titleVisibility: .visible) {
-                ForEach(NFTSortType.allCases, id: \.self) { sortType in
-                    Button(sortType.displayName) {
-                        selectedSortType = sortType
-                        sortNFTs()
-                    }
-                }
-                
-                Button("Отмена", role: .cancel) {}
-            }
         }
     }
     
-    // Отсортированный массив NFT
+    // MARK: - NFT List
+    private var nftList: some View {
+        List {
+            ForEach(sortedNFTs) { nft in
+                NFTListRow(nft: nft)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowSeparator(.hidden)
+            }
+        }
+        .listStyle(.plain)
+    }
+    
+    // MARK: - Back Button
+    private var backButton: some View {
+        Button(action: {
+            dismiss()
+        }) {
+            Image(systemName: "chevron.left")
+                .foregroundColor(.primary)
+        }
+    }
+    
+    // MARK: - Sort Button
+    private var sortButton: some View {
+        Button(action: {
+            showSortDialog = true
+        }) {
+            Image("SortIcon")
+                .foregroundColor(.primary)
+        }
+    }
+    
+    // MARK: - Sort Dialog Content
+    private var sortDialogContent: some View {
+        Group {
+            ForEach(NFTSortType.allCases, id: \.self) { sortType in
+                Button(sortType.displayName) {
+                    selectedSortType = sortType
+                    sortNFTs()
+                }
+            }
+            
+            Button("Отмена", role: .cancel) {}
+        }
+    }
+    
+    // MARK: - Computed Properties
     private var sortedNFTs: [NFTModel] {
         switch selectedSortType {
         case .byPrice:
-            return nfts.sorted { $0.price > $1.price } // По убыванию цены
+            return nfts.sorted { $0.price > $1.price }
         case .byRating:
-            return nfts.sorted { $0.rating > $1.rating } // По убыванию рейтинга
+            return nfts.sorted { $0.rating > $1.rating }
         case .byName:
-            return nfts.sorted { $0.name < $1.name } // По алфавиту
+            return nfts.sorted { $0.name < $1.name }
         }
     }
     
-    // Метод сортировки (можно вызывать при изменении)
+    // MARK: - Actions
     private func sortNFTs() {
         nfts = sortedNFTs
     }

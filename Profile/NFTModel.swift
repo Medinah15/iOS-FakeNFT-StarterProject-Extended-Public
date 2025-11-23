@@ -23,7 +23,7 @@ extension NFTModel {
         NFTModel(
             id: "1",
             name: "Lilo",
-            image: "https://example.com/lilo.png",
+            image: "https://picsum.photos/108/108?random=1",
             author: "John Doe",
             price: 1.78,
             rating: 3,
@@ -32,7 +32,7 @@ extension NFTModel {
         NFTModel(
             id: "2",
             name: "Spring",
-            image: "https://example.com/spring.png",
+            image: "https://picsum.photos/108/108?random=1",
             author: "John Doe",
             price: 1.78,
             rating: 3,
@@ -41,7 +41,7 @@ extension NFTModel {
         NFTModel(
             id: "3",
             name: "April",
-            image: "https://example.com/april.png",
+            image: "https://picsum.photos/108/108?random=1",
             author: "John Doe",
             price: 1.78,
             rating: 3,
