@@ -67,7 +67,7 @@ struct FavouritesNFTListRow: View {
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { index in
                         Image(systemName: index <= nft.rating ? "star.fill" : "star")
-                            .foregroundColor(index <= nft.rating ? .yellow : .gray)
+                            .foregroundColor(index <= nft.rating ? Color(UIColor.starRatingYellow) : .gray)
                             .font(.system(size: 12))
                     }
                 }

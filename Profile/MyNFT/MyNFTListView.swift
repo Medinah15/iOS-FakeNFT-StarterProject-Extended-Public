@@ -16,7 +16,7 @@ struct MyNFTListView: View {
     var body: some View {
         NavigationStack {
             nftList
-                .navigationTitle("Мои NFT")
+                .navigationTitle(viewModel.sortedNFTs.isEmpty ? "" : "Мои NFT")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
@@ -136,7 +136,7 @@ struct MyNFTListView: View {
                         .padding(.top, 20)
                     }
                 }
-                .navigationTitle("Мои NFT")
+                .navigationTitle(viewModel.sortedNFTs.isEmpty ? "" : "Мои NFT")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
