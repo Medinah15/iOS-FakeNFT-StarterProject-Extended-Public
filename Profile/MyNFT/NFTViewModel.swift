@@ -31,6 +31,12 @@ class NFTViewModel {
         applySorting()
     }
     
+    // MARK: - Preview Initializer
+    init(nfts: [NFTModel], sortType: NFTSortType = .byRating) {
+        self.nfts = nfts
+        self.selectedSortType = sortType
+    }
+    
     // MARK: - NFT Loading
     private func loadNFTs() {
         let realNFTs = NFTModel.load(type: .real)

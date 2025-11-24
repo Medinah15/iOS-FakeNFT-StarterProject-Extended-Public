@@ -105,6 +105,51 @@ struct MyNFTListView: View {
     }
 }
 
-#Preview {
+#Preview("With NFTs") {
     MyNFTListView()
+}
+
+#Preview("Empty State") {
+    struct EmptyStatePreview: View {
+        @State private var viewModel = NFTViewModel(nfts: [], sortType: .byRating)
+        
+        var body: some View {
+            NavigationStack {
+                Group {
+                    if viewModel.sortedNFTs.isEmpty {
+                        VStack {
+                            Spacer()
+                            Text("У Вас ещё нет NFT")
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundColor(.primary)
+                            Spacer()
+                        }
+                    } else {
+                        List {
+                            ForEach(viewModel.sortedNFTs) { nft in
+                                NFTListRow(nft: nft)
+                                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                    .listRowSeparator(.hidden)
+                            }
+                        }
+                        .listStyle(.plain)
+                        .padding(.top, 20)
+                    }
+                }
+                .navigationTitle("Мои NFT")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {}) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return EmptyStatePreview()
 }
