@@ -4,7 +4,7 @@ import Foundation
 
 struct OrderGetRequest: NetworkRequest {
     private let path = "/api/v1/orders/1"
-    
+
     var httpMethod: HttpMethod { .get }
     var endpoint: URL? { URL(string: RequestConstants.baseURL + path) }
     var dto: Encodable? { nil }
@@ -12,22 +12,38 @@ struct OrderGetRequest: NetworkRequest {
 
 // MARK: - PUT /api/v1/orders/1
 
-struct OrderPutRequest: NetworkRequest {
+struct OrderPutRequest: NetworkRequest, FormURLEncodedRequest {
     private let path = "/api/v1/orders/1"
-    let dtoModel: UpdateOrderDTO
-    
+    let nftIds: [String]
+
     var httpMethod: HttpMethod { .put }
     var endpoint: URL? { URL(string: RequestConstants.baseURL + path) }
-    var dto: Encodable? { dtoModel }
+
+    var dto: Encodable? { nil }
+
+    var formParameters: [String : String] {
+        if nftIds.isEmpty {
+            return [:]
+        } else {
+            return ["nfts": nftIds.joined(separator: ",")]
+        }
+    }
 }
 
 // MARK: - POST /api/v1/orders/1
 
-struct OrderPostRequest: NetworkRequest {
+struct OrderPostRequest: NetworkRequest, FormURLEncodedRequest {
     private let path = "/api/v1/orders/1"
-    let dtoModel: UpdateOrderDTO
-    
+    let nftIds: [String]
+
     var httpMethod: HttpMethod { .post }
     var endpoint: URL? { URL(string: RequestConstants.baseURL + path) }
-    var dto: Encodable? { dtoModel }
+
+    var dto: Encodable? { nil }
+
+    var formParameters: [String: String] {
+        [
+            "nfts": nftIds.joined(separator: ",")
+        ]
+    }
 }

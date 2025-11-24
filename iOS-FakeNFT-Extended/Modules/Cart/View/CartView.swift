@@ -6,7 +6,7 @@ import Combine
 struct CartView: View {
     @Binding var isSortMenuPresented: Bool
     @Binding var sortOption: CartSortOption
-    let onDeleteRequest: (NFTItem) -> Void
+    let onDeleteRequest: (NftItemAPI) -> Void
     
     @StateObject private var viewModel = CartViewModel()
     @State private var isPaymentPresented = false
@@ -18,7 +18,7 @@ struct CartView: View {
         }
         .background(Color.background.ignoresSafeArea())
         .onReceive(NotificationCenter.default.publisher(for: .deleteNFTItem)) { note in
-            guard let item = note.object as? NFTItem else { return }
+            guard let item = note.object as? NftItemAPI else { return }
             withAnimation(.easeInOut) {
                 viewModel.delete(item)
             }
@@ -80,12 +80,22 @@ private extension CartView {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         case .empty:
-            VStack {
-                Spacer()
-                Text("Корзина пуста")
-                    .font(.customFont(.bodyBold))
-                    .foregroundColor(.textPrimary)
-                Spacer()
+            ScrollView {
+                VStack {
+                    Spacer()
+                    Text("Корзина пуста")
+                        .font(.customFont(.bodyBold))
+                        .foregroundColor(.textPrimary)
+                    Spacer()
+                }
+                // Чтобы ScrollView стал "скроллимым", задаём высоту
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: UIScreen.main.bounds.height * 0.8
+                )
+            }
+            .refreshable {
+                viewModel.reload()
             }
             
         case .loaded(let items):
@@ -103,7 +113,8 @@ private extension CartView {
     }
     
     // MARK: Cart content
-    func cartContent(_ items: [NFTItem]) -> some View {
+    // MARK: Cart content
+    func cartContent(_ items: [NftItemAPI]) -> some View {
         ScrollView {
             VStack(spacing: 0) {
                 ForEach(viewModel.sortedItems(items, by: sortOption)) { item in
@@ -116,10 +127,13 @@ private extension CartView {
             .padding(.top, 4)
             .padding(.bottom, 120)
         }
+        .refreshable {
+            viewModel.reload()
+        }
     }
     
     // MARK: Summary block
-    func cartSummary(_ items: [NFTItem]) -> some View {
+    func cartSummary(_ items: [NftItemAPI]) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(items.count) NFT")

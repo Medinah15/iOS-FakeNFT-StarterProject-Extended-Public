@@ -13,6 +13,11 @@ protocol NetworkRequest {
     var dto: Encodable? { get }
 }
 
+protocol FormURLEncodedRequest: NetworkRequest {
+    /// Параметры для application/x-www-form-urlencoded
+    var formParameters: [String: String] { get }
+}
+
 // default values
 extension NetworkRequest {
     var httpMethod: HttpMethod { .get }

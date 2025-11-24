@@ -40,14 +40,12 @@ final class CartServiceImpl: CartService {
     }
     
     func updateOrder(nftIds: [String]) async throws -> OrderResponse {
-        let dto = UpdateOrderDTO(nfts: nftIds)
-        let request = OrderPutRequest(dtoModel: dto)
+        let request = OrderPutRequest(nftIds: nftIds)
         return try await networkClient.send(request: request)
     }
     
     func completeOrder(nftIds: [String]) async throws -> OrderResponse {
-        let dto = UpdateOrderDTO(nfts: nftIds)
-        let request = OrderPostRequest(dtoModel: dto)
+        let request = OrderPostRequest(nftIds: nftIds)
         return try await networkClient.send(request: request)
     }
 }

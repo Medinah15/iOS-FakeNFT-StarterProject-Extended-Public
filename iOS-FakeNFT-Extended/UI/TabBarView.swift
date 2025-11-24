@@ -10,7 +10,7 @@ struct TabBarView: View {
     // MARK: - State
     @State private var isSortMenuPresented = false
     @State private var cartSort: CartSortOption = .byName
-    @State private var deleteItem: NFTItem? = nil
+    @State private var deleteItem: NftItemAPI? = nil
     
     // MARK: - Init
     init() {
