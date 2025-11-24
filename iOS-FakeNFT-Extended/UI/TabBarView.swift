@@ -22,7 +22,10 @@ struct TabBarView: View {
                 .tabItem { tabItem(icon: "profile", title: "Профиль") }
             
             // Каталог
-            TestCatalogView()
+CatalogView(
+                    viewModel: CatalogViewModel(
+                        catalogService: servicesAssembly.catalogService
+                    )
                 .tabItem { tabItem(icon: "catalog", title: "Каталог") }
             
             // Корзина
@@ -117,5 +120,27 @@ private extension TabBarView {
                 .zIndex(20)
             }
         }
+        .background(Color.background.ignoresSafeArea())
+    }
+}
+
+// MARK: - Reusable tab item
+
+private struct TabBarItemView<Content: View>: View {
+    let image: ImageResource
+    let title: String
+    let content: Content
+    
+    var body: some View {
+        content
+            .tabItem {
+                VStack {
+                    Image(image)
+                        .renderingMode(.template)
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                    Text(title)
+                }
+            }
     }
 }
