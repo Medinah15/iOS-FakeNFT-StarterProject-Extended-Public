@@ -4,6 +4,9 @@ import SwiftUI
 
 struct TabBarView: View {
     
+    // MARK: - Dependencies
+    @Environment(ServicesAssembly.self) private var servicesAssembly
+    
     // MARK: - State
     @State private var isSortMenuPresented = false
     @State private var cartSort: CartSortOption = .byName
@@ -17,18 +20,28 @@ struct TabBarView: View {
     // MARK: - Body
     var body: some View {
         TabView {
+            
+            // -------------------------
             // Профиль
+            // -------------------------
             ProfileView()
                 .tabItem { tabItem(icon: "profile", title: "Профиль") }
             
-            // Каталог
-CatalogView(
-                    viewModel: CatalogViewModel(
-                        catalogService: servicesAssembly.catalogService
-                    )
-                .tabItem { tabItem(icon: "catalog", title: "Каталог") }
             
+            // -------------------------
+            // Каталог
+            // -------------------------
+            CatalogView(
+                viewModel: CatalogViewModel(
+                    catalogService: servicesAssembly.catalogService
+                )
+            )
+            .tabItem { tabItem(icon: "catalog", title: "Каталог") }
+            
+            
+            // -------------------------
             // Корзина
+            // -------------------------
             CartView(
                 isSortMenuPresented: $isSortMenuPresented,
                 sortOption: $cartSort,
@@ -40,7 +53,10 @@ CatalogView(
             )
             .tabItem { tabItem(icon: "cart", title: "Корзина") }
             
+            
+            // -------------------------
             // Статистика
+            // -------------------------
             TestCatalogView()
                 .tabItem { tabItem(icon: "statistic", title: "Статистика") }
         }
@@ -68,7 +84,8 @@ private extension TabBarView {
     // MARK: Overlay content
     var overlayContent: some View {
         ZStack {
-            // Меню сортировки
+            
+            // Меню сортировки корзины
             if isSortMenuPresented {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
@@ -81,6 +98,7 @@ private extension TabBarView {
                 GeometryReader { geo in
                     VStack {
                         Spacer()
+                        
                         CartSortMenuView(
                             selectedOption: $cartSort,
                             isPresented: $isSortMenuPresented
@@ -95,14 +113,14 @@ private extension TabBarView {
                 .zIndex(10)
             }
             
-            // Окно удаления NFT
+            // Диалог "Удалить NFT?"
             if let item = deleteItem {
                 DeleteFromCartView(
                     item: item,
                     onConfirm: {
-                        withAnimation(.easeInOut) {
-                            deleteItem = nil
-                        }
+                        withAnimation(.easeInOut) { deleteItem = nil }
+                        
+                        // Отправляем уведомление о фактическом удалении
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             NotificationCenter.default.post(
                                 name: .deleteNFTItem,
@@ -121,26 +139,5 @@ private extension TabBarView {
             }
         }
         .background(Color.background.ignoresSafeArea())
-    }
-}
-
-// MARK: - Reusable tab item
-
-private struct TabBarItemView<Content: View>: View {
-    let image: ImageResource
-    let title: String
-    let content: Content
-    
-    var body: some View {
-        content
-            .tabItem {
-                VStack {
-                    Image(image)
-                        .renderingMode(.template)
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                    Text(title)
-                }
-            }
     }
 }
