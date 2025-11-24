@@ -32,31 +32,61 @@ struct NFTModel: Identifiable, Codable {
         NFTModel(
             type: .mock,
             id: "1",
-            name: "Lilo",
+            name: "Archie",
             image: "https://picsum.photos/108/108?random=1",
             author: "John Doe",
             price: 1.78,
-            rating: 3,
+            rating: 5,
             isFavorite: true
         ),
         NFTModel(
             type: .mock,
             id: "2",
-            name: "Spring",
+            name: "Pixi",
             image: "https://picsum.photos/108/108?random=2",
             author: "John Doe",
             price: 1.78,
-            rating: 3,
+            rating: 5,
             isFavorite: true
         ),
         NFTModel(
             type: .mock,
             id: "3",
-            name: "April",
+            name: "Melissa",
             image: "https://picsum.photos/108/108?random=3",
             author: "John Doe",
             price: 1.78,
-            rating: 3,
+            rating: 5,
+            isFavorite: true
+        ),
+        NFTModel(
+            type: .mock,
+            id: "4",
+            name: "April",
+            image: "https://picsum.photos/108/108?random=4",
+            author: "John Doe",
+            price: 1.78,
+            rating: 2,
+            isFavorite: true
+        ),
+        NFTModel(
+            type: .mock,
+            id: "5",
+            name: "Daisy",
+            image: "https://picsum.photos/108/108?random=5",
+            author: "John Doe",
+            price: 1.78,
+            rating: 1,
+            isFavorite: true
+        ),
+        NFTModel(
+            type: .mock,
+            id: "6",
+            name: "Lilo",
+            image: "https://picsum.photos/108/108?random=6",
+            author: "John Doe",
+            price: 1.78,
+            rating: 4,
             isFavorite: true
         )
     ]

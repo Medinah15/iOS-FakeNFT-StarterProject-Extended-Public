@@ -12,6 +12,7 @@ struct ProfileView: View {
     @State private var showWebsite = false
     @State private var showEditProfile = false
     @State private var showMyNFTs = false
+    @State private var showFavorites = false
     
     var body: some View {
         NavigationStack {
@@ -41,6 +42,9 @@ struct ProfileView: View {
             .navigationDestination(isPresented: $showMyNFTs) {
                 MyNFTListView()
             }
+            .navigationDestination(isPresented: $showFavorites) {
+                FavouritesNFTListView()
+            }
             .onAppear {
                 setupMenuActions()
             }
@@ -54,7 +58,7 @@ struct ProfileView: View {
                 showMyNFTs = true
             },
             onFavoritesTap: {
-                // TODO: Добавить навигацию к избранным
+                showFavorites = true
             }
         )
     }
