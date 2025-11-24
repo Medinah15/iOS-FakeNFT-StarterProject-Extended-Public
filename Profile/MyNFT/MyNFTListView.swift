@@ -16,12 +16,19 @@ struct MyNFTListView: View {
     var body: some View {
         NavigationStack {
             nftList
-                .navigationTitle(viewModel.sortedNFTs.isEmpty ? "" : "Мои NFT")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         backButton
+                    }
+                    
+                    ToolbarItem(placement: .principal) {
+                        if !viewModel.sortedNFTs.isEmpty {
+                            Text("Мои NFT")
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundColor(.primary)
+                        }
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {

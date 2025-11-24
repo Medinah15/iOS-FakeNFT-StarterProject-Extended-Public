@@ -19,12 +19,19 @@ struct FavouritesNFTListView: View {
     var body: some View {
         NavigationStack {
             contentView
-                .navigationTitle(viewModel.favoriteNFTs.isEmpty ? "" : "Избранные NFT")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         backButton
+                    }
+                    
+                    ToolbarItem(placement: .principal) {
+                        if !viewModel.favoriteNFTs.isEmpty {
+                            Text("Избранные NFT")
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundColor(.primary)
+                        }
                     }
                 }
                 .onAppear {
