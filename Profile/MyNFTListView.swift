@@ -25,7 +25,9 @@ struct MyNFTListView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        sortButton
+                        if !viewModel.sortedNFTs.isEmpty {
+                            sortButton
+                        }
                     }
                 }
                 .confirmationDialog("Сортировка", isPresented: $showSortDialog, titleVisibility: .visible) {
@@ -36,15 +38,32 @@ struct MyNFTListView: View {
     
     // MARK: - NFT List
     private var nftList: some View {
-        List {
-            ForEach(viewModel.sortedNFTs) { nft in
-                NFTListRow(nft: nft)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .listRowSeparator(.hidden)
+        Group {
+            if viewModel.sortedNFTs.isEmpty {
+                emptyStateView
+            } else {
+                List {
+                    ForEach(viewModel.sortedNFTs) { nft in
+                        NFTListRow(nft: nft)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowSeparator(.hidden)
+                    }
+                }
+                .listStyle(.plain)
+                .padding(.top, 20)
             }
         }
-        .listStyle(.plain)
-        .padding(.top, 20)
+    }
+    
+    // MARK: - Empty State
+    private var emptyStateView: some View {
+        VStack {
+            Spacer()
+            Text("У Вас ещё нет NFT")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundColor(.primary)
+            Spacer()
+        }
     }
     
     // MARK: - Back Button
