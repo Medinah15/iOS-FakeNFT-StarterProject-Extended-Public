@@ -105,9 +105,9 @@ struct NFTListRow: View {
 
 #Preview {
     List {
-        NFTListRow(nft: NFTModel.mockArray[0])
-        NFTListRow(nft: NFTModel.mockArray[1])
-        NFTListRow(nft: NFTModel.mockArray[2])
+        NFTListRow(nft: NFTModel.mockArray()[0])
+        NFTListRow(nft: NFTModel.mockArray()[1])
+        NFTListRow(nft: NFTModel.mockArray()[2])
     }
     .listStyle(.plain)
 }

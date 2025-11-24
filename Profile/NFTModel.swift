@@ -71,4 +71,34 @@ struct NFTModel: Identifiable, Codable {
         self.rating = rating
         self.isFavorite = isFavorite
     }
+    
+
+    static func mockArray() -> [NFTModel] {
+        return mockData
+    }
+    
+    // Сохранение массива NFT (только для real типа)
+    static func save(_ nfts: [NFTModel]) {
+        // Сохраняем только реальные NFT
+        let realNFTs = nfts.filter { $0.type == .real }
+        if let encoded = try? JSONEncoder().encode(realNFTs) {
+            UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
+        }
+    }
+    
+    // Загрузка массива NFT в зависимости от типа
+    static func load(type: NFTType) -> [NFTModel] {
+        switch type {
+        case .mock:
+            return mockData
+            
+        case .real:
+            guard let data = UserDefaults.standard.data(forKey: userDefaultsKey),
+                  let nfts = try? JSONDecoder().decode([NFTModel].self, from: data) else {
+                return []
+            }
+            return nfts
+        }
+    }
 }
+

@@ -19,7 +19,7 @@ enum NFTSortType: String, CaseIterable {
 }
 
 struct MyNFTListView: View {
-    @State private var nfts: [NFTModel] = NFTModel.mockArray
+    @State private var viewModel = NFTViewModel()
     @State private var selectedSortType: NFTSortType = .byRating
     @State private var showSortDialog = false
     @Environment(\.dismiss) var dismiss
@@ -100,17 +100,18 @@ struct MyNFTListView: View {
     private var sortedNFTs: [NFTModel] {
         switch selectedSortType {
         case .byPrice:
-            return nfts.sorted { $0.price > $1.price }
+            return viewModel.nfts.sorted { $0.price > $1.price }
         case .byRating:
-            return nfts.sorted { $0.rating > $1.rating }
+            return viewModel.nfts.sorted { $0.rating > $1.rating }
         case .byName:
-            return nfts.sorted { $0.name < $1.name }
+            return viewModel.nfts.sorted { $0.name < $1.name }
         }
     }
     
     // MARK: - Actions
     private func sortNFTs() {
-        nfts = sortedNFTs
+        // Сортировка происходит через computed property sortedNFTs
+        // Обновление не требуется, так как sortedNFTs вычисляется динамически
     }
 }
 
