@@ -18,7 +18,7 @@ struct TabBarView: View {
     var body: some View {
         TabView {
             // Профиль
-            TestCatalogView()
+            ProfileView()
                 .tabItem { tabItem(icon: "profile", title: "Профиль") }
             
             // Каталог
