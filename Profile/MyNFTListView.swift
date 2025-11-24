@@ -8,19 +8,8 @@
 import SwiftUI
 import Foundation
 
-enum NFTSortType: String, CaseIterable {
-    case byPrice = "По цене"
-    case byRating = "По рейтингу"
-    case byName = "По названию"
-    
-    var displayName: String {
-        return rawValue
-    }
-}
-
 struct MyNFTListView: View {
     @State private var viewModel = NFTViewModel()
-    @State private var selectedSortType: NFTSortType = .byRating
     @State private var showSortDialog = false
     @Environment(\.dismiss) var dismiss
     
@@ -48,7 +37,7 @@ struct MyNFTListView: View {
     // MARK: - NFT List
     private var nftList: some View {
         List {
-            ForEach(sortedNFTs) { nft in
+            ForEach(viewModel.sortedNFTs) { nft in
                 NFTListRow(nft: nft)
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     .listRowSeparator(.hidden)
@@ -87,31 +76,13 @@ struct MyNFTListView: View {
         Group {
             ForEach(NFTSortType.allCases, id: \.self) { sortType in
                 Button(sortType.displayName) {
-                    selectedSortType = sortType
-                    sortNFTs()
+                    viewModel.selectedSortType = sortType
+                    viewModel.sortNFTs()
                 }
             }
             
             Button("Отмена", role: .cancel) {}
         }
-    }
-    
-    // MARK: - Computed Properties
-    private var sortedNFTs: [NFTModel] {
-        switch selectedSortType {
-        case .byPrice:
-            return viewModel.nfts.sorted { $0.price > $1.price }
-        case .byRating:
-            return viewModel.nfts.sorted { $0.rating > $1.rating }
-        case .byName:
-            return viewModel.nfts.sorted { $0.name < $1.name }
-        }
-    }
-    
-    // MARK: - Actions
-    private func sortNFTs() {
-        // Сортировка происходит через computed property sortedNFTs
-        // Обновление не требуется, так как sortedNFTs вычисляется динамически
     }
 }
 
