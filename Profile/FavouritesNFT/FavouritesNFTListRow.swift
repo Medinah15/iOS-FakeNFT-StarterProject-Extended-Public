@@ -42,16 +42,16 @@ struct FavouritesNFTListRow: View {
                             }
                     }
                 }
-                .frame(width: 108, height: 108)
+                .frame(width: 80, height: 80)
                 .cornerRadius(12)
                 .clipped()
                 
                 // Красное сердечко в правом верхнем углу
                 if isImageLoaded {
                     Image(systemName: "heart.fill")
-                        .font(.system(size: 12))
+                        .font(.system(size: 21))
                         .foregroundColor(.red)
-                        .padding(8)
+                        .padding(5)
                 }
             }
             
@@ -73,9 +73,17 @@ struct FavouritesNFTListRow: View {
                 }
                 
                 // Цена в ETH
-                Text("\(nft.price, specifier: "%.2f") ETH")
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundColor(.primary)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text("\(nft.price, specifier: "%.2f")")
+                        .font(.system(size: 15, weight: .regular))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                    Text("ETH")
+                        .font(.system(size: 15, weight: .regular))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                }
+                .fixedSize(horizontal: true, vertical: false)
             }
             
             Spacer()
