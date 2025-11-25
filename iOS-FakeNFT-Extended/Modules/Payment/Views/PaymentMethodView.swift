@@ -5,7 +5,7 @@ struct PaymentMethodView: View {
     let onPaymentSuccess: () -> Void
     
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = PaymentViewModel()
+    @StateObject private var viewModel: PaymentViewModel
     @State private var isAgreementPresented = false
     @State private var isPaymentSuccessPresented = false
     
@@ -13,6 +13,25 @@ struct PaymentMethodView: View {
         GridItem(.fixed(168), spacing: 7),
         GridItem(.fixed(168), spacing: 7)
     ]
+    
+    // MARK: - Init
+    
+    /// Стандартный init
+    init(onPaymentSuccess: @escaping () -> Void) {
+        self.onPaymentSuccess = onPaymentSuccess
+        _viewModel = StateObject(wrappedValue: PaymentViewModel())
+    }
+    
+    /// Новый init — принимает внешний PaymentViewModel (например, с currencies)
+    init(
+        viewModel: PaymentViewModel,
+        onPaymentSuccess: @escaping () -> Void
+    ) {
+        self.onPaymentSuccess = onPaymentSuccess
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    // MARK: - Body
     
     var body: some View {
         VStack(spacing: 0) {
@@ -91,6 +110,7 @@ struct PaymentMethodView: View {
         }
     }
 }
+
 
 
 // MARK: - Header

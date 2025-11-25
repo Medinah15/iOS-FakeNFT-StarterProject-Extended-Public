@@ -21,8 +21,11 @@ struct OrderPutRequest: NetworkRequest, FormURLEncodedRequest {
 
     var dto: Encodable? { nil }
 
+    /// PUT обновляет корзину, но не умеет очищать.
     var formParameters: [String : String] {
         if nftIds.isEmpty {
+            // PUT с пустым body вызывает ошибку -> {"error":"entity by id is missing"}
+            // Поэтому НЕ шлём пустой PUT, а пусть вызывающий код сам решает, что делать.
             return [:]
         } else {
             return ["nfts": nftIds.joined(separator: ",")]
@@ -41,9 +44,24 @@ struct OrderPostRequest: NetworkRequest, FormURLEncodedRequest {
 
     var dto: Encodable? { nil }
 
+    /// POST по спецификации выполняет заказ и очищает корзину
+    /// Но сервер НЕ принимает nfts вообще —  шлём пустое тело..
     var formParameters: [String: String] {
-        [
-            "nfts": nftIds.joined(separator: ",")
-        ]
+        return [:]
     }
+}
+
+// MARK: - GET /orders/1/payment/{currency_id}
+
+struct PayOrderRequest: NetworkRequest {
+    let orderId: String
+    let currencyId: String
+
+    var httpMethod: HttpMethod { .get }
+
+    var endpoint: URL? {
+        URL(string: RequestConstants.baseURL + "/api/v1/orders/\(orderId)/payment/\(currencyId)")
+    }
+
+    var dto: Encodable? { nil }
 }

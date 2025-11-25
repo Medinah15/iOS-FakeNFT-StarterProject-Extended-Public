@@ -18,6 +18,8 @@ protocol FormURLEncodedRequest: NetworkRequest {
     var formParameters: [String: String] { get }
 }
 
+protocol EmptyBodyRequest: NetworkRequest {}
+
 // default values
 extension NetworkRequest {
     var httpMethod: HttpMethod { .get }

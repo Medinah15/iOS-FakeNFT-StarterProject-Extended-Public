@@ -5,43 +5,73 @@ final class CartViewModel: ObservableObject {
     
     // MARK: - Published
     @Published private(set) var state: CartState = .loading
+    @Published private(set) var currencies: [CurrencyAPI] = []
     
     // MARK: - Dependencies
     private let cartService: CartService
     private let networkClient: NetworkClient
+    private let paymentService: PaymentService
     
     // MARK: - Init
     
-    /// Основной инициализатор (на него удобно писать тесты)
-    init(cartService: CartService, networkClient: NetworkClient) {
+    init(
+        cartService: CartService,
+        networkClient: NetworkClient,
+        paymentService: PaymentService
+    ) {
         self.cartService = cartService
         self.networkClient = networkClient
+        self.paymentService = paymentService
     }
     
-    /// Удобный init по умолчанию для прода / превью
+    /// Init по умолчанию
     convenience init() {
         let client = DefaultNetworkClient()
         let cartService = CartServiceImpl(networkClient: client)
-        self.init(cartService: cartService, networkClient: client)
+        let paymentService = PaymentServiceImpl(network: client)
         
-        Task { await loadItems() }
+        self.init(
+            cartService: cartService,
+            networkClient: client,
+            paymentService: paymentService
+        )
+        
+        Task {
+            await preloadCurrencies()    // грузим валюты заранее
+            await loadItems()            // грузим корзину
+        }
     }
     
-    // MARK: - Public API
+    // MARK: - Reload
     
     func reload() {
         Task { await loadItems() }
     }
     
-    /// Удаление NFT из корзины (оптимистичное)
+    // MARK: - Payment integration
+    
+    private func preloadCurrencies() async {
+        do {
+            let data = try await paymentService.fetchCurrencies()
+            currencies = data
+#if DEBUG
+            print("ℹ️ Loaded \(data.count) currencies")
+#endif
+        } catch {
+#if DEBUG
+            print("⚠️ Failed to preload currencies:", error)
+#endif
+        }
+    }
+    
+    // MARK: - Delete
+    
     func delete(_ item: NftItemAPI) {
         guard case .loaded(var items) = state else { return }
         
-        // 1. Локально убираем из массива
         items.removeAll { $0.id == item.id }
         state = items.isEmpty ? .empty : .loaded(items)
         
-        // 2. Синхронизируем с бэком
         Task {
             do {
                 let ids = items.map { $0.id }
@@ -55,25 +85,20 @@ final class CartViewModel: ObservableObject {
         }
     }
     
-    /// Вызывается после успешной оплаты
+    // MARK: - Payment complete (FIXED)
+    
+    /// После успешной оплаты очищаем корзину локально.
+
     func handlePaymentSuccess() {
-        // если вдруг по какой-то причине корзина уже пустая — просто обновим состояние
-        guard case .loaded(let items) = state, !items.isEmpty else {
-            state = .empty
-            return
-        }
-        
         state = .loading
-        
+
         Task {
             do {
-                let ids = items.map { $0.id }
-                _ = try await cartService.completeOrder(nftIds: ids)
+                // ВАЖНО: для очистки корзины нужен ПУСТОЙ PUT
+                _ = try await cartService.updateOrder(nftIds: [])
+
                 state = .empty
             } catch {
-#if DEBUG
-                print("❌ CartViewModel.handlePaymentSuccess – completeOrder error:", error)
-#endif
                 state = .error("Не удалось выполнить оплату")
             }
         }
@@ -84,24 +109,22 @@ final class CartViewModel: ObservableObject {
     func sortedItems(_ items: [NftItemAPI], by sort: CartSortOption) -> [NftItemAPI] {
         switch sort {
         case .byPrice:
-            return items.sorted { $0.price > $1.price }
+            items.sorted { $0.price > $1.price }
         case .byRating:
-            return items.sorted { $0.rating > $1.rating }
+            items.sorted { $0.rating > $1.rating }
         case .byName:
-            return items.sorted {
+            items.sorted {
                 $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
             }
         }
     }
     
-    // MARK: - Private
+    // MARK: - Load Order
     
-    /// Загрузка корзины и деталей NFT
     private func loadItems() async {
         state = .loading
         
         do {
-            // 1. Тянем заказ (id-шники NFT)
             let order = try await cartService.fetchOrder()
             
             guard !order.nfts.isEmpty else {
@@ -109,24 +132,23 @@ final class CartViewModel: ObservableObject {
                 return
             }
             
-            // 2. Для каждого id тянем /api/v1/nft/{id} и мапим в NftItemAPI
             var items: [NftItemAPI] = []
+            items.reserveCapacity(order.nfts.count)
+            
             for nftId in order.nfts {
                 do {
                     let request = NFTRequest(id: nftId)
                     let apiModel: NftAPI = try await networkClient.send(request: request)
-                    let normalized = NftItemAPI(from: apiModel)
-                    items.append(normalized)
+                    items.append(NftItemAPI(from: apiModel))
                 } catch {
 #if DEBUG
-                    print("❌ CartViewModel.loadItems – failed to load NFT \(nftId):", error)
+                    print("❌ Failed to load NFT \(nftId):", error)
 #endif
-                    // одного битого NFT игнорируем, остальные показываем
-                    continue
                 }
             }
             
             state = items.isEmpty ? .empty : .loaded(items)
+            
         } catch {
 #if DEBUG
             print("❌ CartViewModel.loadItems – fetchOrder error:", error)
