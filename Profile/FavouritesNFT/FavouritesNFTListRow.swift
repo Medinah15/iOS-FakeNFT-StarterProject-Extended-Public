@@ -96,7 +96,7 @@ struct FavouritesNFTListRow: View {
         type: .mock,
         id: "1",
         name: "Archie",
-        image: "https://picsum.photos/108/108?random=1",
+        image: "https://i.pravatar.cc/150?img=1",
         author: "John Doe",
         price: 1.78,
         rating: 5,
