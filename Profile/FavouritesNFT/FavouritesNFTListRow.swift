@@ -9,7 +9,15 @@ import SwiftUI
 
 struct FavouritesNFTListRow: View {
     let nft: NFTModel
+    @Binding var isFavorite: Bool
     @State private var isImageLoaded = false
+    let onToggleFavorite: () -> Void
+    
+    init(nft: NFTModel, isFavorite: Binding<Bool>, onToggleFavorite: @escaping () -> Void) {
+        self.nft = nft
+        _isFavorite = isFavorite
+        self.onToggleFavorite = onToggleFavorite
+    }
     
     var body: some View {
         HStack(spacing: 12) {
@@ -46,12 +54,18 @@ struct FavouritesNFTListRow: View {
                 .cornerRadius(12)
                 .clipped()
                 
-                // Красное сердечко в правом верхнем углу
+                // Красное сердечко в правом верхнем углу (кликабельное)
                 if isImageLoaded {
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 21))
-                        .foregroundColor(.red)
-                        .padding(5)
+                    Button(action: {
+                        isFavorite = false
+                        onToggleFavorite()
+                    }) {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 21))
+                            .foregroundColor(.red)
+                            .padding(5)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
             
@@ -103,8 +117,12 @@ struct FavouritesNFTListRow: View {
         isFavorite: true
     )
     
-    return FavouritesNFTListRow(nft: mockNFT)
-        .padding()
-        .previewLayout(.sizeThatFits)
+    return FavouritesNFTListRow(
+        nft: mockNFT,
+        isFavorite: .constant(true),
+        onToggleFavorite: {}
+    )
+    .padding()
+    .previewLayout(.sizeThatFits)
 }
 

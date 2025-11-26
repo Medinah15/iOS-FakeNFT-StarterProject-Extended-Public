@@ -11,8 +11,9 @@ import SwiftUI
 @Observable
 class FavouritesNFTViewModel {
     var favoriteNFTs: [NFTModel] = []
-    
-    init() {
+    var allNFTsViewModel: NFTViewModel?
+    init(allNFTsViewModel: NFTViewModel? = nil) {
+        self.allNFTsViewModel = allNFTsViewModel
         loadFavoriteNFTs()
     }
     
@@ -22,56 +23,25 @@ class FavouritesNFTViewModel {
     }
     
     // MARK: - NFT Loading
-    private func loadFavoriteNFTs() {
-        // Загружаем все NFT
-        let realNFTs = NFTModel.load(type: .real)
-        let allNFTs: [NFTModel]
-        
-        if realNFTs.isEmpty {
-            allNFTs = NFTModel.load(type: .mock)
+    func loadFavoriteNFTs() {
+        // Загружаем из основного ViewModel или из хранилища
+        if let allNFTs = allNFTsViewModel?.nfts {
+            favoriteNFTs = allNFTs.filter { $0.isFavorite }
         } else {
-            allNFTs = realNFTs
+            // Fallback на загрузку из хранилища
+            let realNFTs = NFTModel.load(type: .real)
+            let allNFTs = realNFTs.isEmpty ? NFTModel.load(type: .mock) : realNFTs
+            // Фильтруем только избранные
+            favoriteNFTs = allNFTs.filter { $0.isFavorite }
         }
-        
-        // Фильтруем только избранные
-        favoriteNFTs = allNFTs.filter { $0.isFavorite }
     }
-    
     // MARK: - NFT Updates
     func toggleFavorite(for nftId: String) {
-        // Обновляем NFT в основном хранилище
-        let realNFTs = NFTModel.load(type: .real)
-        let allNFTs: [NFTModel]
+        // Обновляем в основном ViewModel
+        allNFTsViewModel?.toggleFavorite(for: nftId)
         
-        if realNFTs.isEmpty {
-            allNFTs = NFTModel.load(type: .mock)
-        } else {
-            allNFTs = realNFTs
-        }
-        
-        // Находим и обновляем NFT
-        if let index = allNFTs.firstIndex(where: { $0.id == nftId }) {
-            let nft = allNFTs[index]
-            let updatedNFT = NFTModel(
-                type: nft.type,
-                id: nft.id,
-                name: nft.name,
-                image: nft.image,
-                author: nft.author,
-                price: nft.price,
-                rating: nft.rating,
-                isFavorite: !nft.isFavorite
-            )
-            
-            var updatedNFTs = allNFTs
-            updatedNFTs[index] = updatedNFT
-            
-            // Сохраняем обновленный массив
-            NFTModel.save(updatedNFTs)
-            
-            // Обновляем локальный список избранных
-            loadFavoriteNFTs()
-        }
+        // Обновляем локальный список
+        loadFavoriteNFTs()
     }
     
     func refresh() {

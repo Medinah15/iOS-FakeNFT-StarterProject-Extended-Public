@@ -9,12 +9,12 @@ import SwiftUI
 
 struct NFTListRow: View {
     let nft: NFTModel
-    @State private var isFavorite: Bool
+    @Binding var isFavorite: Bool
     @State private var isImageLoaded = false
     
-    init(nft: NFTModel) {
+    init(nft: NFTModel, isFavorite: Binding<Bool>) {
         self.nft = nft
-        _isFavorite = State(initialValue: nft.isFavorite)
+        _isFavorite = isFavorite
     }
     
     var body: some View {
@@ -105,9 +105,9 @@ struct NFTListRow: View {
 
 #Preview {
     List {
-        NFTListRow(nft: NFTModel.mockArray()[0])
-        NFTListRow(nft: NFTModel.mockArray()[1])
-        NFTListRow(nft: NFTModel.mockArray()[2])
+        NFTListRow(nft: NFTModel.mockArray()[0], isFavorite: .constant(true))
+        NFTListRow(nft: NFTModel.mockArray()[1], isFavorite: .constant(false))
+        NFTListRow(nft: NFTModel.mockArray()[2], isFavorite: .constant(true))
     }
     .listStyle(.plain)
 }

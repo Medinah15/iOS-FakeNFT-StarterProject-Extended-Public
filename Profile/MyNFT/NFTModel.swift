@@ -8,13 +8,13 @@
 import Foundation
 
 
-enum NFTType: Codable {
+enum NFTType: Codable, Equatable {
     case mock
     case real
 }
 
 
-struct NFTModel: Identifiable, Codable {
+struct NFTModel: Identifiable, Codable, Equatable {
     let type: NFTType
     let id: String
     let name: String

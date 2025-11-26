@@ -8,8 +8,15 @@
 import SwiftUI
 
 struct FavouritesNFTListView: View {
-    @State private var viewModel = FavouritesNFTViewModel()
+    @State private var viewModel: FavouritesNFTViewModel
+    @State private var allNFTsViewModel: NFTViewModel
     @Environment(\.dismiss) var dismiss
+    
+    init(allNFTsViewModel: NFTViewModel? = nil) {
+        let nftViewModel = allNFTsViewModel ?? NFTViewModel()
+        _allNFTsViewModel = State(initialValue: nftViewModel)
+        _viewModel = State(initialValue: FavouritesNFTViewModel(allNFTsViewModel: nftViewModel))
+    }
     
     private let columns = [
         GridItem(.flexible(), spacing: 7),
@@ -37,6 +44,9 @@ struct FavouritesNFTListView: View {
                 .onAppear {
                     viewModel.refresh()
                 }
+                .onChange(of: allNFTsViewModel.nfts) { _, _ in
+                    viewModel.refresh()
+                }
         }
     }
     
@@ -56,10 +66,16 @@ struct FavouritesNFTListView: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(viewModel.favoriteNFTs) { nft in
-                    FavouritesNFTListRow(nft: nft)
-                        .onTapGesture {
-                            // TODO: Добавить навигацию к деталям NFT
+                    FavouritesNFTListRow(
+                        nft: nft,
+                        isFavorite: allNFTsViewModel.bindingForFavorite(nftId: nft.id),
+                        onToggleFavorite: {
+                            viewModel.refresh()
                         }
+                    )
+                    .onTapGesture {
+                        // TODO: Добавить навигацию к деталям NFT
+                    }
                 }
             }
             .padding(.horizontal, 16)
@@ -110,7 +126,11 @@ struct FavouritesNFTListView: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 20) {
                         ForEach(viewModel.favoriteNFTs) { nft in
-                            FavouritesNFTListRow(nft: nft)
+                            FavouritesNFTListRow(
+                                nft: nft,
+                                isFavorite: .constant(true),
+                                onToggleFavorite: {}
+                            )
                         }
                     }
                     .padding(.horizontal, 16)

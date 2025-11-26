@@ -9,9 +9,13 @@ import SwiftUI
 import Foundation
 
 struct MyNFTListView: View {
-    @State private var viewModel = NFTViewModel()
+    @State private var viewModel: NFTViewModel
     @State private var showSortDialog = false
     @Environment(\.dismiss) var dismiss
+    
+    init(viewModel: NFTViewModel? = nil) {
+        _viewModel = State(initialValue: viewModel ?? NFTViewModel())
+    }
     
     var body: some View {
         NavigationStack {
@@ -51,9 +55,12 @@ struct MyNFTListView: View {
             } else {
                 List {
                     ForEach(viewModel.sortedNFTs) { nft in
-                        NFTListRow(nft: nft)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowSeparator(.hidden)
+                        NFTListRow(
+                            nft: nft,
+                            isFavorite: viewModel.bindingForFavorite(nftId: nft.id)
+                        )
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowSeparator(.hidden)
                     }
                 }
                 .listStyle(.plain)
@@ -134,9 +141,12 @@ struct MyNFTListView: View {
                     } else {
                         List {
                             ForEach(viewModel.sortedNFTs) { nft in
-                                NFTListRow(nft: nft)
-                                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                                    .listRowSeparator(.hidden)
+                                NFTListRow(
+                                    nft: nft,
+                                    isFavorite: viewModel.bindingForFavorite(nftId: nft.id)
+                                )
+                                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                .listRowSeparator(.hidden)
                             }
                         }
                         .listStyle(.plain)

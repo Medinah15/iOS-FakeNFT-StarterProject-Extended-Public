@@ -78,6 +78,32 @@ class NFTViewModel {
         }
     }
     
+    // Получить Binding для конкретного NFT
+    func bindingForFavorite(nftId: String) -> Binding<Bool> {
+        Binding(
+            get: {
+                self.nfts.first(where: { $0.id == nftId })?.isFavorite ?? false
+            },
+            set: { newValue in
+                if let index = self.nfts.firstIndex(where: { $0.id == nftId }) {
+                    let nft = self.nfts[index]
+                    let updatedNFT = NFTModel(
+                        type: nft.type,
+                        id: nft.id,
+                        name: nft.name,
+                        image: nft.image,
+                        author: nft.author,
+                        price: nft.price,
+                        rating: nft.rating,
+                        isFavorite: newValue
+                    )
+                    self.nfts[index] = updatedNFT
+                    self.saveNFTs()
+                }
+            }
+        )
+    }
+    
     // MARK: - Sorting
     var sortedNFTs: [NFTModel] {
         switch selectedSortType {
