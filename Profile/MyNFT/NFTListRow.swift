@@ -81,23 +81,24 @@ struct NFTListRow: View {
                 }
                 
                 // Автор
-                Text("OT \(nft.author)")
-                    .font(.system(size: 15, weight: .regular))
-                    .foregroundColor(.secondary)
+                Text("от \(nft.author)")
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(.black)
             }
             
             Spacer()
             
             // Цена
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("Цена")
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.black)
                 
                 Text("\(nft.price, specifier: "%.2f") ETH")
                     .font(.system(size: 17, weight: .bold))
                     .foregroundColor(.primary)
             }
+            .padding(.trailing, 39)
         }
         .padding(.vertical, 4)
     }
