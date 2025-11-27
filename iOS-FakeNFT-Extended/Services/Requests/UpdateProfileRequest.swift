@@ -22,9 +22,13 @@ struct UpdateProfileRequest: FormURLEncodedRequest {
     var formParameters: [String: String] {
         var params: [String: String] = [:]
         
+        // Для likes: если это пустая строка "", отправляем её для очистки избранного
+        // Если nil, не отправляем параметр вообще
         if let likes = profileUpdate.likes {
+            // Отправляем likes всегда, даже если это пустая строка (для очистки избранного)
             params["likes"] = likes
         }
+        
         if let avatar = profileUpdate.avatar {
             params["avatar"] = avatar
         }

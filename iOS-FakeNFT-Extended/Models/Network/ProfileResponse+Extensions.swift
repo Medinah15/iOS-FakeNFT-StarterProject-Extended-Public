@@ -9,30 +9,27 @@ import Foundation
 
 extension ProfileResponse {
     func toProfileModel(userId: String) -> ProfileModel {
-        // Разбиваем строки nfts и likes на массивы ID
-        let nftIds = nfts.flatMap { $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) } }
-        let favoriteIds = likes.flatMap { $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) } }
-        
+        // nfts и likes уже массивы в API ответе, не нужно разбивать
         return ProfileModel(
             type: .real,
             id: userId,
             name: name,
             avatar: avatar,
-            description: description,
+            description: description ?? "", // Используем пустую строку если null
             website: website,
-            nftCount: nftIds.count,
-            favoriteCount: favoriteIds.count
+            nftCount: nfts.count,
+            favoriteCount: likes.count
         )
     }
     
-    // Получить массив ID NFT
+    // Получить массив ID NFT (уже массив в API ответе)
     func getNFTIds() -> [String] {
-        return nfts.flatMap { $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) } }
+        return nfts
     }
     
-    // Получить массив ID избранного
+    // Получить массив ID избранного (уже массив в API ответе)
     func getFavoriteIds() -> [String] {
-        return likes.flatMap { $0.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) } }
+        return likes
     }
 }
 

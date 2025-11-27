@@ -54,18 +54,27 @@ class NFTViewModel {
     // MARK: - NFT Loading
     func loadNFTs() async {
         guard let profileService = profileService, let nftService = nftService else {
-            // Если нет сервисов (Preview режим), используем существующие данные
+            // Если нет сервисов (Preview режим), загружаем сохраненные данные
+            nfts = NFTModel.load(type: .real)
+            if nfts.isEmpty {
+                nfts = NFTModel.mockArray()
+            }
             return
         }
         
         isLoading = true
         errorMessage = nil
+        
+        // Сначала загружаем сохраненные NFT данные
+        let savedNFTs = NFTModel.load(type: .real)
+        
         do {
             // Загружаем профиль для получения списка NFT ID
             let profileResponse = try await profileService.loadProfile(userId: "1")
             
             if profileResponse.nfts.isEmpty {
-                nfts = []
+                // Если нет NFT на сервере, используем сохраненные данные или пустой массив
+                nfts = savedNFTs.isEmpty ? [] : savedNFTs
                 isLoading = false
                 return
             }
@@ -73,18 +82,39 @@ class NFTViewModel {
             // Загружаем NFT по ID
             let nftResponses = try await nftService.loadNFTsByIds(ids: profileResponse.nfts)
             
-            // Преобразуем в NFTModel
+            // Преобразуем в NFTModel, используя сохраненное состояние isFavorite если есть
             nfts = nftResponses.map { response in
-                let isFavorite = profileResponse.likes.contains(response.id)
-                return response.toNFTModel(isFavorite: isFavorite)
+                // Проверяем, есть ли сохраненный NFT с таким ID
+                if let savedNFT = savedNFTs.first(where: { $0.id == response.id }) {
+                    // Используем сохраненное состояние isFavorite
+                    return response.toNFTModel(isFavorite: savedNFT.isFavorite)
+                } else {
+                    // Используем состояние с сервера
+                    let isFavorite = profileResponse.likes.contains(response.id)
+                    return response.toNFTModel(isFavorite: isFavorite)
+                }
             }
             
             saveNFTs()
             applySorting()
+            
+            // Обновляем счетчики в ProfileViewModel после загрузки NFT
+            await MainActor.run {
+                profileViewModel?.updateMenuItemsCounts()
+            }
         } catch {
             errorMessage = "Ошибка загрузки NFT"
-            // Fallback на мок данные
-            nfts = NFTModel.mockArray()
+            // При ошибке используем сохраненные данные или мок
+            if !savedNFTs.isEmpty {
+                nfts = savedNFTs
+            } else {
+                nfts = NFTModel.mockArray()
+            }
+            
+            // Обновляем счетчики даже при ошибке
+            await MainActor.run {
+                profileViewModel?.updateMenuItemsCounts()
+            }
         }
         isLoading = false
     }
@@ -122,6 +152,11 @@ class NFTViewModel {
         if let profileViewModel = profileViewModel {
             let favoriteIds = nfts.filter { $0.isFavorite }.map { $0.id }
             await profileViewModel.updateFavorites(nftIds: favoriteIds)
+            
+            // Обновляем счетчики после изменения избранного
+            await MainActor.run {
+                profileViewModel.updateMenuItemsCounts()
+            }
         }
     }
     
@@ -149,6 +184,11 @@ class NFTViewModel {
                     Task {
                         let favoriteIds = self.nfts.filter { $0.isFavorite }.map { $0.id }
                         await self.profileViewModel?.updateFavorites(nftIds: favoriteIds)
+                        
+                        // Обновляем счетчики после изменения избранного
+                        await MainActor.run {
+                            self.profileViewModel?.updateMenuItemsCounts()
+                        }
                     }
                 }
             }

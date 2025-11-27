@@ -30,14 +30,29 @@ actor DefaultNetworkClient: NetworkClient {
     
     func send(request: NetworkRequest) async throws -> Data {
         let urlRequest = try create(request: request)
-        let (data, response) = try await session.data(for: urlRequest)
-        guard let response = response as? HTTPURLResponse else {
-            throw NetworkClientError.urlSessionError
+        
+        do {
+            let (data, response) = try await session.data(for: urlRequest)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NetworkClientError.urlSessionError
+            }
+            
+            guard 200 ..< 300 ~= httpResponse.statusCode else {
+                print("❌ HTTP ошибка: \(httpResponse.statusCode) для \(urlRequest.url?.absoluteString ?? "unknown")")
+                if let errorString = String(data: data, encoding: .utf8) {
+                    print("   Response body: \(errorString)")
+                }
+                throw NetworkClientError.httpStatusCode(httpResponse.statusCode)
+            }
+            
+            return data
+        } catch let urlError as URLError {
+            print("❌ Сетевая ошибка: \(urlError.localizedDescription) (код: \(urlError.code.rawValue))")
+            throw NetworkClientError.urlRequestError(urlError)
+        } catch {
+            print("❌ Ошибка запроса: \(error.localizedDescription)")
+            throw NetworkClientError.urlRequestError(error)
         }
-        guard 200 ..< 300 ~= response.statusCode else {
-            throw NetworkClientError.httpStatusCode(response.statusCode)
-        }
-        return data
     }
     
     func send<T: Decodable>(request: NetworkRequest) async throws -> T {
@@ -59,7 +74,17 @@ actor DefaultNetworkClient: NetworkClient {
         // 1) form-urlencoded (наш случай с orders)
         // -------------------------------------------
         if let formRequest = request as? FormURLEncodedRequest {
-            let bodyString = formRequest.formParameters
+            let formParams = formRequest.formParameters
+            
+            // Если параметров нет, отправляем пустое тело
+            guard !formParams.isEmpty else {
+                urlRequest.httpBody = Data()
+                urlRequest.setValue("application/x-www-form-urlencoded",
+                                    forHTTPHeaderField: "Content-Type")
+                return urlRequest
+            }
+            
+            let bodyString = formParams
                 .map { key, value in
                     let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? key
                     let encodedValue = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
@@ -67,7 +92,11 @@ actor DefaultNetworkClient: NetworkClient {
                 }
                 .joined(separator: "&")
             
-            urlRequest.httpBody = bodyString.data(using: .utf8)
+            guard let bodyData = bodyString.data(using: .utf8) else {
+                throw NetworkClientError.incorrectRequest("Failed to encode form body")
+            }
+            
+            urlRequest.httpBody = bodyData
             urlRequest.setValue("application/x-www-form-urlencoded",
                                 forHTTPHeaderField: "Content-Type")
             
@@ -83,10 +112,13 @@ actor DefaultNetworkClient: NetworkClient {
         }
         
         // -------------------------------------------
-        // Token — ОБЩИЙ для всех запросов
+        // Token — добавляется только для запросов к нашему API
         // -------------------------------------------
-        urlRequest.addValue(RequestConstants.token,
-                            forHTTPHeaderField: "X-Practicum-Mobile-Token")
+        if let endpointHost = endpoint.host,
+           endpointHost.contains("apigw.yandexcloud.net") {
+            urlRequest.addValue(RequestConstants.token,
+                                forHTTPHeaderField: "X-Practicum-Mobile-Token")
+        }
         
         return urlRequest
     }
@@ -94,7 +126,26 @@ actor DefaultNetworkClient: NetworkClient {
     private func parse<T: Decodable>(data: Data) throws -> T {
         do {
             return try decoder.decode(T.self, from: data)
+        } catch let decodingError as DecodingError {
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("❌ Ошибка декодирования JSON:")
+                print("   Ответ: \(jsonString.prefix(500))")
+            }
+            switch decodingError {
+            case .typeMismatch(let type, let context):
+                print("   Тип не совпадает: \(type), путь: \(context.codingPath.map { $0.stringValue }.joined(separator: "."))")
+            case .valueNotFound(let type, let context):
+                print("   Значение не найдено: \(type), путь: \(context.codingPath.map { $0.stringValue }.joined(separator: "."))")
+            case .keyNotFound(let key, let context):
+                print("   Ключ не найден: \(key.stringValue), путь: \(context.codingPath.map { $0.stringValue }.joined(separator: "."))")
+            case .dataCorrupted(let context):
+                print("   Данные повреждены: \(context.debugDescription)")
+            @unknown default:
+                print("   Неизвестная ошибка декодирования")
+            }
+            throw NetworkClientError.parsingError
         } catch {
+            print("❌ Ошибка парсинга: \(error.localizedDescription)")
             throw NetworkClientError.parsingError
         }
     }

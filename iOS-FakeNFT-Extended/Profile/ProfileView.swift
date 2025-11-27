@@ -16,6 +16,7 @@ struct ProfileView: View {
     @State private var showEditProfile = false
     @State private var showMyNFTs = false
     @State private var showFavorites = false
+    @State private var networkClient: NetworkClient?
     
     init() {
         // Временная инициализация, будет перезаписана в onAppear
@@ -67,7 +68,10 @@ struct ProfileView: View {
             .navigationDestination(isPresented: $showFavorites) {
                 FavouritesNFTListView(allNFTsViewModel: nftViewModel)
             }
-            .alert("Ошибка", isPresented: .constant(viewModel.errorMessage != nil)) {
+            .alert("Ошибка", isPresented: Binding(
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )) {
                 Button("OK") {
                     viewModel.errorMessage = nil
                 }
@@ -96,6 +100,12 @@ struct ProfileView: View {
             profileViewModel: profileVM
         )
         nftViewModel = nftVM
+        
+        // Устанавливаем обратную ссылку для синхронизации NFT данных
+        profileVM.nftViewModel = nftVM
+        
+        // Сохраняем NetworkClient для загрузки изображений
+        networkClient = DefaultNetworkClient()
     }
     
     // MARK: - Setup Menu Actions
@@ -113,21 +123,117 @@ struct ProfileView: View {
     // MARK: - Avatar and Name Section
     private var avatarAndNameSection: some View {
         HStack(spacing: 16) {
-            AsyncImage(url: URL(string: viewModel.profile.avatar)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                ProgressView()
-            }
-            .frame(width: 70, height: 70)
-            .clipShape(Circle())
+            AvatarImageView(avatarURL: viewModel.profile.avatar, networkClient: networkClient)
             
             Text(viewModel.profile.name)
                 .font(.system(size: 22, weight: .bold))
                 .foregroundColor(.primary)
             
             Spacer()
+        }
+    }
+    
+    // MARK: - Avatar Image View
+    private struct AvatarImageView: View {
+        let avatarURL: String
+        let networkClient: NetworkClient?
+        @State private var loadedImage: UIImage?
+        @State private var isLoading = true
+        
+        var body: some View {
+            Group {
+                if let image = loadedImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } else if isLoading {
+                    ProgressView()
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .foregroundColor(.gray)
+                }
+            }
+            .frame(width: 70, height: 70)
+            .clipShape(Circle())
+            .task {
+                await loadAvatarImage()
+            }
+        }
+        
+        // Загрузка изображения через NetworkClient (как и данные профиля)
+        private func loadAvatarImage() async {
+            guard !avatarURL.isEmpty, let url = URL(string: avatarURL) else {
+                isLoading = false
+                return
+            }
+            
+            // Создаем простой NetworkRequest для загрузки изображения
+            let imageRequest = ImageRequest(url: url)
+            
+            do {
+                if let client = networkClient {
+                    // Используем NetworkClient для загрузки (как и данные профиля)
+                    let imageData = try await client.send(request: imageRequest)
+                    
+                    if let image = UIImage(data: imageData) {
+                        await MainActor.run {
+                            loadedImage = image
+                            isLoading = false
+                        }
+                    } else {
+                        isLoading = false
+                    }
+                } else {
+                    // Fallback на обычный URLSession если NetworkClient недоступен
+                    await loadWithURLSession(url: url)
+                }
+            } catch {
+                // Fallback на обычный URLSession при ошибке
+                await loadWithURLSession(url: url)
+            }
+        }
+        
+        // Fallback загрузка через URLSession
+        private func loadWithURLSession(url: URL) async {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 10.0
+            request.cachePolicy = .returnCacheDataElseLoad
+            
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                
+                guard let httpResponse = response as? HTTPURLResponse,
+                      200..<300 ~= httpResponse.statusCode else {
+                    await MainActor.run { isLoading = false }
+                    return
+                }
+                
+                if let image = UIImage(data: data) {
+                    await MainActor.run {
+                        loadedImage = image
+                        isLoading = false
+                    }
+                } else {
+                    await MainActor.run { isLoading = false }
+                }
+            } catch {
+                // Тихая ошибка - просто показываем placeholder
+                await MainActor.run { isLoading = false }
+            }
+        }
+    }
+    
+    // MARK: - Image Request для загрузки изображений
+    private struct ImageRequest: NetworkRequest {
+        let url: URL
+        
+        var endpoint: URL? {
+            return url
+        }
+        
+        var httpMethod: HttpMethod {
+            return .get
         }
     }
     

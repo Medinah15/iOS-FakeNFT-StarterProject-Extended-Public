@@ -129,14 +129,31 @@ struct EditProfileView: View {
     // MARK: - Avatar Section
     private var avatarSection: some View {
         ZStack(alignment: .bottomTrailing) {
-            AsyncImage(url: URL(string: avatarURL)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .foregroundColor(.gray)
+            Group {
+                if let url = URL(string: avatarURL), !avatarURL.isEmpty {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        case .failure:
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .foregroundColor(.gray)
+                        @unknown default:
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .foregroundColor(.gray)
+                        }
+                    }
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .foregroundColor(.gray)
+                }
             }
             .frame(width: 70, height: 70)
             .clipShape(Circle())
