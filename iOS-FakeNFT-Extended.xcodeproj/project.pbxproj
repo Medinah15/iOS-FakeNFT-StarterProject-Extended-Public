@@ -10,6 +10,8 @@
 		3AF439FB2ED86F0F00E7A8A5 /* ProfileResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF439FA2ED86F0E00E7A8A5 /* ProfileResponse.swift */; };
 		3AF439FD2ED86F3F00E7A8A5 /* ProfileUpdateRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF439FC2ED86F3D00E7A8A5 /* ProfileUpdateRequest.swift */; };
 		3AF439FF2ED86FBE00E7A8A5 /* NFTResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF439FE2ED86FBC00E7A8A5 /* NFTResponse.swift */; };
+		3AF43A452ED8720400E7A8A5 /* GetProfileRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF43A442ED8720300E7A8A5 /* GetProfileRequest.swift */; };
+		3AF43A472ED8723200E7A8A5 /* UpdateProfileRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF43A462ED8723100E7A8A5 /* UpdateProfileRequest.swift */; };
 		ABC5E16C2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC5E16B2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift */; };
 		ABC5E16E2C31F5AF002B4068 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC5E16D2C31F5AF002B4068 /* ContentView.swift */; };
 		ABC5E1702C31F5AF002B4068 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABC5E16F2C31F5AF002B4068 /* Assets.xcassets */; };
@@ -68,6 +70,8 @@
 		3AF439FA2ED86F0E00E7A8A5 /* ProfileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileResponse.swift; sourceTree = "<group>"; };
 		3AF439FC2ED86F3D00E7A8A5 /* ProfileUpdateRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileUpdateRequest.swift; sourceTree = "<group>"; };
 		3AF439FE2ED86FBC00E7A8A5 /* NFTResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTResponse.swift; sourceTree = "<group>"; };
+		3AF43A442ED8720300E7A8A5 /* GetProfileRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetProfileRequest.swift; sourceTree = "<group>"; };
+		3AF43A462ED8723100E7A8A5 /* UpdateProfileRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateProfileRequest.swift; sourceTree = "<group>"; };
 		ABC5E1682C31F5AF002B4068 /* iOS-FakeNFT-Extended.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-FakeNFT-Extended.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABC5E16B2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS_FakeNFT_ExtendedApp.swift; sourceTree = "<group>"; };
 		ABC5E16D2C31F5AF002B4068 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -308,6 +312,8 @@
 		ABC5E1AC2C31FB6C002B4068 /* Requests */ = {
 			isa = PBXGroup;
 			children = (
+				3AF43A462ED8723100E7A8A5 /* UpdateProfileRequest.swift */,
+				3AF43A442ED8720300E7A8A5 /* GetProfileRequest.swift */,
 				ABC5E1B12C31FBD4002B4068 /* ExampleRequest.swift */,
 				ABC5E1AD2C31FB7F002B4068 /* NftByIdRequest.swift */,
 				ABC5E1AF2C31FB90002B4068 /* RequestConstants.swift */,
@@ -505,6 +511,7 @@
 			files = (
 				ABC5E1992C31F666002B4068 /* Fonts.swift in Sources */,
 				ABC5E1CF2C32041D002B4068 /* NftDetailViewController.swift in Sources */,
+				3AF43A472ED8723200E7A8A5 /* UpdateProfileRequest.swift in Sources */,
 				ABC5E1B72C31FC70002B4068 /* ServicesAssembly.swift in Sources */,
 				ABC5E19D2C31F6A6002B4068 /* NftStorage.swift in Sources */,
 				ABC5E1E82C320610002B4068 /* NftDetailBridgeView.swift in Sources */,
@@ -512,6 +519,7 @@
 				3AF439FD2ED86F3F00E7A8A5 /* ProfileUpdateRequest.swift in Sources */,
 				ABC5E1DD2C3204DC002B4068 /* CellsReusingUtils.swift in Sources */,
 				3AF439FB2ED86F0F00E7A8A5 /* ProfileResponse.swift in Sources */,
+				3AF43A452ED8720400E7A8A5 /* GetProfileRequest.swift in Sources */,
 				ABC5E1B52C31FC57002B4068 /* TabBarView.swift in Sources */,
 				ABC5E1E42C32055B002B4068 /* ErrorView.swift in Sources */,
 				ABC5E1A62C31F815002B4068 /* NetworkRequest.swift in Sources */,
