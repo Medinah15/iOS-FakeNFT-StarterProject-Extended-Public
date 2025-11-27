@@ -26,7 +26,7 @@ struct EditProfileView: View {
     
     var onSave: ((String, String, String, String) -> Void)?
     
-    init(profile: Profile, onSave: ((String, String, String, String) -> Void)? = nil) {
+    init(profile: ProfileModel, onSave: ((String, String, String, String) -> Void)? = nil) {
         _name = State(initialValue: profile.name)
         _description = State(initialValue: profile.description)
         _website = State(initialValue: profile.website)
@@ -307,6 +307,7 @@ struct EditProfileView: View {
     }
 }
 
+
 #Preview {
-    EditProfileView(profile: Profile.mock)
+    EditProfileView(profile: ProfileModel.mock())
 }

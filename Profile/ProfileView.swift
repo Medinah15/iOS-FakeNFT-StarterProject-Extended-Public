@@ -9,8 +9,11 @@ import SwiftUI
 
 struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
+    @State private var nftViewModel = NFTViewModel() // Общий ViewModel для NFT
     @State private var showWebsite = false
     @State private var showEditProfile = false
+    @State private var showMyNFTs = false
+    @State private var showFavorites = false
     
     var body: some View {
         NavigationStack {
@@ -37,7 +40,28 @@ struct ProfileView: View {
                     editButton
                 }
             }
+            .navigationDestination(isPresented: $showMyNFTs) {
+                MyNFTListView(viewModel: nftViewModel)
+            }
+            .navigationDestination(isPresented: $showFavorites) {
+                FavouritesNFTListView(allNFTsViewModel: nftViewModel)
+            }
+            .onAppear {
+                setupMenuActions()
+            }
         }
+    }
+    
+    // MARK: - Setup Menu Actions
+    private func setupMenuActions() {
+        viewModel.setupMenuActions(
+            onMyNFTsTap: {
+                showMyNFTs = true
+            },
+            onFavoritesTap: {
+                showFavorites = true
+            }
+        )
     }
     
     // MARK: - Avatar and Name Section

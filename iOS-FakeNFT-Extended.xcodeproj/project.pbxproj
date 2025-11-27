@@ -105,6 +105,13 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				EditProfileView.swift,
+				FavouritesNFT/FavouritesNFTListRow.swift,
+				FavouritesNFT/FavouritesNFTListView.swift,
+				FavouritesNFT/FavouritesNFTViewModel.swift,
+				MyNFT/MyNFTListView.swift,
+				MyNFT/NFTListRow.swift,
+				MyNFT/NFTModel.swift,
+				MyNFT/NFTViewModel.swift,
 				Profile.swift,
 				ProfileMenuItem.swift,
 				ProfileMenuRow.swift,
@@ -113,10 +120,28 @@
 			);
 			target = ABC5E1672C31F5AF002B4068 /* iOS-FakeNFT-Extended */;
 		};
+		3AF422392ED4AA6800E7A8A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FavouritesNFT/FavouritesNFTListRow.swift,
+				FavouritesNFT/FavouritesNFTListView.swift,
+				FavouritesNFT/FavouritesNFTViewModel.swift,
+			);
+			target = ABC5E1772C31F5B0002B4068 /* iOS-FakeNFT-ExtendedTests */;
+		};
+		3AF4223A2ED4AA6800E7A8A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FavouritesNFT/FavouritesNFTListRow.swift,
+				FavouritesNFT/FavouritesNFTListView.swift,
+				FavouritesNFT/FavouritesNFTViewModel.swift,
+			);
+			target = ABC5E1812C31F5B0002B4068 /* iOS-FakeNFT-ExtendedUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3A115B182ECB5F1100253FAD /* Profile */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (3A115B1B2ECB5F2E00253FAD /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Profile; sourceTree = "<group>"; };
+		3A115B182ECB5F1100253FAD /* Profile */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (3A115B1B2ECB5F2E00253FAD /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 3AF422392ED4AA6800E7A8A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 3AF4223A2ED4AA6800E7A8A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Profile; sourceTree = "<group>"; };
 		3A115B252ECB7A1600253FAD /* WebView */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = WebView; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
