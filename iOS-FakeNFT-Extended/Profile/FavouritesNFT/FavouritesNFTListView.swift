@@ -13,7 +13,8 @@ struct FavouritesNFTListView: View {
     @Environment(\.dismiss) var dismiss
     
     init(allNFTsViewModel: NFTViewModel? = nil) {
-        let nftViewModel = allNFTsViewModel ?? NFTViewModel()
+        // Используем Preview инициализатор с пустым массивом, если не передан ViewModel
+        let nftViewModel = allNFTsViewModel ?? NFTViewModel(nfts: [])
         _allNFTsViewModel = State(initialValue: nftViewModel)
         _viewModel = State(initialValue: FavouritesNFTViewModel(allNFTsViewModel: nftViewModel))
     }

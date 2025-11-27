@@ -1,3 +1,4 @@
+
 //
 //  ProfileView.swift
 //  iOS-FakeNFT-Extended
@@ -8,31 +9,51 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var viewModel = ProfileViewModel()
-    @State private var nftViewModel = NFTViewModel() // Общий ViewModel для NFT
+    @Environment(ServicesAssembly.self) private var servicesAssembly
+    @State private var viewModel: ProfileViewModel
+    @State private var nftViewModel: NFTViewModel
     @State private var showWebsite = false
     @State private var showEditProfile = false
     @State private var showMyNFTs = false
     @State private var showFavorites = false
     
+    init() {
+        // Временная инициализация, будет перезаписана в onAppear
+        let tempServices = ServicesAssembly(
+            networkClient: DefaultNetworkClient(),
+            nftStorage: NftStorageImpl()
+        )
+        _viewModel = State(initialValue: ProfileViewModel(profileService: tempServices.profileService))
+        // Временная инициализация с пустым массивом, будет перезаписана в onAppear
+        _nftViewModel = State(initialValue: NFTViewModel(nfts: []))
+    }
+    
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Аватар и имя
-                    avatarAndNameSection
-                        .padding(.top, 20)
-                    
-                    // Описание
-                    descriptionSection
-                    
-                    // Кнопка сайта
-                    websiteButton
-                    
-                    // Меню
-                    menuSection
+            ZStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Аватар и имя
+                        avatarAndNameSection
+                            .padding(.top, 20)
+                        
+                        // Описание
+                        descriptionSection
+                        
+                        // Кнопка сайта
+                        websiteButton
+                        
+                        // Меню
+                        menuSection
+                    }
+                    .padding(.horizontal, 16)
                 }
-                .padding(.horizontal, 16)
+                
+                // Loader overlay
+                if viewModel.isLoading {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -46,10 +67,35 @@ struct ProfileView: View {
             .navigationDestination(isPresented: $showFavorites) {
                 FavouritesNFTListView(allNFTsViewModel: nftViewModel)
             }
+            .alert("Ошибка", isPresented: .constant(viewModel.errorMessage != nil)) {
+                Button("OK") {
+                    viewModel.errorMessage = nil
+                }
+            } message: {
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                }
+            }
             .onAppear {
+                setupViewModels()
                 setupMenuActions()
             }
         }
+    }
+    
+    // MARK: - Setup ViewModels
+    private func setupViewModels() {
+        // Обновляем ViewModels с правильными сервисами из Environment
+        let profileVM = ProfileViewModel(profileService: servicesAssembly.profileService)
+        viewModel = profileVM
+        
+        // Создаем NFTViewModel с сервисами и ссылкой на ProfileViewModel
+        let nftVM = NFTViewModel(
+            nftService: servicesAssembly.nftService,
+            profileService: servicesAssembly.profileService,
+            profileViewModel: profileVM
+        )
+        nftViewModel = nftVM
     }
     
     // MARK: - Setup Menu Actions
@@ -135,12 +181,14 @@ struct ProfileView: View {
             EditProfileView(
                 profile: viewModel.profile,
                 onSave: { name, description, website, avatar in
-                    viewModel.updateProfile(
-                        name: name,
-                        description: description,
-                        website: website,
-                        avatar: avatar
-                    )
+                    Task {
+                        await viewModel.updateProfile(
+                            name: name,
+                            description: description,
+                            website: website,
+                            avatar: avatar
+                        )
+                    }
                 }
             )
         }
@@ -149,4 +197,7 @@ struct ProfileView: View {
 
 #Preview {
     ProfileView()
+        .environment(ServicesAssembly(networkClient: DefaultNetworkClient(), nftStorage: NftStorageImpl()))
 }
+
+

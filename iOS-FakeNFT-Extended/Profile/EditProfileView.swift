@@ -24,9 +24,9 @@ struct EditProfileView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    var onSave: ((String, String, String, String) -> Void)?
+    var onSave: ((String, String, String, String) async -> Void)?
     
-    init(profile: ProfileModel, onSave: ((String, String, String, String) -> Void)? = nil) {
+    init(profile: ProfileModel, onSave: ((String, String, String, String) async -> Void)? = nil) {
         _name = State(initialValue: profile.name)
         _description = State(initialValue: profile.description)
         _website = State(initialValue: profile.website)
@@ -225,8 +225,8 @@ struct EditProfileView: View {
     private func saveProfile() {
         isSaving = true
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            onSave?(name, description, website, avatarURL)
+        Task {
+            await onSave?(name, description, website, avatarURL)
             isSaving = false
             showSaveAlert = true
         }

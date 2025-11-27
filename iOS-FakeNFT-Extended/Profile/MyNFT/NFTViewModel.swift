@@ -22,8 +22,8 @@ enum NFTSortType: String, CaseIterable {
 class NFTViewModel {
     var nfts: [NFTModel] = []
     var selectedSortType: NFTSortType = .byRating
-    private let nftService: NftService
-    private let profileService: ProfileService
+    private let nftService: NftService?
+    private let profileService: ProfileService?
     private weak var profileViewModel: ProfileViewModel?  // Ссылка для синхронизации
     var isLoading = false
     var errorMessage: String?
@@ -45,10 +45,19 @@ class NFTViewModel {
     init(nfts: [NFTModel], sortType: NFTSortType = .byRating) {
         self.nfts = nfts
         self.selectedSortType = sortType
+        self.nftService = nil
+        self.profileService = nil
+        self.profileViewModel = nil
+        loadSortType()
     }
     
     // MARK: - NFT Loading
     func loadNFTs() async {
+        guard let profileService = profileService, let nftService = nftService else {
+            // Если нет сервисов (Preview режим), используем существующие данные
+            return
+        }
+        
         isLoading = true
         errorMessage = nil
         do {
@@ -109,9 +118,11 @@ class NFTViewModel {
         nfts[index] = updatedNFT
         saveNFTs()
         
-        // Синхронизируем с сервером через ProfileViewModel
-        let favoriteIds = nfts.filter { $0.isFavorite }.map { $0.id }
-        await profileViewModel?.updateFavorites(nftIds: favoriteIds)
+        // Синхронизируем с сервером через ProfileViewModel (если есть)
+        if let profileViewModel = profileViewModel {
+            let favoriteIds = nfts.filter { $0.isFavorite }.map { $0.id }
+            await profileViewModel.updateFavorites(nftIds: favoriteIds)
+        }
     }
     
     // Получить Binding для конкретного NFT

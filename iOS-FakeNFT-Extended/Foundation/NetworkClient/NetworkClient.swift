@@ -42,7 +42,7 @@ actor DefaultNetworkClient: NetworkClient {
     
     func send<T: Decodable>(request: NetworkRequest) async throws -> T {
         let data = try await send(request: request)
-        return try await parse(data: data)
+        return try parse(data: data)
     }
     
     // MARK: - Private
@@ -50,54 +50,52 @@ actor DefaultNetworkClient: NetworkClient {
     private func create(request: NetworkRequest) throws -> URLRequest {
         guard let endpoint = request.endpoint else {
             throw NetworkClientError.incorrectRequest("Empty endpoint")
-            throw NetworkClientError.incorrectRequest("empty endpoint")
         }
         
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
         
-        if let dto = request.dto,
-           let dtoEncoded = try? encoder.encode(dto) {
-            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = dtoEncoded
+        // -------------------------------------------
+        // 1) form-urlencoded (наш случай с orders)
+        // -------------------------------------------
+        if let formRequest = request as? FormURLEncodedRequest {
+            let bodyString = formRequest.formParameters
+                .map { key, value in
+                    let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? key
+                    let encodedValue = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
+                    return "\(encodedKey)=\(encodedValue)"
+                }
+                .joined(separator: "&")
+            
+            urlRequest.httpBody = bodyString.data(using: .utf8)
+            urlRequest.setValue("application/x-www-form-urlencoded",
+                                forHTTPHeaderField: "Content-Type")
+            
             // -------------------------------------------
-            // 1) form-urlencoded (наш случай с orders)
+            // 2) JSON (старый сценарий, если есть dto)
             // -------------------------------------------
-            if let formRequest = request as? FormURLEncodedRequest {
-                let bodyString = formRequest.formParameters
-                    .map { "\($0.key)=\($0.value)" }
-                    .joined(separator: "&")
-                
-                urlRequest.httpBody = bodyString.data(using: .utf8)
-                urlRequest.setValue("application/x-www-form-urlencoded",
-                                    forHTTPHeaderField: "Content-Type")
-                
-                // -------------------------------------------
-                // 2) JSON (старый сценарий, если есть dto)
-                // -------------------------------------------
-            } else if let dto = request.dto {
-                let encoded = try encoder.encode(dto)
-                urlRequest.httpBody = encoded
+        } else if let dto = request.dto {
+            if let dtoEncoded = try? encoder.encode(dto) {
+                urlRequest.httpBody = dtoEncoded
                 urlRequest.setValue("application/json",
                                     forHTTPHeaderField: "Content-Type")
             }
-            urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
-            
-            // -------------------------------------------
-            // Token — ОБЩИЙ для всех запросов
-            // -------------------------------------------
-            urlRequest.addValue(RequestConstants.token,
-                                forHTTPHeaderField: "X-Practicum-Mobile-Token")
-            
-            return urlRequest
         }
         
-        private func parse<T: Decodable>(data: Data) async throws -> T {
-            do {
-                return try decoder.decode(T.self, from: data)
-            } catch {
-                throw NetworkClientError.parsingError
-            }
+        // -------------------------------------------
+        // Token — ОБЩИЙ для всех запросов
+        // -------------------------------------------
+        urlRequest.addValue(RequestConstants.token,
+                            forHTTPHeaderField: "X-Practicum-Mobile-Token")
+        
+        return urlRequest
+    }
+    
+    private func parse<T: Decodable>(data: Data) throws -> T {
+        do {
+            return try decoder.decode(T.self, from: data)
+        } catch {
+            throw NetworkClientError.parsingError
         }
     }
 }
