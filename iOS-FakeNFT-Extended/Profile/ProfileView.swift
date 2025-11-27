@@ -101,8 +101,8 @@ struct ProfileView: View {
         )
         nftViewModel = nftVM
         
-        // Устанавливаем обратную ссылку для синхронизации NFT данных
-        profileVM.nftViewModel = nftVM
+        // Устанавливаем обратную ссылку через протокол для синхронизации NFT данных
+        profileVM.menuUpdater = nftVM
         
         // Сохраняем NetworkClient для загрузки изображений
         networkClient = DefaultNetworkClient()
@@ -261,7 +261,9 @@ struct ProfileView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .navigationDestination(isPresented: $showWebsite) {
-            WebsiteView(urlString: "https://practicum.yandex.ru/ios-developer/")
+            if !viewModel.profile.website.isEmpty {
+                WebsiteView(urlString: viewModel.profile.website)
+            }
         }
     }
     

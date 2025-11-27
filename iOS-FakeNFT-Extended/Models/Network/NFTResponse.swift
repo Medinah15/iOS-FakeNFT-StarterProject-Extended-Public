@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct NFTResponse: Decodable {
+struct NFTResponse: Decodable, Sendable {
     let id: String
     let name: String
     let images: [String]  // Массив URL изображений

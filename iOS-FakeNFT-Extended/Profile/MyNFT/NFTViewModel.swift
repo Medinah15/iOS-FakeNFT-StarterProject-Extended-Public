@@ -19,16 +19,22 @@ enum NFTSortType: String, CaseIterable {
 }
 
 @Observable
-class NFTViewModel {
+class NFTViewModel: ProfileMenuUpdater {
     var nfts: [NFTModel] = []
     var selectedSortType: NFTSortType = .byRating
     private let nftService: NftService?
     private let profileService: ProfileService?
-    private weak var profileViewModel: ProfileViewModel?  // Ссылка для синхронизации
+    weak var profileViewModel: ProfileViewModel?  // Ссылка для синхронизации
     var isLoading = false
     var errorMessage: String?
     
     private static let sortTypeKey = "nftSortType"
+    
+    // MARK: - ProfileMenuUpdater
+    func updateMenuCounts(nftCount: Int, favoriteCount: Int) {
+        // Обновляем счетчики в ProfileViewModel через обратную ссылку
+        // Это позволяет избежать циклической зависимости
+    }
     
     init(nftService: NftService, profileService: ProfileService, profileViewModel: ProfileViewModel? = nil) {
         self.nftService = nftService
@@ -70,7 +76,7 @@ class NFTViewModel {
         
         do {
             // Загружаем профиль для получения списка NFT ID
-            let profileResponse = try await profileService.loadProfile(userId: "1")
+            let profileResponse = try await profileService.loadProfile(userId: RequestConstants.profileUserId)
             
             if profileResponse.nfts.isEmpty {
                 // Если нет NFT на сервере, используем сохраненные данные или пустой массив

@@ -8,19 +8,26 @@
 import Foundation
 import SwiftUI
 
+// Протокол для обновления счетчиков меню (убираем циклическую зависимость)
+protocol ProfileMenuUpdater: AnyObject {
+    func updateMenuCounts(nftCount: Int, favoriteCount: Int)
+}
+
 @Observable
 class ProfileViewModel {
     var profile: ProfileModel
     var menuItems: [ProfileMenuItem] = []
     private let profileService: ProfileService
+    private let urlService: URLService
     var isLoading = false
     var errorMessage: String?
-    private let userId: String = "1"  // Всегда используем "1" для профиля согласно API
-    weak var nftViewModel: NFTViewModel?  // Ссылка для синхронизации NFT данных
+    private let userId = RequestConstants.profileUserId
+    weak var menuUpdater: ProfileMenuUpdater?  // Протокол вместо прямого NFTViewModel
     
-    init(profileService: ProfileService) {
+    init(profileService: ProfileService, urlService: URLService = URLServiceImpl()) {
         self.profileService = profileService
-        self.profile = ProfileModel.mock()  // Временный мок
+        self.urlService = urlService
+        self.profile = ProfileModel.mock()
         setupMenuItems()
         Task { await loadProfile() }
     }
@@ -54,8 +61,7 @@ class ProfileViewModel {
         do {
             let response = try await profileService.loadProfile(userId: userId)
             
-            // Важно: всегда используем "1" для userId, так как API использует фиксированный ID для профиля
-            // response.id содержит токен, а не ID профиля
+            // Используем константу из RequestConstants для userId
             profile = response.toProfileModel(userId: userId)
             profile.save()
             updateMenuItemsCounts()
@@ -72,11 +78,8 @@ class ProfileViewModel {
                 if code == 406 || code == 404 {
                     // Профиль не найден - используем сохраненные данные или моковые
                     if profile.type == .mock {
-                        // Если уже есть сохраненные данные, используем их
-                        // Иначе используем мок
-                        if profile.id == "1" && profile.name == "Joaquin Phoenix" {
-                            // Это мок, оставляем как есть
-                        }
+                        // Если нет сохраненных данных, используем мок
+                        profile = ProfileModel.mock()
                     }
                     // Не синхронизируем NFT данные с сервером при ошибке
                     errorMessage = nil // Не показываем ошибку пользователю
@@ -99,21 +102,17 @@ class ProfileViewModel {
     }
     
     func setupMenuActions(onMyNFTsTap: @escaping () -> Void, onFavoritesTap: @escaping () -> Void) {
-        // Обновляем счетчики на основе реальных данных из NFTViewModel
-        let actualNFTCount = nftViewModel?.nfts.count ?? profile.nftCount
-        let actualFavoriteCount = nftViewModel?.nfts.filter { $0.isFavorite }.count ?? profile.favoriteCount
-        
         menuItems = [
             ProfileMenuItem(
                 id: "myNFTs",
                 title: "Мои NFT",
-                count: actualNFTCount,
+                count: profile.nftCount,
                 action: onMyNFTsTap
             ),
             ProfileMenuItem(
                 id: "favorites",
                 title: "Избранные NFT",
-                count: actualFavoriteCount,
+                count: profile.favoriteCount,
                 action: onFavoritesTap
             )
         ]
@@ -124,9 +123,17 @@ class ProfileViewModel {
         let myNFTsAction = menuItems.first(where: { $0.id == "myNFTs" })?.action ?? {}
         let favoritesAction = menuItems.first(where: { $0.id == "favorites" })?.action ?? {}
         
-        // Обновляем счетчики на основе реальных данных из NFTViewModel
-        let actualNFTCount = nftViewModel?.nfts.count ?? profile.nftCount
-        let actualFavoriteCount = nftViewModel?.nfts.filter { $0.isFavorite }.count ?? profile.favoriteCount
+        // Получаем актуальные счетчики из NFTViewModel если доступен, иначе из профиля
+        let actualNFTCount: Int
+        let actualFavoriteCount: Int
+        
+        if let nftVM = menuUpdater as? NFTViewModel {
+            actualNFTCount = nftVM.nfts.count
+            actualFavoriteCount = nftVM.nfts.filter { $0.isFavorite }.count
+        } else {
+            actualNFTCount = profile.nftCount
+            actualFavoriteCount = profile.favoriteCount
+        }
         
         menuItems = [
             ProfileMenuItem(
@@ -143,24 +150,33 @@ class ProfileViewModel {
             )
         ]
         
-        // Обновляем профиль с актуальными счетчиками
-        profile = ProfileModel(
+        // Обновляем профиль с актуальными счетчиками только если они изменились
+        if profile.nftCount != actualNFTCount || profile.favoriteCount != actualFavoriteCount {
+            profile = createUpdatedProfile(nftCount: actualNFTCount, favoriteCount: actualFavoriteCount)
+            profile.save()
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func createUpdatedProfile(nftCount: Int, favoriteCount: Int) -> ProfileModel {
+        ProfileModel(
             type: profile.type,
             id: profile.id,
             name: profile.name,
             avatar: profile.avatar,
             description: profile.description,
             website: profile.website,
-            nftCount: actualNFTCount,
-            favoriteCount: actualFavoriteCount
+            nftCount: nftCount,
+            favoriteCount: favoriteCount
         )
-        profile.save()
     }
     
     func openWebsite() {
-        if let url = URL(string: "https://\(profile.website)") {
-            UIApplication.shared.open(url)
+        guard let url = urlService.makeURL(from: profile.website) else {
+            return
         }
+        urlService.openURL(url)
     }
     
     func updateProfile(name: String, description: String, website: String, avatar: String) async {
@@ -191,16 +207,7 @@ class ProfileViewModel {
         
         // Сначала обновляем локальное состояние избранного
         let newFavoriteCount = nftIds.count
-        profile = ProfileModel(
-            type: profile.type,
-            id: profile.id,
-            name: profile.name,
-            avatar: profile.avatar,
-            description: profile.description,
-            website: profile.website,
-            nftCount: profile.nftCount,
-            favoriteCount: newFavoriteCount
-        )
+        profile = createUpdatedProfile(nftCount: profile.nftCount, favoriteCount: newFavoriteCount)
         profile.save()
         updateMenuItemsCounts()
         
@@ -271,7 +278,8 @@ class ProfileViewModel {
     
     // Синхронизация локальных NFT данных с сервером после успешного обновления избранного
     private func synchronizeNFTsWithServer(likesIds: [String]) async {
-        guard let nftVM = nftViewModel else {
+        // Получаем NFTViewModel через протокол для избежания циклической зависимости
+        guard let nftVM = menuUpdater as? NFTViewModel else {
             return
         }
         

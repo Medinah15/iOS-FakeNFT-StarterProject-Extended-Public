@@ -7,12 +7,12 @@
 
 import Foundation
 
-enum ProfileType: Codable {
+enum ProfileType: Codable, Sendable {
     case mock
     case real
 }
 
-struct ProfileModel: Codable {
+struct ProfileModel: Codable, Sendable {
     let type: ProfileType
     let id: String
     let name: String

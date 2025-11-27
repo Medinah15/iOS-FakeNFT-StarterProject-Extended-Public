@@ -61,7 +61,7 @@ class FavouritesNFTViewModel {
                 return
             }
             
-            let profileResponse = try await profileService.loadProfile(userId: "1")
+            let profileResponse = try await profileService.loadProfile(userId: RequestConstants.profileUserId)
             
             if profileResponse.likes.isEmpty {
                 favoriteNFTs = []

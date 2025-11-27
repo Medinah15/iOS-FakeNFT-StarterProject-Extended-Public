@@ -249,8 +249,8 @@ struct EditProfileView: View {
         }
     }
     private func deletePhoto() {
-        // Устанавливаем дефолтное фото или пустую строку
-        avatarURL = "https://i.pravatar.cc/150?img=12" // или пустая строка ""
+        // Устанавливаем пустую строку для удаления фото
+        avatarURL = ""
     }
     
     private func handleBackButton() {

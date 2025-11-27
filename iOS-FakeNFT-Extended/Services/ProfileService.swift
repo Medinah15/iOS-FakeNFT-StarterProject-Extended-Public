@@ -13,8 +13,7 @@ protocol ProfileService {
     func updateProfile(userId: String, request: ProfileUpdateRequest) async throws -> ProfileResponse
 }
 
-@MainActor
-final class ProfileServiceImpl: ProfileService {
+actor ProfileServiceImpl: ProfileService {
     private let networkClient: NetworkClient
     
     init(networkClient: NetworkClient) {
