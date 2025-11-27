@@ -27,7 +27,7 @@ final class ProfileServiceImpl: ProfileService {
     }
     
     func updateProfile(userId: String, request: ProfileUpdateRequest) async throws -> ProfileResponse {
-        let networkRequest = UpdateProfileRequest(userId: userId, dto: request)
+        let networkRequest = UpdateProfileRequest(userId: userId, profileUpdate: request)
         return try await networkClient.send(request: networkRequest)
     }
 }
