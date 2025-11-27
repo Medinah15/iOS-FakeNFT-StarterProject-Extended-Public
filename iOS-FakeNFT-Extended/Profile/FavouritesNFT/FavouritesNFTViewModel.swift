@@ -18,22 +18,43 @@ class FavouritesNFTViewModel {
     }
     
     // MARK: - Preview Initializer
-    init(nfts: [NFTModel]) {
-        self.favoriteNFTs = nfts
+    init(nftService: NftService, profileService: ProfileService, allNFTsViewModel: NFTViewModel? = nil) {
+        self.nftService = nftService
+        self.profileService = profileService
+        self.allNFTsViewModel = allNFTsViewModel
+        Task { await loadFavoriteNFTs() }
     }
-    
     // MARK: - NFT Loading
-    func loadFavoriteNFTs() {
-        // Загружаем из основного ViewModel или из хранилища
-        if let allNFTs = allNFTsViewModel?.nfts {
-            favoriteNFTs = allNFTs.filter { $0.isFavorite }
-        } else {
-            // Fallback на загрузку из хранилища
-            let realNFTs = NFTModel.load(type: .real)
-            let allNFTs = realNFTs.isEmpty ? NFTModel.load(type: .mock) : realNFTs
-            // Фильтруем только избранные
-            favoriteNFTs = allNFTs.filter { $0.isFavorite }
+    func loadFavoriteNFTs() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            // Если есть shared ViewModel, используем его
+            if let allNFTs = allNFTsViewModel?.nfts {
+                favoriteNFTs = allNFTs.filter { $0.isFavorite }
+                isLoading = false
+                return
+            }
+            
+            // Иначе загружаем из API
+            let profileResponse = try await profileService.loadProfile(userId: "1")
+            
+            if profileResponse.likes.isEmpty {
+                favoriteNFTs = []
+                isLoading = false
+                return
+            }
+            
+            let nftResponses = try await nftService.loadNFTsByIds(ids: profileResponse.likes)
+            
+            favoriteNFTs = nftResponses.map { response in
+                response.toNFTModel(isFavorite: true)
+            }
+        } catch {
+            errorMessage = "Ошибка загрузки избранных NFT"
+            favoriteNFTs = []
         }
+        isLoading = false
     }
     // MARK: - NFT Updates
     func toggleFavorite(for nftId: String) {

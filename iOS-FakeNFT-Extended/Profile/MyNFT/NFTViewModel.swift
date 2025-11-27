@@ -22,13 +22,23 @@ enum NFTSortType: String, CaseIterable {
 class NFTViewModel {
     var nfts: [NFTModel] = []
     var selectedSortType: NFTSortType = .byRating
+    private let nftService: NftService
+    private let profileService: ProfileService
+    private weak var profileViewModel: ProfileViewModel?  // Ссылка для синхронизации
+    var isLoading = false
+    var errorMessage: String?
     
     private static let sortTypeKey = "nftSortType"
     
-    init() {
-        loadNFTs()
+    init(nftService: NftService, profileService: ProfileService, profileViewModel: ProfileViewModel? = nil) {
+        self.nftService = nftService
+        self.profileService = profileService
+        self.profileViewModel = profileViewModel
         loadSortType()
-        applySorting()
+        Task {
+            await loadNFTs()
+            applySorting()
+        }
     }
     
     // MARK: - Preview Initializer
@@ -38,14 +48,36 @@ class NFTViewModel {
     }
     
     // MARK: - NFT Loading
-    private func loadNFTs() {
-        let realNFTs = NFTModel.load(type: .real)
-        
-        if realNFTs.isEmpty {
-            nfts = NFTModel.load(type: .mock)
-        } else {
-            nfts = realNFTs
+    func loadNFTs() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            // Загружаем профиль для получения списка NFT ID
+            let profileResponse = try await profileService.loadProfile(userId: "1")
+            
+            if profileResponse.nfts.isEmpty {
+                nfts = []
+                isLoading = false
+                return
+            }
+            
+            // Загружаем NFT по ID
+            let nftResponses = try await nftService.loadNFTsByIds(ids: profileResponse.nfts)
+            
+            // Преобразуем в NFTModel
+            nfts = nftResponses.map { response in
+                let isFavorite = profileResponse.likes.contains(response.id)
+                return response.toNFTModel(isFavorite: isFavorite)
+            }
+            
+            saveNFTs()
+            applySorting()
+        } catch {
+            errorMessage = "Ошибка загрузки NFT"
+            // Fallback на мок данные
+            nfts = NFTModel.mockArray()
         }
+        isLoading = false
     }
     
     func saveNFTs() {
@@ -60,30 +92,32 @@ class NFTViewModel {
         }
     }
     
-    func toggleFavorite(for nftId: String) {
-        if let index = nfts.firstIndex(where: { $0.id == nftId }) {
-            let nft = nfts[index]
-            let updatedNFT = NFTModel(
-                type: nft.type,
-                id: nft.id,
-                name: nft.name,
-                image: nft.image,
-                author: nft.author,
-                price: nft.price,
-                rating: nft.rating,
-                isFavorite: !nft.isFavorite
-            )
-            nfts[index] = updatedNFT
-            saveNFTs()
-        }
+    func toggleFavorite(for nftId: String) async {
+        guard let index = nfts.firstIndex(where: { $0.id == nftId }) else { return }
+        
+        let nft = nfts[index]
+        let updatedNFT = NFTModel(
+            type: nft.type,
+            id: nft.id,
+            name: nft.name,
+            image: nft.image,
+            author: nft.author,
+            price: nft.price,
+            rating: nft.rating,
+            isFavorite: !nft.isFavorite
+        )
+        nfts[index] = updatedNFT
+        saveNFTs()
+        
+        // Синхронизируем с сервером через ProfileViewModel
+        let favoriteIds = nfts.filter { $0.isFavorite }.map { $0.id }
+        await profileViewModel?.updateFavorites(nftIds: favoriteIds)
     }
     
     // Получить Binding для конкретного NFT
     func bindingForFavorite(nftId: String) -> Binding<Bool> {
         Binding(
-            get: {
-                self.nfts.first(where: { $0.id == nftId })?.isFavorite ?? false
-            },
+            get: { self.nfts.first(where: { $0.id == nftId })?.isFavorite ?? false },
             set: { newValue in
                 if let index = self.nfts.firstIndex(where: { $0.id == nftId }) {
                     let nft = self.nfts[index]
@@ -99,6 +133,12 @@ class NFTViewModel {
                     )
                     self.nfts[index] = updatedNFT
                     self.saveNFTs()
+                    
+                    // Синхронизируем с сервером
+                    Task {
+                        let favoriteIds = self.nfts.filter { $0.isFavorite }.map { $0.id }
+                        await self.profileViewModel?.updateFavorites(nftIds: favoriteIds)
+                    }
                 }
             }
         )

@@ -12,29 +12,16 @@ import SwiftUI
 class ProfileViewModel {
     var profile: ProfileModel
     var menuItems: [ProfileMenuItem] = []
+    private let profileService: ProfileService
+    var isLoading = false
+    var errorMessage: String?
+    private let userId = "1"  // Пока хардкод, потом будет динамически
     
-    init() {
-        // Создаем профиль с типом real
-        let realProfile = ProfileModel(
-            type: .real,
-            id: "1",
-            name: "",
-            avatar: "",
-            description: "",
-            website: "",
-            nftCount: 0,
-            favoriteCount: 0
-        )
-        
-        // Пытаемся загрузить реальные данные
-        if let loadedProfile = realProfile.load() {
-            profile = loadedProfile
-        } else {
-            // Если нет сохраненных данных, используем мок
-            profile = ProfileModel.mock()
-        }
-        
+    init(profileService: ProfileService) {
+        self.profileService = profileService
+        self.profile = ProfileModel.mock()  // Временный мок
         setupMenuItems()
+        Task { await loadProfile() }
     }
     
     private func setupMenuItems() {
@@ -52,6 +39,21 @@ class ProfileViewModel {
                 action: {}
             )
         ]
+    }
+    func loadProfile() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            let response = try await profileService.loadProfile(userId: userId)
+            profile = response.toProfileModel(userId: userId)
+            profile.save()
+            updateMenuItemsCounts()
+        } catch {
+            errorMessage = "Ошибка загрузки профиля"
+            // Fallback на мок данные при ошибке
+            profile = ProfileModel.mock()
+        }
+        isLoading = false
     }
     
     func setupMenuActions(onMyNFTsTap: @escaping () -> Void, onFavoritesTap: @escaping () -> Void) {
@@ -98,22 +100,55 @@ class ProfileViewModel {
         }
     }
     
-    func updateProfile(name: String, description: String, website: String, avatar: String) {
-        // Создаем новый профиль с типом real
-        profile = ProfileModel(
-            type: .real,
-            id: profile.id,
-            name: name,
-            avatar: avatar,
-            description: description,
-            website: website,
-            nftCount: profile.nftCount,
-            favoriteCount: profile.favoriteCount
-        )
-        
-        // Сохраняем профиль
-        profile.save()
-        updateMenuItemsCounts()
+    func updateProfile(name: String, description: String, website: String, avatar: String) async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            let request = ProfileUpdateRequest(
+                likes: nil,
+                avatar: avatar,
+                name: name,
+                description: description,
+                website: website
+            )
+            let response = try await profileService.updateProfile(userId: userId, request: request)
+            profile = response.toProfileModel(userId: userId)
+            profile.save()
+            updateMenuItemsCounts()
+        } catch {
+            errorMessage = "Ошибка обновления профиля"
+        }
+        isLoading = false
     }
-    
+    func updateFavorites(nftIds: [String]) async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            let likesString = nftIds.joined(separator: ",")
+            let request = ProfileUpdateRequest(
+                likes: likesString,
+                avatar: nil,
+                name: nil,
+                description: nil,
+                website: nil
+            )
+            let response = try await profileService.updateProfile(userId: userId, request: request)
+            // Обновляем только favoriteCount, остальное оставляем как есть
+            profile = ProfileModel(
+                type: .real,
+                id: profile.id,
+                name: profile.name,
+                avatar: profile.avatar,
+                description: profile.description,
+                website: profile.website,
+                nftCount: profile.nftCount,
+                favoriteCount: response.likes.count
+            )
+            profile.save()
+            updateMenuItemsCounts()
+        } catch {
+            errorMessage = "Ошибка обновления избранного"
+        }
+        isLoading = false
+    }
 }
