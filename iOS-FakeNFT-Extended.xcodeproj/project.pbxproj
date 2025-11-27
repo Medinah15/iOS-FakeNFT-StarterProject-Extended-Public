@@ -175,7 +175,6 @@
 		ABC5E15F2C31F5AF002B4068 = {
 			isa = PBXGroup;
 			children = (
-				3A115B182ECB5F1100253FAD /* Profile */,
 				ABC5E16A2C31F5AF002B4068 /* iOS-FakeNFT-Extended */,
 				ABC5E17B2C31F5B0002B4068 /* iOS-FakeNFT-ExtendedTests */,
 				ABC5E1852C31F5B0002B4068 /* iOS-FakeNFT-ExtendedUITests */,
@@ -205,6 +204,7 @@
 				ABC5E1B32C31FC03002B4068 /* UI */,
 				ABC5E16F2C31F5AF002B4068 /* Assets.xcassets */,
 				ABC5E1712C31F5AF002B4068 /* Preview Content */,
+				3A115B182ECB5F1100253FAD /* Profile */,
 			);
 			path = "iOS-FakeNFT-Extended";
 			sourceTree = "<group>";
