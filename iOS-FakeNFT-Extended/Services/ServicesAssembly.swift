@@ -16,7 +16,7 @@ final class ServicesAssembly {
         self.networkClient = networkClient
         self.nftStorage = nftStorage
         self.catalogServiceInternal = CatalogServiceImpl(networkClient: networkClient)
-        self.cartServiceInternal = CartServiceImpl(networkClient: networkClient)
+        self.cartServiceInternal = CartService(networkClient: networkClient)
     }
     
     var nftService: NftService {

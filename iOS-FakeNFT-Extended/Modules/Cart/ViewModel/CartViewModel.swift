@@ -27,8 +27,8 @@ final class CartViewModel: ObservableObject {
     /// Init по умолчанию
     convenience init() {
         let client = DefaultNetworkClient()
-        let cartService = CartServiceImpl(networkClient: client)
-        let paymentService = PaymentServiceImpl(network: client)
+        let cartService = CartService(networkClient: client)
+        let paymentService = PaymentService(network: client)
         
         self.init(
             cartService: cartService,

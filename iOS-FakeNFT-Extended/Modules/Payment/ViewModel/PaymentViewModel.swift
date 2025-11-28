@@ -16,7 +16,7 @@ final class PaymentViewModel: ObservableObject {
     // MARK: - Init
     init(
         orderId: String = "1",
-        paymentService: PaymentService = PaymentServiceImpl(network: DefaultNetworkClient())
+        paymentService: PaymentService = PaymentService(network: DefaultNetworkClient())
     ) {
         self.orderId = orderId
         self.paymentService = paymentService
