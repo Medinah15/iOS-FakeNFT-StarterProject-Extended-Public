@@ -137,15 +137,22 @@ struct CollectionDetailsView: View {
                 .foregroundColor(.textPrimary)
                 
                 if let authorName = viewModel.collection?.authorName,
-                   let authorURL = viewModel.collection?.authorURL {
-                    Link(authorName, destination: authorURL)
-                        .font(.customFont(.caption1))
-                        .foregroundColor(.primary)
+                   !authorName.isEmpty {
+                    NavigationLink {
+                        WebViewScreen()
+                    } label: {
+                        Text(authorName)
+                            .font(.customFont(.caption1))
+                            .foregroundColor(.primary)
+                            .underline() // чтобы было похоже на ссылку
+                    }
+                    .buttonStyle(.plain)
                 } else {
                     Text(viewModel.collection?.authorName ?? "—")
                         .font(.customFont(.caption1))
                         .foregroundColor(.primary)
                 }
+                
             }
             .padding(.top, 13)
             
@@ -164,7 +171,7 @@ struct CollectionDetailsView: View {
     private var grid: some View {
         let columns = Array(repeating: GridItem(.flexible(), spacing: 9), count: 3)
         
-        return LazyVGrid(columns: columns, spacing: 12) {
+        return LazyVGrid(columns: columns,alignment: .leading, spacing: 12) {
             ForEach(viewModel.items) { item in
                 CollectionNftCardView(
                     model: item,

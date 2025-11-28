@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B8EA4662EDA40CE0075F266 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8EA4652EDA40CE0075F266 /* WebView.swift */; };
+		8B8EA4682EDA40FA0075F266 /* WebViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8EA4672EDA40FA0075F266 /* WebViewScreen.swift */; };
 		8BAE4CE82ECB6EB900606989 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAE4CE72ECB6EB900606989 /* Color+Extensions.swift */; };
 		8BAE4CEA2ECB6F8900606989 /* Font+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAE4CE92ECB6F8900606989 /* Font+Extensions.swift */; };
 		ABC5E16C2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC5E16B2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift */; };
@@ -64,6 +66,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B8EA4652EDA40CE0075F266 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		8B8EA4672EDA40FA0075F266 /* WebViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewScreen.swift; sourceTree = "<group>"; };
 		8BAE4CE72ECB6EB900606989 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		8BAE4CE92ECB6F8900606989 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Extensions.swift"; sourceTree = "<group>"; };
 		ABC5E1682C31F5AF002B4068 /* iOS-FakeNFT-Extended.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-FakeNFT-Extended.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -262,6 +266,8 @@
 				ABC5E1AC2C31FB6C002B4068 /* Requests */,
 				ABC5E1AA2C31FACD002B4068 /* NftService.swift */,
 				ABC5E1B62C31FC70002B4068 /* ServicesAssembly.swift */,
+				8B8EA4652EDA40CE0075F266 /* WebView.swift */,
+				8B8EA4672EDA40FA0075F266 /* WebViewScreen.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -489,8 +495,10 @@
 				ABC5E1D32C320438002B4068 /* NftDetailAssembly.swift in Sources */,
 				ABC5E1A12C31F6D7002B4068 /* Nft.swift in Sources */,
 				ABC5E1AE2C31FB7F002B4068 /* NftByIdRequest.swift in Sources */,
+				8B8EA4662EDA40CE0075F266 /* WebView.swift in Sources */,
 				ABC5E1DB2C3204CE002B4068 /* UIView+Constraints.swift in Sources */,
 				ABC5E16C2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift in Sources */,
+				8B8EA4682EDA40FA0075F266 /* WebViewScreen.swift in Sources */,
 				ABC5E1CB2C3203FC002B4068 /* NftDetailCellModel.swift in Sources */,
 				ABC5E1AB2C31FACD002B4068 /* NftService.swift in Sources */,
 				ABC5E1B22C31FBD4002B4068 /* ExampleRequest.swift in Sources */,
