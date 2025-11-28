@@ -23,6 +23,7 @@
 		7BA580F42ED5959F004BB775 /* GetCurrenciesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA580F32ED5959F004BB775 /* GetCurrenciesRequest.swift */; };
 		7BA580F62ED59617004BB775 /* CurrencyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA580F52ED59617004BB775 /* CurrencyAPI.swift */; };
 		7BA580F82ED5962C004BB775 /* PaymentResultAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA580F72ED5962C004BB775 /* PaymentResultAPI.swift */; };
+		7BA581A52ED5E317004BB775 /* UsersRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA581A42ED5E317004BB775 /* UsersRequest.swift */; };
 		7BC21A882EC1E5C000908A74 /* Font+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC21A872EC1E5BB00908A74 /* Font+Extensions.swift */; };
 		7BC21A942EC3554100908A74 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC21A932EC3554000908A74 /* Color+Extensions.swift */; };
 		ABC5E16C2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC5E16B2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift */; };
@@ -96,6 +97,7 @@
 		7BA580F32ED5959F004BB775 /* GetCurrenciesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrenciesRequest.swift; sourceTree = "<group>"; };
 		7BA580F52ED59617004BB775 /* CurrencyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyAPI.swift; sourceTree = "<group>"; };
 		7BA580F72ED5962C004BB775 /* PaymentResultAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentResultAPI.swift; sourceTree = "<group>"; };
+		7BA581A42ED5E317004BB775 /* UsersRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersRequest.swift; sourceTree = "<group>"; };
 		7BC21A872EC1E5BB00908A74 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Extensions.swift"; sourceTree = "<group>"; };
 		7BC21A932EC3554000908A74 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		ABC5E1682C31F5AF002B4068 /* iOS-FakeNFT-Extended.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-FakeNFT-Extended.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -212,6 +214,7 @@
 		7B90FF1B2ECC6920008DDCBF /* Requests */ = {
 			isa = PBXGroup;
 			children = (
+				7BA581A42ED5E317004BB775 /* UsersRequest.swift */,
 				7BA580F32ED5959F004BB775 /* GetCurrenciesRequest.swift */,
 				7BA580232ED473A6004BB775 /* OrderRequests.swift */,
 				7B90FF182ECC6920008DDCBF /* ExampleRequest.swift */,
@@ -580,6 +583,7 @@
 			files = (
 				7BA580EE2ED4E043004BB775 /* NftItemAPI.swift in Sources */,
 				ABC5E1992C31F666002B4068 /* Fonts.swift in Sources */,
+				7BA581A52ED5E317004BB775 /* UsersRequest.swift in Sources */,
 				7B90FF132ECC68F7008DDCBF /* CatalogItem.swift in Sources */,
 				7B90FF262ECC7181008DDCBF /* TabBarConfigurator.swift in Sources */,
 				7BA580EC2ED4DEC3004BB775 /* NftAPI.swift in Sources */,

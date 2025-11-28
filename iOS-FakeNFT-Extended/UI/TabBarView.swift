@@ -57,7 +57,7 @@ struct TabBarView: View {
             // -------------------------
             // Статистика
             // -------------------------
-            TestCatalogView()
+            UsersListView()
                 .tabItem { tabItem(icon: "statistic", title: "Статистика") }
         }
         .background(Color.background.ignoresSafeArea())
