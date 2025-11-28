@@ -8,6 +8,7 @@ import SwiftUI
 
 struct CollectionNftCardView: View {
     let model: CatalogItemViewModel
+    let onRemove: (() -> Void)?
     
     @State private var isFavorite = false
     
@@ -69,8 +70,7 @@ struct CollectionNftCardView: View {
                 Spacer()
                 
                 Button {
-                    
-                    print("trash tapped for id = \(model.id)")
+                    onRemove?()
                 } label: {
                     Image("trashX")
                         .renderingMode(.template)
@@ -81,18 +81,4 @@ struct CollectionNftCardView: View {
             }
         }
     }
-}
-
-#Preview {
-    CollectionNftCardView(
-        model: .init(
-            id: "1",
-            title: "Archie",
-            previewURL: URL(string: "https://picsum.photos/200"),
-            rating: 3.5,
-            priceETH: 1
-        )
-    )
-    .padding()
-    .background(Color.background)
 }

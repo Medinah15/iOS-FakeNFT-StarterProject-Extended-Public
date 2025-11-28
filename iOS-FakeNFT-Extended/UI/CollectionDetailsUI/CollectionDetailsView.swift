@@ -94,7 +94,7 @@ struct CollectionDetailsView: View {
             }
         }
     }
-    // MARK: - Header 
+    // MARK: - Header
     
     private var header: some View {
         AsyncImage(url: viewModel.collection?.coverURL) { phase in
@@ -147,7 +147,7 @@ struct CollectionDetailsView: View {
                         .foregroundColor(.primary)
                 }
             }
-            .padding(.top, 13) 
+            .padding(.top, 13)
             
             if let description = viewModel.collection?.description,
                !description.isEmpty {
@@ -166,7 +166,12 @@ struct CollectionDetailsView: View {
         
         return LazyVGrid(columns: columns, spacing: 12) {
             ForEach(viewModel.items) { item in
-                CollectionNftCardView(model: item)
+                CollectionNftCardView(
+                    model: item,
+                    onRemove: {
+                        viewModel.removeItem(item)
+                    }
+                )
             }
         }
         .padding(.top, 24)
