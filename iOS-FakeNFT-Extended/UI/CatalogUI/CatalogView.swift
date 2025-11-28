@@ -17,6 +17,7 @@ struct CatalogView: View {
     
     @State private var viewModel: CatalogViewModel
     @State private var isErrorAlertPresented = false
+    @State private var isFilterPresented = false
     
     // MARK: - Init (DI)
     
@@ -28,26 +29,38 @@ struct CatalogView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    Button {
-                    } label: {
-                        Image("menu")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 42, height: 42)
-                            .padding(.trailing, 9)
-                            .foregroundColor(.textPrimary)
+            ZStack {
+                VStack(spacing: 0) {
+                    HStack {
+                        Spacer()
+                        Button {
+                            isFilterPresented = true
+                        } label: {
+                            Image("menu")
+                                .renderingMode(.template)
+                                .resizable()
+                                .frame(width: 42, height: 42)
+                                .padding(.trailing, 9)
+                                .foregroundColor(.textPrimary)
+                        }
+                        
                     }
+                    .frame(height: 42)
+                    .background(Color.background)
+                    .padding(.bottom, 20)
+                    
+                    content
                 }
-                .frame(height: 42)
-                .background(Color.background)
-                .padding(.bottom, 20)
-                
-                content
+                .background(Color.background.ignoresSafeArea())
+                if isFilterPresented {
+                    Color(red: 26/255,
+                          green: 27/255,
+                          blue: 34/255)
+                    .opacity(0.5)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                }
             }
-            .background(Color.background.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 viewModel.onAppear()
@@ -71,7 +84,23 @@ struct CatalogView: View {
                     Text("")
                 }
             }
-            
+            .confirmationDialog(
+                NSLocalizedString("Catalog.sort.title", comment: ""),
+                isPresented: $isFilterPresented,
+                titleVisibility: .visible
+            ) {
+                Button(NSLocalizedString("Catalog.sort.byTitle", comment: "")) {
+                    viewModel.updateSort(.title)
+                }
+                
+                Button(NSLocalizedString("Catalog.sort.byNftCount", comment: "")) {
+                    viewModel.updateSort(.nftCount)
+                }
+                
+                Button(NSLocalizedString("Catalog.sort.close", comment: ""), role: .cancel) {
+                    
+                }
+            }
             .navigationDestination(
                 item: $viewModel.selectedCollection
             ) { collection in
@@ -84,6 +113,7 @@ struct CatalogView: View {
                     )
                 )
             }
+            
         }
     }
     

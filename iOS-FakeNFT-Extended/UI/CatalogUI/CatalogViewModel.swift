@@ -26,6 +26,14 @@ final class CatalogViewModel {
     
     private let catalogService: CatalogService
     
+    // MARK: - Stored data
+    
+    private var originalCollections: [CatalogCollection] = []
+    
+    // MARK: - Sort
+    
+    private(set) var sortType: CatalogSortType = .title
+    
     // MARK: - Published properties
     
     private(set) var collections: [CatalogCollectionViewModel] = []
@@ -54,6 +62,11 @@ final class CatalogViewModel {
         selectedCollection = collection
     }
     
+    func updateSort(_ sort: CatalogSortType) {
+        sortType = sort
+        applySortAndBuildViewModels()
+    }
+    
     // MARK: - Private methods
     
     private func loadCollections() {
@@ -65,17 +78,8 @@ final class CatalogViewModel {
             do {
                 let collectionsData = try await catalogService.fetchCollections()
                 
-                let viewModels = collectionsData.map {
-                    CatalogCollectionViewModel(
-                        id: $0.id,
-                        title: $0.title,
-                        itemsCountText: "(\($0.nftCount ?? 0))",
-                        coverURL: $0.coverURL
-                    )
-                }
-                
-                self.collections = viewModels
-                self.state = viewModels.isEmpty ? .empty : .data
+                self.originalCollections = collectionsData
+                self.applySortAndBuildViewModels()
                 
             } catch {
                 self.state = .error(message: makeErrorMessage(from: error))
@@ -83,14 +87,42 @@ final class CatalogViewModel {
         }
     }
     
+    private func applySortAndBuildViewModels() {
+        let sorted: [CatalogCollection]
+        
+        switch sortType {
+        case .title:
+            sorted = originalCollections.sorted {
+                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+            }
+            
+        case .nftCount:
+            sorted = originalCollections.sorted {
+                ($0.nftCount ?? 0) > ($1.nftCount ?? 0)
+            }
+        }
+        
+        let viewModels = sorted.map {
+            CatalogCollectionViewModel(
+                id: $0.id,
+                title: $0.title,
+                itemsCountText: "(\($0.nftCount ?? 0))",
+                coverURL: $0.coverURL
+            )
+        }
+        
+        self.collections = viewModels
+        self.state = viewModels.isEmpty ? .empty : .data
+    }
+    
     private func makeErrorMessage(from error: Error) -> String {
         switch error {
         case CatalogServiceError.network:
-            NSLocalizedString("Error.network", comment: "")
+            return NSLocalizedString("Error.network", comment: "")
         case CatalogServiceError.decoding:
-            NSLocalizedString("Error.decoding", comment: "")
+            return NSLocalizedString("Error.decoding", comment: "")
         default:
-            NSLocalizedString("Error.unknown", comment: "")
+            return NSLocalizedString("Error.unknown", comment: "")
         }
     }
 }
