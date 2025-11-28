@@ -144,7 +144,7 @@ struct CollectionDetailsView: View {
                         Text(authorName)
                             .font(.customFont(.caption1))
                             .foregroundColor(.primary)
-                            .underline() // чтобы было похоже на ссылку
+                            .underline() 
                     }
                     .buttonStyle(.plain)
                 } else {
@@ -171,16 +171,25 @@ struct CollectionDetailsView: View {
     private var grid: some View {
         let columns = Array(repeating: GridItem(.flexible(), spacing: 9), count: 3)
         
-        return LazyVGrid(columns: columns,alignment: .leading, spacing: 12) {
-            ForEach(viewModel.items) { item in
-                CollectionNftCardView(
-                    model: item,
-                    onRemove: {
-                        viewModel.removeItem(item)
+        return Group {
+            if viewModel.items.isEmpty {
+                Text("Здесь пока нет NFT")
+                    .font(.customFont(.caption2))
+                    .foregroundColor(.textSecondary)
+                    .padding(.top, 24)
+            } else {
+                LazyVGrid(columns: columns, spacing: 12) {
+                    ForEach(viewModel.items) { item in
+                        CollectionNftCardView(
+                            model: item,
+                            onRemove: {
+                                viewModel.removeItem(item)
+                            }
+                        )
                     }
-                )
+                }
+                .padding(.top, 24)
             }
         }
-        .padding(.top, 24)
     }
 }

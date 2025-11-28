@@ -65,9 +65,6 @@ final class CollectionDetailsViewModel {
     func removeItem(_ item: CatalogItemViewModel) {
         items.removeAll { $0.id == item.id }
         
-        if items.isEmpty {
-            state = .empty
-        }
     }
     
     // MARK: - Private
@@ -109,11 +106,13 @@ final class CollectionDetailsViewModel {
                             
                             do {
                                 let nft = try await nftService.loadNft(id: id)
+                                
+                                let fakeRating = Double(Int.random(in: 3...5))
                                 return CatalogItemViewModel(
                                     id: nft.id,
                                     title: nft.id,
                                     previewURL: nft.images.first,
-                                    rating: 0,
+                                    rating: fakeRating,
                                     priceETH: nil
                                 )
                             } catch {
