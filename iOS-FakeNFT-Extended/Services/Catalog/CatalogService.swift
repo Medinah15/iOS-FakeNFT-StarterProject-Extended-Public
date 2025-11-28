@@ -93,6 +93,7 @@ struct CatalogItemsRequest: NetworkRequest {
     let collectionID: String
     
     var endpoint: URL? {
-        URL(string: "\(RequestConstants.baseURL)/api/v1/collections/\(collectionID)/nft")
+            URL(string: "\(RequestConstants.baseURL)/api/v1/collections/\(collectionID)/nfts")
+            
+        }
     }
-}

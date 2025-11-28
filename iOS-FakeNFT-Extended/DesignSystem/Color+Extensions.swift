@@ -8,10 +8,6 @@
 import SwiftUI
 
 extension Color {
-    // MARK: - Init bridge
-    init(_ uiColor: UIColor) {
-        self.init(uiColor: uiColor)
-    }
     
     // MARK: - Основная палитра
     static let primary = Color(UIColor.primary)
@@ -33,4 +29,7 @@ extension Color {
     static let closeButton = Color(UIColor.closeButton)
     static let priceGreen = Color(UIColor.priceGreen)
     static let actionSheet = Color(UIColor.actionSheetGray)
+    static let universalRed = Color(UIColor.universalRed)
+    static let universalWhite = Color(UIColor.universalWhite)
+    static let universalYellow = Color(UIColor.universalYellow)
 }
