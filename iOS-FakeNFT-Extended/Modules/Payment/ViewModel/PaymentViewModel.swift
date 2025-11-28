@@ -4,29 +4,81 @@ import SwiftUI
 final class PaymentViewModel: ObservableObject {
     
     // MARK: - Published
-    @Published var methods: [PaymentMethod] = PaymentMethod.all
+    @Published var methods: [PaymentMethod] = []
     @Published var selectedMethod: PaymentMethod?
     @Published var isPaymentInProgress = false
     @Published var alertType: PaymentAlertType?
     
-    // MARK: - Actions
+    // MARK: - Dependencies
+    private let paymentService: PaymentService
+    private let orderId: String
+    
+    // MARK: - Init
+    init(
+        orderId: String = "1",
+        paymentService: PaymentService = PaymentService(network: DefaultNetworkClient())
+    ) {
+        self.orderId = orderId
+        self.paymentService = paymentService
+        
+        Task { await loadCurrencies() }
+    }
+    
+    // MARK: - Load Currencies
+    private func loadCurrencies() async {
+        do {
+            let currencies = try await paymentService.fetchCurrencies()
+            
+            // API → UI mapping
+            self.methods = currencies.map { currency in
+                let url = URL(string: currency.image)
+                
+                return PaymentMethod(
+                    id: currency.id,
+                    name: currency.title,
+                    ticker: currency.name,
+                    imageURL: url,
+                    assetName: nil
+                )
+            }
+            
+            print("ℹ️ Loaded \(methods.count) payment methods")
+            
+        } catch {
+            print("❌ Failed to load currencies:", error)
+            
+            // fallback на локальные моки (иконки из ассетов)
+            self.methods = PaymentMethod.mockAll
+        }
+    }
+    
+    // MARK: - User actions
     func select(_ method: PaymentMethod) {
         selectedMethod = method
     }
     
     func startPayment() {
-        guard selectedMethod != nil, !isPaymentInProgress else { return }
-        
+        guard let selectedMethod else { return }
+        guard !isPaymentInProgress else { return }
+
         isPaymentInProgress = true
         
         Task {
-            try? await Task.sleep(nanoseconds: 800_000_000)
-            
-            isPaymentInProgress = false
-            
-            // здесь потом будет результат реального запроса
-            let success = Bool.random()
-            alertType = success ? .success : .error
+            do {
+                let result = try await paymentService.pay(
+                    orderId: orderId,
+                    currencyId: selectedMethod.id
+                )
+                
+                isPaymentInProgress = false
+                
+                alertType = result.success ? .success : .error
+                
+            } catch {
+                isPaymentInProgress = false
+                print("❌ Payment error:", error)
+                alertType = .error
+            }
         }
     }
 }

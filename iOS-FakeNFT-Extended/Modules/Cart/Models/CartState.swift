@@ -4,6 +4,6 @@ import Foundation
 enum CartState {
     case loading
     case empty
-    case loaded([NFTItem])
+    case loaded([NftItemAPI])
     case error(String)
 }

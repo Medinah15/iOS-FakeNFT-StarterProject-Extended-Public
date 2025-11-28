@@ -7,6 +7,7 @@ final class ServicesAssembly {
     private let networkClient: NetworkClient
     private let nftStorage: NftStorage
     private let catalogServiceInternal: CatalogService
+    private let cartServiceInternal: CartService
     
     init(
         networkClient: NetworkClient,
@@ -15,6 +16,7 @@ final class ServicesAssembly {
         self.networkClient = networkClient
         self.nftStorage = nftStorage
         self.catalogServiceInternal = CatalogServiceImpl(networkClient: networkClient)
+        self.cartServiceInternal = CartService(networkClient: networkClient)
     }
     
     var nftService: NftService {
@@ -27,4 +29,9 @@ final class ServicesAssembly {
     var catalogService: CatalogService {
         catalogServiceInternal
     }
+    
+    var cartService: CartService {
+        cartServiceInternal
+    }
 }
+

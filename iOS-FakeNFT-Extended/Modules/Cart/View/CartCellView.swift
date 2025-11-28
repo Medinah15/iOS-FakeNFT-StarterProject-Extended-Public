@@ -19,13 +19,12 @@ private enum Constants {
 struct CartCellView: View {
     
     // MARK: - Properties
-    let item: NFTItem
+    let item: NftItemAPI
     let onDeleteTap: () -> Void
     
     // MARK: - Body
     var body: some View {
         HStack(alignment: .center, spacing: 20) {
-            
             previewImage
             textSection
             
@@ -46,11 +45,30 @@ private extension CartCellView {
     
     // MARK: Preview Image
     var previewImage: some View {
-        Image(item.imageName)
-            .resizable()
-            .scaledToFill()
-            .frame(width: Constants.imageSize, height: Constants.imageSize)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+        AsyncImage(url: item.imageURL) { phase in
+            switch phase {
+            case .empty:
+                ProgressView()
+                    .frame(width: Constants.imageSize, height: Constants.imageSize)
+            case .success(let image):
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: Constants.imageSize, height: Constants.imageSize)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            case .failure:
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: Constants.imageSize * 0.6,
+                           height: Constants.imageSize * 0.6)
+                    .frame(width: Constants.imageSize, height: Constants.imageSize)
+                    .background(Color.segmentInactive)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            @unknown default:
+                EmptyView()
+            }
+        }
     }
     
     // MARK: Text Section
@@ -116,8 +134,25 @@ private extension CartCellView {
 // MARK: - Preview
 
 #Preview("CartCellView") {
-    VStack(spacing: .zero) {
-        ForEach(NFTItem.mock) { item in
+    let mockItems: [NftItemAPI] = [
+        .init(
+            id: "1",
+            title: "April",
+            rating: 4,
+            price: 12.34,
+            imageURL: URL(string: "https://placehold.co/200x200?text=April")!
+        ),
+        .init(
+            id: "2",
+            title: "Greena",
+            rating: 2,
+            price: 5.67,
+            imageURL: URL(string: "https://placehold.co/200x200?text=Greena")!
+        )
+    ]
+    
+    return VStack(spacing: .zero) {
+        ForEach(mockItems) { item in
             CartCellView(item: item) {
                 print("Tapped delete for \(item.title)")
             }

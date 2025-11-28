@@ -13,10 +13,23 @@ struct PaymentMethodCell: View {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(Color.universalBlack)
                     
-                    Image(method.iconName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 31.5, height: 31.5)
+                    AsyncImage(url: method.imageURL) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .scaleEffect(0.6)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        case .failure:
+                            Image(systemName: "questionmark")
+                                .foregroundColor(.red)
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                    .frame(width: 31.5, height: 31.5)
                 }
                 .frame(width: 36, height: 36)
                 .padding(.leading, 12)
@@ -42,7 +55,7 @@ struct PaymentMethodCell: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.textPrimary: .clear, lineWidth: 2)
+                    .stroke(isSelected ? Color.textPrimary : .clear, lineWidth: 2)
             )
         }
         .buttonStyle(.plain)
@@ -54,9 +67,10 @@ struct PaymentMethodCell: View {
         
         PaymentMethodCell(
             method: PaymentMethod(
+                id: "5",
                 name: "Bitcoin",
                 ticker: "BTC",
-                iconName: "bitcoin"
+                imageURL: URL(string: "https://code.s3.yandex.net/Mobile/iOS/Currencies/Bitcoin_(BTC).png")!, assetName: "bitcoin"
             ),
             isSelected: false,
             onTap: {}
@@ -64,9 +78,10 @@ struct PaymentMethodCell: View {
         
         PaymentMethodCell(
             method: PaymentMethod(
+                id: "7",
                 name: "Ethereum",
                 ticker: "ETH",
-                iconName: "eth"
+                imageURL: URL(string: "https://code.s3.yandex.net/Mobile/iOS/Currencies/Ethereum_(ETH).png")!, assetName: "ETH"
             ),
             isSelected: true,
             onTap: {}
@@ -75,4 +90,3 @@ struct PaymentMethodCell: View {
     .padding()
     .background(Color.background)
 }
-

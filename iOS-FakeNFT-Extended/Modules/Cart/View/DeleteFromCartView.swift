@@ -22,7 +22,7 @@ private enum Constants {
 // MARK: - DeleteFromCartView
 
 struct DeleteFromCartView: View {
-    let item: NFTItem
+    let item: NftItemAPI
     let onConfirm: () -> Void
     let onCancel: () -> Void
 
@@ -57,11 +57,30 @@ private extension DeleteFromCartView {
         VStack(spacing: 20) {
 
             // NFT preview
-            Image(item.imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: Constants.imageSize, height: Constants.imageSize)
-                .cornerRadius(Constants.cornerRadius)
+            AsyncImage(url: item.imageURL) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .frame(width: Constants.imageSize, height: Constants.imageSize)
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: Constants.imageSize, height: Constants.imageSize)
+                        .cornerRadius(Constants.cornerRadius)
+                case .failure:
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: Constants.imageSize * 0.6,
+                               height: Constants.imageSize * 0.6)
+                        .frame(width: Constants.imageSize, height: Constants.imageSize)
+                        .background(Color.segmentInactive)
+                        .cornerRadius(Constants.cornerRadius)
+                @unknown default:
+                    EmptyView()
+                }
+            }
 
             // Text
             Text(Constants.questionText)
@@ -108,8 +127,16 @@ private extension DeleteFromCartView {
 // MARK: - Preview
 
 #Preview {
-    DeleteFromCartView(
-        item: .mock.first!,
+    let mockItem = NftItemAPI(
+        id: "1",
+        title: "April",
+        rating: 4,
+        price: 12.34,
+        imageURL: URL(string: "https://placehold.co/200x200?text=NFT")!
+    )
+
+    return DeleteFromCartView(
+        item: mockItem,
         onConfirm: {},
         onCancel: {}
     )
