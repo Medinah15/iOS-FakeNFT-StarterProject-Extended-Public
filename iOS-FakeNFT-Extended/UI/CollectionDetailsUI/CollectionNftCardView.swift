@@ -8,9 +8,9 @@ import SwiftUI
 
 struct CollectionNftCardView: View {
     let model: CatalogItemViewModel
-    let onRemove: (() -> Void)?
     
     @State private var isFavorite = false
+    @State private var isAddedToCart = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -70,12 +70,10 @@ struct CollectionNftCardView: View {
                 Spacer()
                 
                 Button {
-                    onRemove?()
+                    isAddedToCart.toggle()
                 } label: {
-                    Image("trashX")
+                    Image(isAddedToCart ? "fullBasket" : "emptyBasket")
                         .renderingMode(.template)
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.textPrimary)
                 }
                 .buttonStyle(.plain)
             }

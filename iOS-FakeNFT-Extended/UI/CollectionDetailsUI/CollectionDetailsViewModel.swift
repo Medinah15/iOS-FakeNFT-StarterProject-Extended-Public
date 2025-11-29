@@ -62,11 +62,6 @@ final class CollectionDetailsViewModel {
         load()
     }
     
-    func removeItem(_ item: CatalogItemViewModel) {
-        items.removeAll { $0.id == item.id }
-        
-    }
-    
     // MARK: - Private
     
     private func load() {
