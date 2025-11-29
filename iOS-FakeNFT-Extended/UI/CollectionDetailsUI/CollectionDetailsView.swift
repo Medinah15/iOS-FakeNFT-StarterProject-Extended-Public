@@ -144,7 +144,6 @@ struct CollectionDetailsView: View {
                         Text(authorName)
                             .font(.customFont(.caption1))
                             .foregroundColor(.primary)
-                            .underline() 
                     }
                     .buttonStyle(.plain)
                 } else {
@@ -177,6 +176,7 @@ struct CollectionDetailsView: View {
                     model: item)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading) 
         .padding(.top, 24)
     }
 }
