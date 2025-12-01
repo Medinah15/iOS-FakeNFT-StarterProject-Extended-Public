@@ -9,3 +9,4 @@ struct UserAPI: Decodable, Identifiable {
     let nfts: [String]
     let rating: String
 }
+

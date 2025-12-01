@@ -6,6 +6,7 @@ enum TabBarConfigurator {
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor.background
         appearance.shadowColor = UIColor.black.withAlphaComponent(0.1)
+        appearance.backgroundEffect = nil
         
         appearance.stackedLayoutAppearance.normal.iconColor = UIColor.textPrimary
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
@@ -19,6 +20,5 @@ enum TabBarConfigurator {
         
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
-        UITabBar.appearance().isTranslucent = false
     }
 }

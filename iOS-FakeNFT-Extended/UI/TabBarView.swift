@@ -57,10 +57,10 @@ struct TabBarView: View {
             // -------------------------
             // Статистика
             // -------------------------
-            UsersListView()
+            StatisticView()
                 .tabItem { tabItem(icon: "statistic", title: "Статистика") }
         }
-        .background(Color.background.ignoresSafeArea())
+        //.background(Color.background.ignoresSafeArea())
         .overlay(overlayContent)
     }
 }
