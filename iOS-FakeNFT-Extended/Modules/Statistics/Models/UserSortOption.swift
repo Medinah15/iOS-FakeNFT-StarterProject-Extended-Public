@@ -6,6 +6,6 @@
 //
 enum UserSortOption: String, CaseIterable, Identifiable {
     case byName = "По имени"
-    case byNFTCount = "По количеству NFT"
+    case byNFTCount = "По рейтингу"
     var id: String { self.rawValue }
 }
