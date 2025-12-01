@@ -53,6 +53,7 @@ final class ServicesAssembly {
     
     var cartService: CartService {
         cartServiceInternal
+    }
     var profileService: ProfileService {
         ProfileServiceImpl(networkClient: networkClient)
     }
@@ -61,4 +62,3 @@ final class ServicesAssembly {
         URLServiceImpl()
     }
 }
-
