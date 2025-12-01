@@ -64,66 +64,61 @@ actor DefaultNetworkClient: NetworkClient {
     
     private func create(request: NetworkRequest) throws -> URLRequest {
         guard let endpoint = request.endpoint else {
-            throw NetworkClientError.incorrectRequest("Empty endpoint")
+            throw NetworkClientError.incorrectRequest("empty endpoint")
         }
         
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
-        
+
         // -------------------------------------------
         // 1) form-urlencoded (наш случай с orders)
         // -------------------------------------------
         if let formRequest = request as? FormURLEncodedRequest {
-            let formParams = formRequest.formParameters
-            
-            // Если параметров нет, отправляем пустое тело
-            guard !formParams.isEmpty else {
-                urlRequest.httpBody = Data()
-                urlRequest.setValue("application/x-www-form-urlencoded",
-                                    forHTTPHeaderField: "Content-Type")
-                return urlRequest
-            }
-            
-            let bodyString = formParams
-                .map { key, value in
-                    let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? key
-                    let encodedValue = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
-                    return "\(encodedKey)=\(encodedValue)"
-                }
+            let bodyString = formRequest.formParameters
+                .map { "\($0.key)=\($0.value)" }
                 .joined(separator: "&")
-            
-            guard let bodyData = bodyString.data(using: .utf8) else {
-                throw NetworkClientError.incorrectRequest("Failed to encode form body")
-            }
-            
-            urlRequest.httpBody = bodyData
+
+            urlRequest.httpBody = bodyString.data(using: .utf8)
             urlRequest.setValue("application/x-www-form-urlencoded",
                                 forHTTPHeaderField: "Content-Type")
-            
-            // -------------------------------------------
-            // 2) JSON (старый сценарий, если есть dto)
-            // -------------------------------------------
+
+        // -------------------------------------------
+        // 2) JSON (старый сценарий, если есть dto)
+        // -------------------------------------------
         } else if let dto = request.dto {
-            if let dtoEncoded = try? encoder.encode(dto) {
-                urlRequest.httpBody = dtoEncoded
-                urlRequest.setValue("application/json",
-                                    forHTTPHeaderField: "Content-Type")
-            }
+            let encoded = try encoder.encode(dto)
+            urlRequest.httpBody = encoded
+            urlRequest.setValue("application/json",
+                                forHTTPHeaderField: "Content-Type")
         }
-        
+
         // -------------------------------------------
-        // Token — добавляется только для запросов к нашему API
+        // Token — ОБЩИЙ для всех запросов
         // -------------------------------------------
-        if let endpointHost = endpoint.host,
-           endpointHost.contains("apigw.yandexcloud.net") {
-            urlRequest.addValue(RequestConstants.token,
-                                forHTTPHeaderField: "X-Practicum-Mobile-Token")
-        }
-        
+        urlRequest.addValue(RequestConstants.token,
+                            forHTTPHeaderField: "X-Practicum-Mobile-Token")
+
         return urlRequest
     }
     
-    private func parse<T: Decodable>(data: Data) throws -> T {
+    // MARK: - Order form body (x-www-form-urlencoded)
+
+    private func applyOrderFormBody(_ request: inout URLRequest, nfts: [String]) {
+        request.setValue("application/x-www-form-urlencoded",
+                         forHTTPHeaderField: "Content-Type")
+
+        if nfts.isEmpty {
+            // Полностью пустое тело: --data "" в curl
+            request.httpBody = Data()
+        } else {
+            // nfts=id1,id2,id3  — строго как в рабочем curl
+            let bodyString = "nfts=" + nfts.joined(separator: ",")
+            request.httpBody = bodyString.data(using: .utf8)
+        }
+    }
+
+
+    private func parse<T: Decodable>(data: Data) async throws -> T {
         do {
             return try decoder.decode(T.self, from: data)
         } catch let decodingError as DecodingError {
