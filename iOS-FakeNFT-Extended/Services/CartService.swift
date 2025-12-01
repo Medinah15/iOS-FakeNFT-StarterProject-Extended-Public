@@ -13,7 +13,7 @@ struct UpdateOrderDTO: Encodable, Sendable {
 
 // MARK: - Protocol
 
-protocol CartService {
+protocol CartServiceProtocol {
     /// Получить текущий заказ (корзину)
     func fetchOrder() async throws -> OrderResponse
     
@@ -26,7 +26,7 @@ protocol CartService {
 
 // MARK: - Implementation
 
-final class CartServiceImpl: CartService {
+final class CartService: CartServiceProtocol {
     
     private let networkClient: NetworkClient
     

@@ -24,9 +24,9 @@ struct EditProfileView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    var onSave: ((String, String, String, String) -> Void)?
+    var onSave: ((String, String, String, String) async -> Void)?
     
-    init(profile: Profile, onSave: ((String, String, String, String) -> Void)? = nil) {
+    init(profile: ProfileModel, onSave: ((String, String, String, String) async -> Void)? = nil) {
         _name = State(initialValue: profile.name)
         _description = State(initialValue: profile.description)
         _website = State(initialValue: profile.website)
@@ -129,14 +129,31 @@ struct EditProfileView: View {
     // MARK: - Avatar Section
     private var avatarSection: some View {
         ZStack(alignment: .bottomTrailing) {
-            AsyncImage(url: URL(string: avatarURL)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .foregroundColor(.gray)
+            Group {
+                if let url = URL(string: avatarURL), !avatarURL.isEmpty {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        case .failure:
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .foregroundColor(.gray)
+                        @unknown default:
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .foregroundColor(.gray)
+                        }
+                    }
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .foregroundColor(.gray)
+                }
             }
             .frame(width: 70, height: 70)
             .clipShape(Circle())
@@ -225,15 +242,15 @@ struct EditProfileView: View {
     private func saveProfile() {
         isSaving = true
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            onSave?(name, description, website, avatarURL)
+        Task {
+            await onSave?(name, description, website, avatarURL)
             isSaving = false
             showSaveAlert = true
         }
     }
     private func deletePhoto() {
-        // Устанавливаем дефолтное фото или пустую строку
-        avatarURL = "https://i.pravatar.cc/150?img=12" // или пустая строка ""
+        // Устанавливаем пустую строку для удаления фото
+        avatarURL = ""
     }
     
     private func handleBackButton() {
@@ -307,6 +324,7 @@ struct EditProfileView: View {
     }
 }
 
+
 #Preview {
-    EditProfileView(profile: Profile.mock)
+    EditProfileView(profile: ProfileModel.mock())
 }

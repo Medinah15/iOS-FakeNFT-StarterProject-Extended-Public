@@ -13,11 +13,6 @@ protocol NetworkRequest {
     var dto: Encodable? { get }
 }
 
-protocol FormURLEncodedRequest: NetworkRequest {
-    /// Параметры для application/x-www-form-urlencoded
-    var formParameters: [String: String] { get }
-}
-
 protocol EmptyBodyRequest: NetworkRequest {}
 
 // default values

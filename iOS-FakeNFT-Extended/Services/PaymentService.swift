@@ -1,11 +1,11 @@
 import Foundation
 
-protocol PaymentService {
+protocol PaymentServiceProtocol {
     func fetchCurrencies() async throws -> [CurrencyAPI]
     func pay(orderId: String, currencyId: String) async throws -> PaymentResultAPI
 }
 
-final class PaymentServiceImpl: PaymentService {
+final class PaymentService: PaymentServiceProtocol {
 
     private let network: NetworkClient
     

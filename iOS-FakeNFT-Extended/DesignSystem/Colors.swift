@@ -31,6 +31,7 @@ extension UIColor {
     static let yaBlackDark = UIColor.white
     static let yaLightGrayLight = UIColor(hexString: "#F7F7F8")
     static let yaLightGrayDark = UIColor(hexString: "#2C2C2E")
+    static let starRatingYellow = UIColor(hexString: "#FEEF0D")
     
     // MARK: - Primary & Secondary
     static let primary = UIColor { traits in
