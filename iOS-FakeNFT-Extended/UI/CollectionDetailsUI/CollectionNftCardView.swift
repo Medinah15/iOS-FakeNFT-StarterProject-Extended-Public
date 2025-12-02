@@ -61,6 +61,7 @@ struct CollectionNftCardView: View {
                         .foregroundColor(.textPrimary)
                         .lineLimit(1)
                     
+                    
                     Text(model.priceText)
                         .font(.customFont(.priceCaption))
                         .foregroundColor(.textPrimary)

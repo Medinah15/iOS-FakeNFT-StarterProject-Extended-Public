@@ -115,7 +115,7 @@ final class CollectionDetailsViewModel {
                                 let fakeRating = Double(Int.random(in: 3...5))
                                 return CatalogItemViewModel(
                                     nftId: nft.id,
-                                    title: nft.id,
+                                    title: nft.title,
                                     previewURL: nft.images.first,
                                     rating: fakeRating,
                                     priceETH: nil
