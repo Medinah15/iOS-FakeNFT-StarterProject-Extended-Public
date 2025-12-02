@@ -32,7 +32,8 @@ final class CatalogViewModel {
     
     // MARK: - Sort
     
-    private(set) var sortType: CatalogSortType = .title
+    private static let sortStorageKey = "catalog.sort.type"
+    private(set) var sortType: CatalogSortType
     
     // MARK: - Published properties
     
@@ -45,6 +46,7 @@ final class CatalogViewModel {
     
     init(catalogService: CatalogService) {
         self.catalogService = catalogService
+        self.sortType = Self.loadStoredSortType()
     }
     
     // MARK: - Public methods
@@ -64,6 +66,7 @@ final class CatalogViewModel {
     
     func updateSort(_ sort: CatalogSortType) {
         sortType = sort
+        saveSortType(sort)
         applySortAndBuildViewModels()
     }
     
@@ -124,5 +127,23 @@ final class CatalogViewModel {
         default:
             return NSLocalizedString("Error.unknown", comment: "")
         }
+    }
+    
+    // MARK: - Sort persistence
+    
+    private static func loadStoredSortType() -> CatalogSortType {
+        let defaults = UserDefaults.standard
+        
+        if let raw = defaults.string(forKey: sortStorageKey),
+           let value = CatalogSortType(rawValue: raw) {
+            return value
+        }
+        
+        return .nftCount
+    }
+    
+    private func saveSortType(_ sortType: CatalogSortType) {
+        let defaults = UserDefaults.standard
+        defaults.set(sortType.rawValue, forKey: Self.sortStorageKey)
     }
 }
