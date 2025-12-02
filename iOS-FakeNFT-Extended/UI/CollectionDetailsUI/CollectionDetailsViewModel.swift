@@ -118,7 +118,7 @@ final class CollectionDetailsViewModel {
                                     title: nft.title,
                                     previewURL: nft.images.first,
                                     rating: fakeRating,
-                                    priceETH: nil
+                                    priceETH: nft.priceETH 
                                 )
                             } catch {
                                 
