@@ -7,7 +7,8 @@
 import Foundation
 
 struct CatalogItemViewModel: Identifiable, Hashable {
-    let id: String
+    let id = UUID()
+    let nftId: String
     let title: String
     let previewURL: URL?
     let rating: Double

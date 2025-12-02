@@ -16,7 +16,7 @@ struct CatalogCollection: Codable, Sendable, Hashable {
     public let authorURL: URL?
     public let nftCount: Int?
     public let nftIDs: [String]
-
+    
 }
 
 extension CatalogCollection {
@@ -38,31 +38,29 @@ extension CatalogCollection {
     
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-
+        
         self.id = try c.decode(String.self, forKey: .id)
-
+        
         let title = try c.decodeIfPresent(String.self, forKey: .title)
         ?? c.decodeIfPresent(String.self, forKey: .name)
         ?? "Untitled"
         self.title = title
-
+        
         self.description = try c.decodeIfPresent(String.self, forKey: .description)
-
+        
         let coverString = try c.decodeIfPresent(String.self, forKey: .cover)
         ?? c.decodeIfPresent(String.self, forKey: .coverURL)
         self.coverURL = coverString.flatMap { URL(string: $0) }
-
+        
         self.authorName = try c.decodeIfPresent(String.self, forKey: .authorName)
         ?? c.decodeIfPresent(String.self, forKey: .author)
-
+        
         let authorURLString = try c.decodeIfPresent(String.self, forKey: .authorSite)
         ?? c.decodeIfPresent(String.self, forKey: .authorURL)
         self.authorURL = authorURLString.flatMap { URL(string: $0) }
-
-        // 🔥 ВАЖНО: Декодируем массив ID NFT
+        
         self.nftIDs = (try? c.decode([String].self, forKey: .nfts)) ?? []
         
-        // Остальное как у тебя
         if let cnt = try c.decodeIfPresent(Int.self, forKey: .nftCount) {
             self.nftCount = cnt
         } else if let cnt = try c.decodeIfPresent(Int.self, forKey: .count) {

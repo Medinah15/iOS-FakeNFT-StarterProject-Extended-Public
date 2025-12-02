@@ -91,11 +91,21 @@ final class CollectionDetailsViewModel {
                     return
                 }
                 
+                var uniqueIDs: [String] = []
+                var seen = Set<String>()
+                
+                for id in nftIDs {
+                    if !seen.contains(id) {
+                        seen.insert(id)
+                        uniqueIDs.append(id)
+                    }
+                }
+                
                 var viewModels: [CatalogItemViewModel] = []
-                viewModels.reserveCapacity(nftIDs.count)
+                viewModels.reserveCapacity(uniqueIDs.count)
                 
                 try await withThrowingTaskGroup(of: CatalogItemViewModel?.self) { group in
-                    for id in nftIDs {
+                    for id in uniqueIDs {
                         group.addTask { [weak self] in
                             guard let self else { return nil }
                             
@@ -104,7 +114,7 @@ final class CollectionDetailsViewModel {
                                 
                                 let fakeRating = Double(Int.random(in: 3...5))
                                 return CatalogItemViewModel(
-                                    id: nft.id,
+                                    nftId: nft.id,
                                     title: nft.id,
                                     previewURL: nft.images.first,
                                     rating: fakeRating,
