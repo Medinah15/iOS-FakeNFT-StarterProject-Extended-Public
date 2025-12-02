@@ -13,6 +13,7 @@ struct WebViewScreen: View {
     var body: some View {
         WebView()
             .navigationBarBackButtonHidden(true)
+            .toolbar(.hidden, for: .tabBar) 
             .toolbar {
                 
                 ToolbarItem(placement: .bottomBar) {
