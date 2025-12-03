@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B06098E2EDF967C00F235EE /* CartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B06098D2EDF967C00F235EE /* CartService.swift */; };
+		8B0609942EDFB8DE00F235EE /* OrderRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0609932EDFB8DE00F235EE /* OrderRequests.swift */; };
 		8B8EA4662EDA40CE0075F266 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8EA4652EDA40CE0075F266 /* WebView.swift */; };
 		8B8EA4682EDA40FA0075F266 /* WebViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8EA4672EDA40FA0075F266 /* WebViewScreen.swift */; };
 		8BAE4CE82ECB6EB900606989 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAE4CE72ECB6EB900606989 /* Color+Extensions.swift */; };
@@ -66,6 +68,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B06098D2EDF967C00F235EE /* CartService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartService.swift; sourceTree = "<group>"; };
+		8B0609932EDFB8DE00F235EE /* OrderRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderRequests.swift; sourceTree = "<group>"; };
 		8B8EA4652EDA40CE0075F266 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		8B8EA4672EDA40FA0075F266 /* WebViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewScreen.swift; sourceTree = "<group>"; };
 		8BAE4CE72ECB6EB900606989 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
@@ -268,6 +272,7 @@
 				ABC5E1B62C31FC70002B4068 /* ServicesAssembly.swift */,
 				8B8EA4652EDA40CE0075F266 /* WebView.swift */,
 				8B8EA4672EDA40FA0075F266 /* WebViewScreen.swift */,
+				8B06098D2EDF967C00F235EE /* CartService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -278,6 +283,7 @@
 				ABC5E1B12C31FBD4002B4068 /* ExampleRequest.swift */,
 				ABC5E1AD2C31FB7F002B4068 /* NftByIdRequest.swift */,
 				ABC5E1AF2C31FB90002B4068 /* RequestConstants.swift */,
+				8B0609932EDFB8DE00F235EE /* OrderRequests.swift */,
 			);
 			path = Requests;
 			sourceTree = "<group>";
@@ -476,6 +482,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABC5E1992C31F666002B4068 /* Fonts.swift in Sources */,
+				8B0609942EDFB8DE00F235EE /* OrderRequests.swift in Sources */,
 				ABC5E1CF2C32041D002B4068 /* NftDetailViewController.swift in Sources */,
 				ABC5E1B72C31FC70002B4068 /* ServicesAssembly.swift in Sources */,
 				ABC5E19D2C31F6A6002B4068 /* NftStorage.swift in Sources */,
@@ -502,6 +509,7 @@
 				ABC5E1CB2C3203FC002B4068 /* NftDetailCellModel.swift in Sources */,
 				ABC5E1AB2C31FACD002B4068 /* NftService.swift in Sources */,
 				ABC5E1B22C31FBD4002B4068 /* ExampleRequest.swift in Sources */,
+				8B06098E2EDF967C00F235EE /* CartService.swift in Sources */,
 				ABC5E1CD2C32040C002B4068 /* NftImageCollectionViewCell.swift in Sources */,
 				8BAE4CEA2ECB6F8900606989 /* Font+Extensions.swift in Sources */,
 				ABC5E1A82C31FA90002B4068 /* DateFormatters+Presets.swift in Sources */,

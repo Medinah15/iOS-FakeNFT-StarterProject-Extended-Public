@@ -34,7 +34,6 @@ actor DefaultNetworkClient: NetworkClient {
         guard let response = response as? HTTPURLResponse else {
             throw NetworkClientError.urlSessionError
         }
-        
         guard 200 ..< 300 ~= response.statusCode else {
             throw NetworkClientError.httpStatusCode(response.statusCode)
         }
@@ -46,22 +45,33 @@ actor DefaultNetworkClient: NetworkClient {
         return try await parse(data: data)
     }
     
-    // MARK: - Private
-    
     private func create(request: NetworkRequest) throws -> URLRequest {
         guard let endpoint = request.endpoint else {
-            throw NetworkClientError.incorrectRequest("Empty endpoint")
+            throw NetworkClientError.incorrectRequest("empty endpoint")
         }
         
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
         
-        if let dto = request.dto,
-           let dtoEncoded = try? encoder.encode(dto) {
-            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = dtoEncoded
+        if let formRequest = request as? FormURLEncodedRequest {
+            let bodyString = formRequest.formParameters
+                .map { "\($0.key)=\($0.value)" }
+                .joined(separator: "&")
+            
+            urlRequest.httpBody = bodyString.data(using: .utf8)
+            urlRequest.setValue("application/x-www-form-urlencoded",
+                                forHTTPHeaderField: "Content-Type")
         }
-        urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
+        
+        else if let dto = request.dto {
+            let encoded = try encoder.encode(dto)
+            urlRequest.httpBody = encoded
+            urlRequest.setValue("application/json",
+                                forHTTPHeaderField: "Content-Type")
+        }
+        
+        urlRequest.addValue(RequestConstants.token,
+                            forHTTPHeaderField: "X-Practicum-Mobile-Token")
         
         return urlRequest
     }
