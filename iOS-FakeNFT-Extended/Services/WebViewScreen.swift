@@ -24,7 +24,7 @@ struct WebViewScreen: View {
                     Button {
                         dismiss()
                     } label: {
-                        Image("backward")
+                        Image(.backward)
                             .foregroundColor(.textPrimary)
                     }
                 }

@@ -76,8 +76,7 @@ struct CollectionDetailsView: View {
                             infoBlock
                             grid
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
+                        .padding([.horizontal, .top], 16)
                         .padding(.bottom, 20)
                     }
                 }
@@ -85,7 +84,7 @@ struct CollectionDetailsView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Image("backward")
+                    Image(.backward)
                         .foregroundColor(.textPrimary)
                         .frame(width: 24, height: 24)
                     

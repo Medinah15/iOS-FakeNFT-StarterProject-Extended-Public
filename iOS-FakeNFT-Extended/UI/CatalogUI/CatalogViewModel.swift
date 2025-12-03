@@ -114,18 +114,18 @@ final class CatalogViewModel {
             )
         }
         
-        self.collections = viewModels
-        self.state = viewModels.isEmpty ? .empty : .data
+        collections = viewModels
+        state = viewModels.isEmpty ? .empty : .data
     }
     
     private func makeErrorMessage(from error: Error) -> String {
         switch error {
         case CatalogServiceError.network:
-            return NSLocalizedString("Error.network", comment: "")
+            NSLocalizedString("Error.network", comment: "")
         case CatalogServiceError.decoding:
-            return NSLocalizedString("Error.decoding", comment: "")
+            NSLocalizedString("Error.decoding", comment: "")
         default:
-            return NSLocalizedString("Error.unknown", comment: "")
+            NSLocalizedString("Error.unknown", comment: "")
         }
     }
     

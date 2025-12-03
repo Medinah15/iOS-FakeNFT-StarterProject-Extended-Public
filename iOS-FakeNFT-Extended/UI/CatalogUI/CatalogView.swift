@@ -36,7 +36,7 @@ struct CatalogView: View {
                         Button {
                             isFilterPresented = true
                         } label: {
-                            Image("menu")
+                            Image(.menu)
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width: 42, height: 42)
