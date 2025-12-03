@@ -9,9 +9,11 @@ import SwiftUI
 struct CollectionNftCardView: View {
     let model: CatalogItemViewModel
     @Environment(ServicesAssembly.self) private var services
+    
     @State private var isFavorite = false
     @State private var isAddedToCart = false
     @State private var isLoadingCart = false
+    @State private var isLoadingFavorite = false
     @State private var showError = false
     @State private var errorMessage = ""
     
@@ -22,17 +24,20 @@ struct CollectionNftCardView: View {
                     switch phase {
                     case .empty: Rectangle().fill(Color.segmentInactive)
                     case .success(let image): image.resizable().scaledToFill()
-                    case .failure: Rectangle().fill(Color.segmentInactive).overlay(Image(systemName: "photo"))
+                    case .failure:
+                        Rectangle().fill(Color.segmentInactive)
+                            .overlay(Image(systemName: "photo"))
                     @unknown default: Rectangle().fill(Color.segmentInactive)
                     }
                 }
                 .aspectRatio(1, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 
-                Button(action: { isFavorite.toggle() }) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                Button(action: handleFavoriteAction) {
+                    Image(systemName: "heart.fill")
                         .foregroundColor(isFavorite ? .universalRed : .universalWhite)
                         .padding(10)
+                    
                 }
                 .buttonStyle(.plain)
             }
@@ -47,19 +52,22 @@ struct CollectionNftCardView: View {
             
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(model.title).font(.customFont(.bodyBold)).foregroundColor(.textPrimary).lineLimit(1)
-                    Text(model.priceText).font(.customFont(.priceCaption)).foregroundColor(.textPrimary).lineLimit(1)
+                    Text(model.title)
+                        .font(.customFont(.bodyBold))
+                        .foregroundColor(.textPrimary)
+                        .lineLimit(1)
+                    Text(model.priceText)
+                        .font(.customFont(.priceCaption))
+                        .foregroundColor(.textPrimary)
+                        .lineLimit(1)
                 }
                 Spacer()
-                
-                
                 
                 Button(action: handleCartAction) {
                     Image(isAddedToCart ? "fullBasket" : "emptyBasket")
                         .renderingMode(.template)
                 }
                 .buttonStyle(.plain)
-                .disabled(isLoadingCart)
             }
         }
         .alert("Ошибка", isPresented: $showError) {
@@ -67,13 +75,30 @@ struct CollectionNftCardView: View {
         } message: {
             Text(errorMessage)
         }
-        .task { await loadCartState() }
+        .task {
+            await loadInitialState()
+        }
+    }
+    
+    private func loadInitialState() async {
+        await loadCartState()
+        await loadFavoriteState()
     }
     
     private func loadCartState() async {
         do {
             let response = try await services.cartService.fetchOrder()
             isAddedToCart = response.nfts.contains(model.nftId)
+        } catch {}
+    }
+    
+    private func loadFavoriteState() async {
+        do {
+            
+            let profile = try await services.profileService.loadProfile(
+                userId: RequestConstants.profileUserId
+            )
+            isFavorite = profile.likes.contains(model.nftId)
         } catch {}
     }
     
@@ -106,6 +131,55 @@ struct CollectionNftCardView: View {
                     errorMessage = "Ошибка корзины"
                     showError = true
                     isLoadingCart = false
+                }
+            }
+        }
+    }
+    
+    private func handleFavoriteAction() {
+        guard !isLoadingFavorite else { return }
+        print("НАЖАЛИ ЛАЙК для NFT: \(model.nftId)")
+        isLoadingFavorite = true
+        
+        Task {
+            do {
+                
+                let profile = try await services.profileService.loadProfile(
+                    userId: RequestConstants.profileUserId
+                )
+                var likes = profile.likes
+                
+                if likes.contains(model.nftId) {
+                    likes.removeAll { $0 == model.nftId }
+                } else {
+                    likes.append(model.nftId)
+                }
+                
+                let likesString = likes.joined(separator: ",")
+                let updateRequest = ProfileUpdateRequest(
+                    likes: likesString,
+                    avatar: nil,
+                    name: nil,
+                    description: nil,
+                    website: nil
+                )
+                
+                _ = try await services.profileService.updateProfile(
+                    userId: RequestConstants.profileUserId,
+                    request: updateRequest
+                )
+                
+                await MainActor.run {
+                    isFavorite = likes.contains(model.nftId)
+                    isLoadingFavorite = false
+                    print("isFavorite стало: \(isFavorite)")
+                }
+            } catch {
+                print("ОШИБКА ЛАЙКА: \(error)")
+                await MainActor.run {
+                    errorMessage = "Ошибка избранного"
+                    showError = true
+                    isLoadingFavorite = false
                 }
             }
         }
