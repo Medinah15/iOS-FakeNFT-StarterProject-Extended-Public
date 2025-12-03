@@ -32,4 +32,5 @@ extension Color {
     static let universalRed = Color(UIColor.universalRed)
     static let universalWhite = Color(UIColor.universalWhite)
     static let universalYellow = Color(UIColor.universalYellow)
+    static let yaBlackOverlay50 = Color(UIColor.yaBlackOverlay50)
 }

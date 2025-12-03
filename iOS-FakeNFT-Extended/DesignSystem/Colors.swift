@@ -87,4 +87,6 @@ extension UIColor {
     static let closeButton = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .yaBlackDark : .yaBlackLight
     }
+    static let yaBlackOverlay50 = UIColor(hexString: "#1A1B22").withAlphaComponent(0.5)
+
 }

@@ -21,7 +21,7 @@ protocol CartServiceProtocol {
 }
 
 // MARK: - Implementation
-final class CartService: CartServiceProtocol {
+actor CartService: CartServiceProtocol {
     private let networkClient: NetworkClient
     
     init(networkClient: NetworkClient) {

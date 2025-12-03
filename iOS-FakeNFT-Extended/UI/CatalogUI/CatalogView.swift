@@ -53,10 +53,7 @@ struct CatalogView: View {
                 }
                 .background(Color.background.ignoresSafeArea())
                 if isFilterPresented {
-                    Color(red: 26/255,
-                          green: 27/255,
-                          blue: 34/255)
-                    .opacity(0.5)
+                    Color.yaBlackOverlay50 
                     .ignoresSafeArea()
                     .transition(.opacity)
                 }
