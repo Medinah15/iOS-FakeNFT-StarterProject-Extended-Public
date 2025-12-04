@@ -3,7 +3,7 @@ import SwiftUI
 struct TestCatalogView: View {
     @Environment(ServicesAssembly.self) var servicesAssembly
     @State private var presentingNft = false
-
+    
     var body: some View {
         Button {
             showNft()
@@ -16,7 +16,7 @@ struct TestCatalogView: View {
             NftDetailBridgeView()
         }
     }
-
+    
     func showNft() {
         presentingNft = true
     }

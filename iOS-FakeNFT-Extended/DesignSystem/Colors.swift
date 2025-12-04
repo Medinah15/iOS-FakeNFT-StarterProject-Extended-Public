@@ -1,7 +1,9 @@
 import UIKit
 
 extension UIColor {
+    
     // MARK: - Init from HEX
+    
     convenience init(hexString: String) {
         let hex = hexString.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int = UInt64()
@@ -47,12 +49,12 @@ extension UIColor {
     
     // MARK: - Background
     static let background = UIColor { traits in
-        traits.userInterfaceStyle == .dark ? .yaBlackLight : .white
+        traits.userInterfaceStyle == .dark ? .yaBlackLight : universalWhite
     }
     
     // MARK: - Text
     static let textPrimary = UIColor { traits in
-        traits.userInterfaceStyle == .dark ? .white : .black
+        traits.userInterfaceStyle == .dark ? universalWhite : .yaBlackLight
     }
     
     static let textButton = UIColor { traits in
@@ -76,10 +78,15 @@ extension UIColor {
     }
     
     // MARK: - Accent / Buttons
+    static let universalYellow = UIColor(hexString: "#FEEF0D")
+    static let universalWhite = UIColor(hexString: "#FFFFFF")
+    static let universalRed = UIColor(hexString: "#F56B6C")
     static let universalGreen = UIColor(hexString: "#1C9F00")
     static let actionSheetGray = UIColor(hexString: "#F5F5F5")
     static let priceGreen = UIColor(hexString: "#32D74B")
     static let closeButton = UIColor { traits in
         traits.userInterfaceStyle == .dark ? .yaBlackDark : .yaBlackLight
     }
+    static let yaBlackOverlay50 = UIColor(hexString: "#1A1B22").withAlphaComponent(0.5)
+
 }

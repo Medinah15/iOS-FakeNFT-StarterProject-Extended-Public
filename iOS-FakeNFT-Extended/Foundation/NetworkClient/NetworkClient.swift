@@ -17,7 +17,7 @@ actor DefaultNetworkClient: NetworkClient {
     private let session: URLSession
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
-
+    
     init(
         session: URLSession = URLSession.shared,
         decoder: JSONDecoder = JSONDecoder(),
@@ -27,7 +27,7 @@ actor DefaultNetworkClient: NetworkClient {
         self.decoder = decoder
         self.encoder = encoder
     }
-
+    
     func send(request: NetworkRequest) async throws -> Data {
         let urlRequest = try create(request: request)
         let (data, response) = try await session.data(for: urlRequest)
@@ -39,32 +39,43 @@ actor DefaultNetworkClient: NetworkClient {
         }
         return data
     }
-
+    
     func send<T: Decodable>(request: NetworkRequest) async throws -> T {
         let data = try await send(request: request)
         return try await parse(data: data)
     }
-
-    // MARK: - Private
-
+    
     private func create(request: NetworkRequest) throws -> URLRequest {
         guard let endpoint = request.endpoint else {
-            throw NetworkClientError.incorrectRequest("Empty endpoint")
+            throw NetworkClientError.incorrectRequest("empty endpoint")
         }
-
+        
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
-
-        if let dto = request.dto,
-           let dtoEncoded = try? encoder.encode(dto) {
-            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = dtoEncoded
+        
+        if let formRequest = request as? FormURLEncodedRequest {
+            let bodyString = formRequest.formParameters
+                .map { "\($0.key)=\($0.value)" }
+                .joined(separator: "&")
+            
+            urlRequest.httpBody = bodyString.data(using: .utf8)
+            urlRequest.setValue("application/x-www-form-urlencoded",
+                                forHTTPHeaderField: "Content-Type")
         }
-        urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
-
+        
+        else if let dto = request.dto {
+            let encoded = try encoder.encode(dto)
+            urlRequest.httpBody = encoded
+            urlRequest.setValue("application/json",
+                                forHTTPHeaderField: "Content-Type")
+        }
+        
+        urlRequest.addValue(RequestConstants.token,
+                            forHTTPHeaderField: "X-Practicum-Mobile-Token")
+        
         return urlRequest
     }
-
+    
     private func parse<T: Decodable>(data: Data) async throws -> T {
         do {
             return try decoder.decode(T.self, from: data)

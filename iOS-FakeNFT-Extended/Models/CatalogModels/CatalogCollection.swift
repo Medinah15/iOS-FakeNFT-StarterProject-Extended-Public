@@ -15,6 +15,8 @@ struct CatalogCollection: Codable, Sendable, Hashable {
     public let authorName: String?
     public let authorURL: URL?
     public let nftCount: Int?
+    public let nftIDs: [String]
+    
 }
 
 extension CatalogCollection {
@@ -56,6 +58,8 @@ extension CatalogCollection {
         let authorURLString = try c.decodeIfPresent(String.self, forKey: .authorSite)
         ?? c.decodeIfPresent(String.self, forKey: .authorURL)
         self.authorURL = authorURLString.flatMap { URL(string: $0) }
+        
+        self.nftIDs = (try? c.decode([String].self, forKey: .nfts)) ?? []
         
         if let cnt = try c.decodeIfPresent(Int.self, forKey: .nftCount) {
             self.nftCount = cnt

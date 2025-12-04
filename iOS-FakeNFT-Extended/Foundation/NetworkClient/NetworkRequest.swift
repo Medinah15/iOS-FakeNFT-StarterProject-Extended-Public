@@ -13,7 +13,10 @@ protocol NetworkRequest {
     var dto: Encodable? { get }
 }
 
-// default values
+protocol FormURLEncodedRequest: NetworkRequest {
+    var formParameters: [String: String] { get }
+}
+
 extension NetworkRequest {
     var httpMethod: HttpMethod { .get }
     var dto: Encodable? { nil }
