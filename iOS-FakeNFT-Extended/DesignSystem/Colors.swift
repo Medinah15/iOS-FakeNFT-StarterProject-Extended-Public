@@ -29,10 +29,11 @@ extension UIColor {
     }
     
     // MARK: - Base palette
-    private static let yaBlackLight = UIColor(hexString: "#1A1B22")
-    private static let yaBlackDark = UIColor.white
-    private static let yaLightGrayLight = UIColor(hexString: "#F7F7F8")
-    private static let yaLightGrayDark = UIColor(hexString: "#2C2C2E")
+    static let yaBlackLight = UIColor(hexString: "#1A1B22")
+    static let yaBlackDark = UIColor.white
+    static let yaLightGrayLight = UIColor(hexString: "#F7F7F8")
+    static let yaLightGrayDark = UIColor(hexString: "#2C2C2E")
+    static let starRatingYellow = UIColor(hexString: "#FEEF0D")
     
     // MARK: - Primary & Secondary
     static let primary = UIColor { traits in
@@ -88,5 +89,5 @@ extension UIColor {
         traits.userInterfaceStyle == .dark ? .yaBlackDark : .yaBlackLight
     }
     static let yaBlackOverlay50 = UIColor(hexString: "#1A1B22").withAlphaComponent(0.5)
-
+    
 }

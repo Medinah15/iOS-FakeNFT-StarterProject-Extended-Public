@@ -10,12 +10,13 @@ import WebKit
 struct WebViewScreen: View {
     @Environment(\.dismiss) private var dismiss
     
+    private let url = URL(string: "https://practicum.yandex.ru/ios-developer/")!
+    
     var body: some View {
-        WebView()
+        WebView(url: url)
             .navigationBarBackButtonHidden(true)
-            .toolbar(.hidden, for: .tabBar) 
+            .toolbar(.hidden, for: .tabBar)
             .toolbar {
-                
                 ToolbarItem(placement: .bottomBar) {
                     EmptyView()
                 }

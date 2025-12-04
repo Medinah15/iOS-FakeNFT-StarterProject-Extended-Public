@@ -1,4 +1,25 @@
 import Foundation
+import UIKit
+
+protocol URLService {
+    func openURL(_ url: URL)
+    func makeURL(from string: String) -> URL?
+}
+
+final class URLServiceImpl: URLService {
+    func openURL(_ url: URL) {
+        UIApplication.shared.open(url)
+    }
+    
+    func makeURL(from string: String) -> URL? {
+        
+        if string.hasPrefix("http://") || string.hasPrefix("https://") {
+            return URL(string: string)
+        }
+        
+        return URL(string: "https://\(string)")
+    }
+}
 
 @Observable
 @MainActor
@@ -37,6 +58,10 @@ final class ServicesAssembly {
     }
     
     var profileService: ProfileService {
-        profileServiceInternal
+        ProfileServiceImpl(networkClient: networkClient)
+    }
+    
+    var urlService: URLService {
+        URLServiceImpl()
     }
 }

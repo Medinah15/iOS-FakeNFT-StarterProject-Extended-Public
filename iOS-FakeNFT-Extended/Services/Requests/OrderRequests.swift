@@ -8,6 +8,7 @@
 import Foundation
 
 // MARK: - GET /api/v1/orders/1
+
 struct OrderGetRequest: NetworkRequest {
     private let path = "/api/v1/orders/1"
     
@@ -17,6 +18,7 @@ struct OrderGetRequest: NetworkRequest {
 }
 
 // MARK: - PUT /api/v1/orders/1
+
 struct OrderPutRequest: NetworkRequest, FormURLEncodedRequest {
     private let path = "/api/v1/orders/1"
     let nftIds: [String]
@@ -36,6 +38,7 @@ struct OrderPutRequest: NetworkRequest, FormURLEncodedRequest {
 }
 
 // MARK: - POST /api/v1/orders/1
+
 struct OrderPostRequest: NetworkRequest, FormURLEncodedRequest {
     private let path = "/api/v1/orders/1"
     let nftIds: [String]
@@ -48,4 +51,19 @@ struct OrderPostRequest: NetworkRequest, FormURLEncodedRequest {
     var formParameters: [String: String] {
         return [:]
     }
+}
+
+// MARK: - GET /orders/1/payment/{currency_id}
+
+struct PayOrderRequest: NetworkRequest {
+    let orderId: String
+    let currencyId: String
+    
+    var httpMethod: HttpMethod { .get }
+    
+    var endpoint: URL? {
+        URL(string: RequestConstants.baseURL + "/api/v1/orders/\(orderId)/payment/\(currencyId)")
+    }
+    
+    var dto: Encodable? { nil }
 }

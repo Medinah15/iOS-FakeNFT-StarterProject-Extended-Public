@@ -58,7 +58,7 @@ struct CollectionDetailsView: View {
                 .foregroundColor(.textButton)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 10)
-                .background(Color.primary)
+                .background(Color.systemBlue)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -143,13 +143,13 @@ struct CollectionDetailsView: View {
                     } label: {
                         Text(authorName)
                             .font(.customFont(.caption1))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.systemBlue)
                     }
                     .buttonStyle(.plain)
                 } else {
                     Text(viewModel.collection?.authorName ?? "—")
                         .font(.customFont(.caption1))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.systemBlue)
                 }
                 
             }

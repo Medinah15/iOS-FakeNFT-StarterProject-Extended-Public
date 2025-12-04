@@ -13,6 +13,10 @@ struct OrderResponse: Decodable, Sendable {
     let id: String
 }
 
+struct UpdateOrderDTO: Encodable, Sendable {
+    let nfts: [String]
+}
+
 // MARK: - Protocol
 protocol CartServiceProtocol {
     func fetchOrder() async throws -> OrderResponse

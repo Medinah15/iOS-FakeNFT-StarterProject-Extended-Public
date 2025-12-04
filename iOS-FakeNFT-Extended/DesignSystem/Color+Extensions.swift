@@ -10,11 +10,12 @@ import SwiftUI
 extension Color {
     
     // MARK: - Основная палитра
-    static let primary = Color(UIColor.primary)
+    static let systemBlue = Color(UIColor.primary)
     static let secondary = Color(UIColor.secondary)
     
     // MARK: - Фон
     static let background = Color(UIColor.background)
+    static let universalBlack = Color(UIColor.yaBlackLight)
     
     // MARK: - Текст
     static let textPrimary = Color(UIColor.textPrimary)
@@ -27,6 +28,7 @@ extension Color {
     static let segmentActive = Color(UIColor.segmentActive)
     static let segmentInactive = Color(UIColor.segmentInactive)
     static let closeButton = Color(UIColor.closeButton)
+    static let universalGreen = Color(UIColor.priceGreen)
     static let priceGreen = Color(UIColor.priceGreen)
     static let actionSheet = Color(UIColor.actionSheetGray)
     static let universalRed = Color(UIColor.universalRed)
