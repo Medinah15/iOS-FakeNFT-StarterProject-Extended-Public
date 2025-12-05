@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 struct BlurView: UIViewRepresentable {
     var style: UIBlurEffect.Style
 

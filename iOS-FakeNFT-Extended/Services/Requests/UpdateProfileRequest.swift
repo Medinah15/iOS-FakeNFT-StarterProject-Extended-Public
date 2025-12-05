@@ -17,7 +17,7 @@ struct UpdateProfileRequest: FormURLEncodedRequest {
         URL(string: "\(RequestConstants.baseURL)/api/v1/profile/\(userId)")
     }
     
-    var dto: Encodable? { nil }  
+    var dto: Encodable? { nil }
     
     var formParameters: [String: String] {
         var params: [String: String] = [:]
