@@ -2,7 +2,7 @@
 //  UpdateProfileRequest.swift
 //  iOS-FakeNFT-Extended
 //
-//  Created by Medina Huseynova on 03.12.25.
+//  Created by Дионисий Коневиченко on 27.11.2025.
 //
 
 import Foundation
@@ -17,12 +17,13 @@ struct UpdateProfileRequest: FormURLEncodedRequest {
         URL(string: "\(RequestConstants.baseURL)/api/v1/profile/\(userId)")
     }
     
-    var dto: Encodable? { nil }
+    var dto: Encodable? { nil }  
     
     var formParameters: [String: String] {
         var params: [String: String] = [:]
         
         if let likes = profileUpdate.likes {
+            
             params["likes"] = likes
         }
         

@@ -1,9 +1,3 @@
-//
-//  CartService.swift
-//  iOS-FakeNFT-Extended
-//
-//  Created by Medina Huseynova on 03.12.25.
-//
 
 import Foundation
 

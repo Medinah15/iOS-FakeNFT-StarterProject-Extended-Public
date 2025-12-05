@@ -1,74 +1,143 @@
 import SwiftUI
 
+// MARK: - TabBarView
+
 struct TabBarView: View {
     
+    // MARK: - Dependencies
     @Environment(ServicesAssembly.self) private var servicesAssembly
     
+    // MARK: - State
+    @State private var isSortMenuPresented = false
+    @State private var cartSort: CartSortOption = .byName
+    @State private var deleteItem: NftItemAPI? = nil
+    
+    // MARK: - Init
     init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.background
-        appearance.shadowColor = .clear
-        
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor.textPrimary
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.textPrimary]
-        
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-        UITabBar.appearance().isTranslucent = true
+        TabBarConfigurator.setupAppearance()
     }
     
+    // MARK: - Body
     var body: some View {
         TabView {
-            TabBarItemView(
-                image: .profile,
-                title: "Профиль",
-                content: TestCatalogView()
-            )
             
-            TabBarItemView(
-                image: .catalog,
-                title: "Каталог",
-                content: CatalogView(
-                    viewModel: CatalogViewModel(
-                        catalogService: servicesAssembly.catalogService
-                    )
+            // -------------------------
+            // Профиль
+            // -------------------------
+            ProfileView()
+                .tabItem { tabItem(icon: "profile", title: "Профиль") }
+            
+            
+            // -------------------------
+            // Каталог
+            // -------------------------
+            CatalogView(
+                viewModel: CatalogViewModel(
+                    catalogService: servicesAssembly.catalogService
                 )
             )
+            .tabItem { tabItem(icon: "catalog", title: "Каталог") }
             
-            TabBarItemView(
-                image: .cart,
-                title: "Корзина",
-                content: TestCatalogView()
-            )
             
-            TabBarItemView(
-                image: .statistic,
-                title: "Статистика",
-                content: TestCatalogView()
+            // -------------------------
+            // Корзина
+            // -------------------------
+            CartView(
+                isSortMenuPresented: $isSortMenuPresented,
+                sortOption: $cartSort,
+                onDeleteRequest: { item in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        deleteItem = item
+                    }
+                }
             )
+            .tabItem { tabItem(icon: "cart", title: "Корзина") }
+            
+            
+            // -------------------------
+            // Статистика
+            // -------------------------
+            TestCatalogView()
+                .tabItem { tabItem(icon: "statistic", title: "Статистика") }
         }
         .background(Color.background.ignoresSafeArea())
+        .overlay(overlayContent)
     }
 }
 
-// MARK: - Reusable tab item
+// MARK: - Subviews / Helpers
 
-private struct TabBarItemView<Content: View>: View {
-    let image: ImageResource
-    let title: String
-    let content: Content
+private extension TabBarView {
     
-    var body: some View {
-        content
-            .tabItem {
-                VStack {
-                    Image(image)
-                        .renderingMode(.template)
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                    Text(title)
+    // MARK: Tab item factory
+    func tabItem(icon: String, title: String) -> some View {
+        VStack(spacing: 2) {
+            Image(icon)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+            Text(title)
+        }
+    }
+    
+    // MARK: Overlay content
+    var overlayContent: some View {
+        ZStack {
+            
+            // Меню сортировки корзины
+            if isSortMenuPresented {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut) {
+                            isSortMenuPresented = false
+                        }
+                    }
+                
+                GeometryReader { geo in
+                    VStack {
+                        Spacer()
+                        
+                        CartSortMenuView(
+                            selectedOption: $cartSort,
+                            isPresented: $isSortMenuPresented
+                        )
+                        .position(
+                            x: geo.size.width / 2,
+                            y: geo.size.height - 143
+                        )
+                    }
                 }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .zIndex(10)
             }
+            
+            // Диалог "Удалить NFT?"
+            if let item = deleteItem {
+                DeleteFromCartView(
+                    item: item,
+                    onConfirm: {
+                        withAnimation(.easeInOut) { deleteItem = nil }
+                        
+                        // Отправляем уведомление о фактическом удалении
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            NotificationCenter.default.post(
+                                name: .deleteNFTItem,
+                                object: item
+                            )
+                        }
+                    },
+                    onCancel: {
+                        withAnimation(.easeInOut) {
+                            deleteItem = nil
+                        }
+                    }
+                )
+                .transition(.opacity.combined(with: .scale))
+                .zIndex(20)
+            }
+        }
+        .background(Color.background.ignoresSafeArea())
     }
 }

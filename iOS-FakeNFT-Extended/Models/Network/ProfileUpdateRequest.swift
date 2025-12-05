@@ -2,12 +2,14 @@
 //  ProfileUpdateRequest.swift
 //  iOS-FakeNFT-Extended
 //
-//  Created by Medina Huseynova on 03.12.25.
+//  Created by Дионисий Коневиченко on 27.11.2025.
 //
+
+
 import Foundation
 
 struct ProfileUpdateRequest: Encodable {
-    let likes: String?     
+    let likes: String?
     let avatar: String?
     let name: String?
     let description: String?

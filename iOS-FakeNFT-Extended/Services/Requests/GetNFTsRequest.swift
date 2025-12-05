@@ -2,7 +2,7 @@
 //  GetNFTsRequest.swift
 //  iOS-FakeNFT-Extended
 //
-//  Created by Medina Huseynova on 05.12.25.
+//  Created by Дионисий Коневиченко on 27.11.2025.
 //
 
 import Foundation
