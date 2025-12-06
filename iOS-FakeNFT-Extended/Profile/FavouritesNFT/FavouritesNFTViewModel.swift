@@ -3,103 +3,75 @@
 //  iOS-FakeNFT-Extended
 //
 //  Created by Дионисий Коневиченко on 24.11.2025.
-//
-
 import Foundation
 import SwiftUI
 
-@Observable
-class FavouritesNFTViewModel {
-    var favoriteNFTs: [NFTModel] = []
-    var isLoading = false
-    var errorMessage: String?
+@MainActor
+final class FavouritesNFTViewModel: ObservableObject {
+    @Published var favoriteNFTs: [NFTModel] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
     
-    private let nftService: NftService?
-    private let profileService: ProfileService?
-    var allNFTsViewModel: NFTViewModel?
+    let allNFTsViewModel: NFTViewModel
     
-    init(allNFTsViewModel: NFTViewModel? = nil) {
-        self.nftService = nil
-        self.profileService = nil
+    private var isRefreshing = false
+    
+    init(allNFTsViewModel: NFTViewModel) {
         self.allNFTsViewModel = allNFTsViewModel
-        Task { await loadFavoriteNFTs() }
+        setupObserver()
     }
     
-    // MARK: - Preview Initializer
-    init(nfts: [NFTModel]) {
-        self.nftService = nil
-        self.profileService = nil
-        self.allNFTsViewModel = nil
-        self.favoriteNFTs = nfts
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .favoritesUpdated, object: nil)
     }
     
-    // MARK: - Full Initializer (для API интеграции)
-    init(nftService: NftService, profileService: ProfileService, allNFTsViewModel: NFTViewModel? = nil) {
-        self.nftService = nftService
-        self.profileService = profileService
-        self.allNFTsViewModel = allNFTsViewModel
-        Task { await loadFavoriteNFTs() }
+    private func setupObserver() {
+        NotificationCenter.default.addObserver(
+            forName: .favoritesUpdated,
+            object: nil,
+            queue: .main
+        ) { [weak self] note in
+            guard let self else { return }
+            Task { @MainActor in
+                self.refresh()
+            }
+        }
     }
     
-    // MARK: - NFT Loading
+    // MARK: - Load favorites
+    
     func loadFavoriteNFTs() async {
+        if isLoading {
+            return
+        }
         isLoading = true
-        errorMessage = nil
-        do {
-            // Если есть shared ViewModel, используем его
-            if let allNFTs = allNFTsViewModel?.nfts {
-                favoriteNFTs = allNFTs.filter { $0.isFavorite }
-                isLoading = false
-                return
-            }
-            
-            // Иначе загружаем из API (если есть сервисы)
-            guard let profileService = profileService, let nftService = nftService else {
-                // Fallback на пустой список если нет сервисов
-                favoriteNFTs = []
-                isLoading = false
-                return
-            }
-            
-            let profileResponse = try await profileService.loadProfile(userId: RequestConstants.profileUserId)
-            
-            if profileResponse.likes.isEmpty {
-                favoriteNFTs = []
-                isLoading = false
-                return
-            }
-            
-            let nftResponses = try await nftService.loadNFTsByIds(ids: profileResponse.likes)
-            
-            favoriteNFTs = nftResponses.map { response in
-                response.toNFTModel(isFavorite: true)
-            }
-        } catch {
-            errorMessage = "Ошибка загрузки избранных NFT"
-            favoriteNFTs = []
-        }
-        isLoading = false
-    }
-    
-    // MARK: - NFT Updates
-    func toggleFavorite(for nftId: String) async {
-        // Обновляем в основном ViewModel (теперь async)
-        await allNFTsViewModel?.toggleFavorite(for: nftId)
         
-        // Обновляем локальный список
-        await loadFavoriteNFTs()
+        defer {
+            isLoading = false
+        }
+        
+        let allNFTs = allNFTsViewModel.nfts
+        guard !allNFTs.isEmpty else {
+            favoriteNFTs = []
+            return
+        }
+        
+        favoriteNFTs = allNFTs.filter { $0.isFavorite }
     }
     
-    func toggleFavoriteSync(for nftId: String) {
-        // Синхронная версия для использования в Binding
-        Task {
-            await allNFTsViewModel?.toggleFavorite(for: nftId)
-            await loadFavoriteNFTs()
-        }
-    }
+    // MARK: - Updates
     
     func refresh() {
-        Task { await loadFavoriteNFTs() }
+        guard !isRefreshing else {
+            return
+        }
+        isRefreshing = true
+        
+        Task {
+            await loadFavoriteNFTs()
+            await MainActor.run {
+                self.isRefreshing = false
+            }
+        }
     }
 }
-

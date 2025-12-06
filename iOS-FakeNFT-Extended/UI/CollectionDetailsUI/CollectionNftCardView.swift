@@ -22,12 +22,18 @@ struct CollectionNftCardView: View {
             ZStack(alignment: .topTrailing) {
                 AsyncImage(url: model.previewURL) { phase in
                     switch phase {
-                    case .empty: Rectangle().fill(Color.segmentInactive)
-                    case .success(let image): image.resizable().scaledToFill()
-                    case .failure:
+                    case .empty:
                         Rectangle().fill(Color.segmentInactive)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    case .failure:
+                        Rectangle()
+                            .fill(Color.segmentInactive)
                             .overlay(Image(systemName: "photo"))
-                    @unknown default: Rectangle().fill(Color.segmentInactive)
+                    @unknown default:
+                        Rectangle().fill(Color.segmentInactive)
                     }
                 }
                 .aspectRatio(1, contentMode: .fit)
@@ -37,7 +43,6 @@ struct CollectionNftCardView: View {
                     Image(systemName: "heart.fill")
                         .foregroundColor(isFavorite ? .universalRed : .universalWhite)
                         .padding(10)
-                    
                 }
                 .buttonStyle(.plain)
             }
@@ -56,11 +61,13 @@ struct CollectionNftCardView: View {
                         .font(.customFont(.bodyBold))
                         .foregroundColor(.textPrimary)
                         .lineLimit(1)
+                    
                     Text(model.priceText)
                         .font(.customFont(.priceCaption))
                         .foregroundColor(.textPrimary)
                         .lineLimit(1)
                 }
+                
                 Spacer()
                 
                 Button(action: handleCartAction) {
@@ -80,6 +87,8 @@ struct CollectionNftCardView: View {
         }
     }
     
+    // MARK: - Initial state
+    
     private func loadInitialState() async {
         await loadCartState()
         await loadFavoriteState()
@@ -89,21 +98,23 @@ struct CollectionNftCardView: View {
         do {
             let response = try await services.cartService.fetchOrder()
             isAddedToCart = response.nfts.contains(model.nftId)
-        } catch {}
+        } catch { }
     }
     
     private func loadFavoriteState() async {
         do {
-            
             let profile = try await services.profileService.loadProfile(
                 userId: RequestConstants.profileUserId
             )
             isFavorite = profile.likes.contains(model.nftId)
-        } catch {}
+        } catch { }
     }
+    
+    // MARK: - Cart
     
     private func handleCartAction() {
         guard !isLoadingCart else { return }
+        isLoadingCart = true
         
         Task {
             do {
@@ -121,11 +132,7 @@ struct CollectionNftCardView: View {
                 await MainActor.run {
                     isAddedToCart = response.nfts.contains(model.nftId)
                     isLoadingCart = false
-                    
-                    NotificationCenter.default.post(
-                        name: Notification.Name("CartUpdated"),
-                        object: nil
-                    )
+                    NotificationCenter.default.post(name: .cartUpdated, object: nil)
                 }
             } catch {
                 await MainActor.run {
@@ -137,46 +144,31 @@ struct CollectionNftCardView: View {
         }
     }
     
+    // MARK: - Favorites
+    
     private func handleFavoriteAction() {
         guard !isLoadingFavorite else { return }
-        print("НАЖАЛИ ЛАЙК для NFT: \(model.nftId)")
+        
         isLoadingFavorite = true
         
         Task {
             do {
-                
-                let profile = try await services.profileService.loadProfile(
+                let likes = try await services.likesService.toggleLike(
+                    nftId: model.nftId,
                     userId: RequestConstants.profileUserId
-                )
-                var likes = profile.likes
-                
-                if likes.contains(model.nftId) {
-                    likes.removeAll { $0 == model.nftId }
-                } else {
-                    likes.append(model.nftId)
-                }
-                
-                let likesString = likes.joined(separator: ",")
-                let updateRequest = ProfileUpdateRequest(
-                    likes: likesString,
-                    avatar: nil,
-                    name: nil,
-                    description: nil,
-                    website: nil
-                )
-                
-                _ = try await services.profileService.updateProfile(
-                    userId: RequestConstants.profileUserId,
-                    request: updateRequest
                 )
                 
                 await MainActor.run {
                     isFavorite = likes.contains(model.nftId)
                     isLoadingFavorite = false
-                    print("isFavorite стало: \(isFavorite)")
+                    
+                    NotificationCenter.default.post(
+                        name: .favoritesUpdated,
+                        object: likes
+                    )
                 }
             } catch {
-                print("ОШИБКА ЛАЙКА: \(error)")
+                
                 await MainActor.run {
                     errorMessage = "Ошибка избранного"
                     showError = true

@@ -4,7 +4,6 @@
 //
 //  Created by Дионисий Коневиченко on 24.11.2025.
 //
-
 import SwiftUI
 
 struct FavouritesNFTListRow: View {
@@ -13,7 +12,11 @@ struct FavouritesNFTListRow: View {
     @State private var isImageLoaded = false
     let onToggleFavorite: () -> Void
     
-    init(nft: NFTModel, isFavorite: Binding<Bool>, onToggleFavorite: @escaping () -> Void) {
+    init(
+        nft: NFTModel,
+        isFavorite: Binding<Bool>,
+        onToggleFavorite: @escaping () -> Void
+    ) {
         self.nft = nft
         _isFavorite = isFavorite
         self.onToggleFavorite = onToggleFavorite
@@ -21,43 +24,34 @@ struct FavouritesNFTListRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Изображение NFT с сердечком
             ZStack(alignment: .topTrailing) {
                 AsyncImage(url: URL(string: nft.image)) { phase in
                     switch phase {
                     case .empty:
                         ProgressView()
-                            .onAppear {
-                                isImageLoaded = false
-                            }
+                            .onAppear { isImageLoaded = false }
                     case .success(let image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .onAppear {
-                                isImageLoaded = true
-                            }
+                            .onAppear { isImageLoaded = true }
                     case .failure:
                         Image(systemName: "photo")
                             .foregroundColor(.gray)
-                            .onAppear {
-                                isImageLoaded = false
-                            }
+                            .onAppear { isImageLoaded = false }
                     @unknown default:
                         ProgressView()
-                            .onAppear {
-                                isImageLoaded = false
-                            }
+                            .onAppear { isImageLoaded = false }
                     }
                 }
                 .frame(width: 80, height: 80)
                 .cornerRadius(12)
                 .clipped()
                 
-                // Красное сердечко в правом верхнем углу (кликабельное)
                 if isImageLoaded {
                     Button(action: {
-                        isFavorite = false
+                        
+                        isFavorite.toggle()
                         onToggleFavorite()
                     }) {
                         Image(systemName: "heart.fill")
@@ -69,24 +63,25 @@ struct FavouritesNFTListRow: View {
                 }
             }
             
-            // Информация справа
             VStack(alignment: .leading, spacing: 4) {
-                // Название NFT
+                
                 Text(nft.name)
                     .font(.system(size: 17, weight: .bold))
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
-                // Рейтинг (звезды)
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { index in
                         Image(systemName: index <= nft.rating ? "star.fill" : "star")
-                            .foregroundColor(index <= nft.rating ? Color(UIColor.starRatingYellow) : .gray)
+                            .foregroundColor(
+                                index <= nft.rating
+                                ? Color(UIColor.starRatingYellow)
+                                : .gray
+                            )
                             .font(.system(size: 12))
                     }
                 }
                 
-                // Цена в ETH
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text("\(nft.price, specifier: "%.2f")")
                         .font(.system(size: 15, weight: .regular))
@@ -104,8 +99,7 @@ struct FavouritesNFTListRow: View {
         }
     }
 }
-
-#Preview {
+#Preview(traits: .sizeThatFitsLayout) {
     let mockNFT = NFTModel(
         type: .mock,
         id: "1",
@@ -117,12 +111,10 @@ struct FavouritesNFTListRow: View {
         isFavorite: true
     )
     
-    return FavouritesNFTListRow(
+    FavouritesNFTListRow(
         nft: mockNFT,
         isFavorite: .constant(true),
         onToggleFavorite: {}
     )
     .padding()
-    .previewLayout(.sizeThatFits)
 }
-
