@@ -6,7 +6,7 @@ import Combine
 struct CartView: View {
     @Binding var isSortMenuPresented: Bool
     @Binding var sortOption: CartSortOption
-    let onDeleteRequest: (NftItemAPI) -> Void
+    let onDeleteRequest: (CartItem) -> Void
     
     @StateObject private var viewModel = CartViewModel()
     @State private var isPaymentPresented = false
@@ -18,7 +18,7 @@ struct CartView: View {
         }
         .background(Color.background.ignoresSafeArea())
         .onReceive(NotificationCenter.default.publisher(for: .deleteNFTItem)) { note in
-            guard let item = note.object as? NftItemAPI else { return }
+            guard let item = note.object as? CartItem else { return }
             withAnimation(.easeInOut) {
                 viewModel.delete(item)
             }
@@ -79,6 +79,7 @@ private extension CartView {
             ProgressView("Загрузка…")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
+            
         case .empty:
             ScrollView {
                 VStack {
@@ -88,7 +89,6 @@ private extension CartView {
                         .foregroundColor(.textPrimary)
                     Spacer()
                 }
-                // Чтобы ScrollView стал "скроллимым", задаём высоту
                 .frame(
                     maxWidth: .infinity,
                     minHeight: UIScreen.main.bounds.height * 0.8
@@ -113,8 +113,7 @@ private extension CartView {
     }
     
     // MARK: Cart content
-    // MARK: Cart content
-    func cartContent(_ items: [NftItemAPI]) -> some View {
+    func cartContent(_ items: [CartItem]) -> some View {
         ScrollView {
             VStack(spacing: 0) {
                 ForEach(viewModel.sortedItems(items, by: sortOption)) { item in
@@ -133,7 +132,7 @@ private extension CartView {
     }
     
     // MARK: Summary block
-    func cartSummary(_ items: [NftItemAPI]) -> some View {
+    func cartSummary(_ items: [CartItem]) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(items.count) NFT")
@@ -164,7 +163,6 @@ private extension CartView {
         }
     }
 }
-
 
 // MARK: - Preview
 

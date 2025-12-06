@@ -1,15 +1,16 @@
 import SwiftUI
+import Kingfisher
 
 // MARK: - Constants
 
 private enum Constants {
     static let imageSize: CGFloat = 108
     static let starSize: CGFloat = 12
-
+    
     static let filledStarImage = "starsFill"
     static let emptyStarImage  = "stars"
     static let trashImage      = "trashX"
-
+    
     static let priceLabel      = "Цена"
     static let priceFormat     = "%.2f"
 }
@@ -19,7 +20,7 @@ private enum Constants {
 struct CartCellView: View {
     
     // MARK: - Properties
-    let item: NftItemAPI
+    let item: CartItem
     let onDeleteTap: () -> Void
     
     // MARK: - Body
@@ -38,37 +39,22 @@ struct CartCellView: View {
     }
 }
 
-
 // MARK: - Subviews
 
 private extension CartCellView {
     
     // MARK: Preview Image
     var previewImage: some View {
-        AsyncImage(url: item.imageURL) { phase in
-            switch phase {
-            case .empty:
+        KFImage(item.cover)
+            .placeholder {
                 ProgressView()
                     .frame(width: Constants.imageSize, height: Constants.imageSize)
-            case .success(let image):
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: Constants.imageSize, height: Constants.imageSize)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            case .failure:
-                Image(systemName: "photo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: Constants.imageSize * 0.6,
-                           height: Constants.imageSize * 0.6)
-                    .frame(width: Constants.imageSize, height: Constants.imageSize)
-                    .background(Color.segmentInactive)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            @unknown default:
-                EmptyView()
             }
-        }
+            .retry(maxCount: 3, interval: .seconds(1))
+            .resizable()
+            .scaledToFill()
+            .frame(width: Constants.imageSize, height: Constants.imageSize)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     
     // MARK: Text Section
@@ -130,24 +116,23 @@ private extension CartCellView {
     }
 }
 
-
 // MARK: - Preview
 
 #Preview("CartCellView") {
-    let mockItems: [NftItemAPI] = [
-        .init(
+    let mockItems: [CartItem] = [
+        CartItem(
             id: "1",
             title: "April",
+            cover: URL(string: "https://placehold.co/200x200?text=April")!,
             rating: 4,
-            price: 12.34,
-            imageURL: URL(string: "https://placehold.co/200x200?text=April")!
+            price: 12.34
         ),
-        .init(
+        CartItem(
             id: "2",
             title: "Greena",
+            cover: URL(string: "https://placehold.co/200x200?text=Greena")!,
             rating: 2,
-            price: 5.67,
-            imageURL: URL(string: "https://placehold.co/200x200?text=Greena")!
+            price: 5.67
         )
     ]
     

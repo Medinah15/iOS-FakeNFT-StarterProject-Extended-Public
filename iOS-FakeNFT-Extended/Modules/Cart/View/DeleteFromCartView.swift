@@ -5,27 +5,27 @@ import SwiftUI
 private enum Constants {
     static let imageSize: CGFloat = 120
     static let cornerRadius: CGFloat = 16
-
+    
     static let modalPadding: CGFloat = 24
     static let modalHorizontalPadding: CGFloat = 40
-
+    
     static let buttonWidth: CGFloat = 127
     static let buttonHeight: CGFloat = 44
-
+    
     static let confirmTitle = "Удалить"
     static let cancelTitle  = "Вернуться"
-
+    
     static let questionText =
-        "Вы уверены, что хотите\nудалить объект из корзины?"
+    "Вы уверены, что хотите\nудалить объект из корзины?"
 }
 
 // MARK: - DeleteFromCartView
 
 struct DeleteFromCartView: View {
-    let item: NftItemAPI
+    let item: CartItem
     let onConfirm: () -> Void
     let onCancel: () -> Void
-
+    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -35,11 +35,10 @@ struct DeleteFromCartView: View {
     }
 }
 
-
 // MARK: - Subviews
 
 private extension DeleteFromCartView {
-
+    
     // MARK: Background
     var backgroundLayer: some View {
         BlurView(style: .systemUltraThinMaterialDark)
@@ -51,13 +50,12 @@ private extension DeleteFromCartView {
                 }
             }
     }
-
+    
     // MARK: Modal
     var modalContent: some View {
         VStack(spacing: 20) {
-
-            // NFT preview
-            AsyncImage(url: item.imageURL) { phase in
+            
+            AsyncImage(url: item.cover) { phase in
                 switch phase {
                 case .empty:
                     ProgressView()
@@ -81,24 +79,22 @@ private extension DeleteFromCartView {
                     EmptyView()
                 }
             }
-
-            // Text
+            
             Text(Constants.questionText)
                 .multilineTextAlignment(.center)
                 .font(.customFont(.caption2))
                 .foregroundColor(.textPrimary)
-
-            // Buttons
+            
             HStack(spacing: 16) {
                 confirmButton
                 cancelButton
             }
-
+            
         }
         .padding(Constants.modalPadding)
         .padding(.horizontal, Constants.modalHorizontalPadding)
     }
-
+    
     // MARK: Buttons
     var confirmButton: some View {
         Button(action: onConfirm) {
@@ -110,7 +106,7 @@ private extension DeleteFromCartView {
                 .cornerRadius(12)
         }
     }
-
+    
     var cancelButton: some View {
         Button(action: onCancel) {
             Text(Constants.cancelTitle)
@@ -123,18 +119,17 @@ private extension DeleteFromCartView {
     }
 }
 
-
 // MARK: - Preview
 
 #Preview {
-    let mockItem = NftItemAPI(
+    let mockItem = CartItem( 
         id: "1",
         title: "April",
+        cover: URL(string: "https://placehold.co/200x200?text=NFT")!,
         rating: 4,
-        price: 12.34,
-        imageURL: URL(string: "https://placehold.co/200x200?text=NFT")!
+        price: 12.34
     )
-
+    
     return DeleteFromCartView(
         item: mockItem,
         onConfirm: {},

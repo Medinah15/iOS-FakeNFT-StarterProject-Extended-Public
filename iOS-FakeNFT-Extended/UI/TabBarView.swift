@@ -10,7 +10,7 @@ struct TabBarView: View {
     // MARK: - State
     @State private var isSortMenuPresented = false
     @State private var cartSort: CartSortOption = .byName
-    @State private var deleteItem: NftItemAPI? = nil
+    @State private var deleteItem: CartItem? = nil
     
     // MARK: - Init
     init() {
@@ -20,17 +20,9 @@ struct TabBarView: View {
     // MARK: - Body
     var body: some View {
         TabView {
-            
-            // -------------------------
-            // Профиль
-            // -------------------------
             ProfileView()
                 .tabItem { tabItem(icon: "profile", title: "Профиль") }
             
-            
-            // -------------------------
-            // Каталог
-            // -------------------------
             CatalogView(
                 viewModel: CatalogViewModel(
                     catalogService: servicesAssembly.catalogService
@@ -38,10 +30,6 @@ struct TabBarView: View {
             )
             .tabItem { tabItem(icon: "catalog", title: "Каталог") }
             
-            
-            // -------------------------
-            // Корзина
-            // -------------------------
             CartView(
                 isSortMenuPresented: $isSortMenuPresented,
                 sortOption: $cartSort,
@@ -53,10 +41,6 @@ struct TabBarView: View {
             )
             .tabItem { tabItem(icon: "cart", title: "Корзина") }
             
-            
-            // -------------------------
-            // Статистика
-            // -------------------------
             TestCatalogView()
                 .tabItem { tabItem(icon: "statistic", title: "Статистика") }
         }
@@ -85,7 +69,6 @@ private extension TabBarView {
     var overlayContent: some View {
         ZStack {
             
-            // Меню сортировки корзины
             if isSortMenuPresented {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
@@ -113,18 +96,16 @@ private extension TabBarView {
                 .zIndex(10)
             }
             
-            // Диалог "Удалить NFT?"
             if let item = deleteItem {
                 DeleteFromCartView(
                     item: item,
                     onConfirm: {
                         withAnimation(.easeInOut) { deleteItem = nil }
                         
-                        // Отправляем уведомление о фактическом удалении
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             NotificationCenter.default.post(
                                 name: .deleteNFTItem,
-                                object: item
+                                object: item 
                             )
                         }
                     },

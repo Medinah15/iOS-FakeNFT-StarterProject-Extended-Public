@@ -105,9 +105,6 @@ struct CollectionNftCardView: View {
     private func handleCartAction() {
         guard !isLoadingCart else { return }
         
-        print("\(isAddedToCart ? "Удаляем" : "Добавляем") NFT: \(model.nftId)")
-        isLoadingCart = true
-        
         Task {
             do {
                 let currentOrder = try await services.cartService.fetchOrder()
@@ -120,11 +117,15 @@ struct CollectionNftCardView: View {
                 }
                 
                 let response = try await services.cartService.updateOrder(nftIds: updatedNfts)
-                print("Корзина: \(response.nfts)")
                 
                 await MainActor.run {
                     isAddedToCart = response.nfts.contains(model.nftId)
                     isLoadingCart = false
+                    
+                    NotificationCenter.default.post(
+                        name: Notification.Name("CartUpdated"),
+                        object: nil
+                    )
                 }
             } catch {
                 await MainActor.run {

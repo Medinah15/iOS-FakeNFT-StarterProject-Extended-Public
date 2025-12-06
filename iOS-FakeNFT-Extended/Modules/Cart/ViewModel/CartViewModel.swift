@@ -10,35 +10,47 @@ final class CartViewModel: ObservableObject {
     // MARK: - Dependencies
     private let cartService: CartService
     private let networkClient: NetworkClient
+    private let nftService: NftService
     private let paymentService: PaymentService
     
-    // MARK: - Init
+    // MARK: - Init (DI)
     
     init(
         cartService: CartService,
         networkClient: NetworkClient,
+        nftService: NftService,
         paymentService: PaymentService
     ) {
         self.cartService = cartService
         self.networkClient = networkClient
+        self.nftService = nftService
         self.paymentService = paymentService
+        
+        Task { @MainActor [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: .cartUpdated).map({ _ in () }) {
+                print("🔔 CartViewModel reload")
+                await self?.loadItems()
+            }
+        }
     }
     
-    /// Init по умолчанию
     convenience init() {
         let client = DefaultNetworkClient()
         let cartService = CartService(networkClient: client)
+        let nftStorage = NftStorageImpl()
+        let nftService = NftServiceImpl(networkClient: client, storage: nftStorage)
         let paymentService = PaymentService(network: client)
         
         self.init(
             cartService: cartService,
             networkClient: client,
+            nftService: nftService,
             paymentService: paymentService
         )
         
         Task {
-            await preloadCurrencies()    // грузим валюты заранее
-            await loadItems()            // грузим корзину
+            await preloadCurrencies()
+            await loadItems()
         }
     }
     
@@ -66,7 +78,7 @@ final class CartViewModel: ObservableObject {
     
     // MARK: - Delete
     
-    func delete(_ item: NftItemAPI) {
+    func delete(_ item: CartItem) {
         guard case .loaded(var items) = state else { return }
         
         items.removeAll { $0.id == item.id }
@@ -85,18 +97,16 @@ final class CartViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Payment complete (FIXED)
+    // MARK: - Payment complete
     
-    /// После успешной оплаты очищаем корзину локально.
-
     func handlePaymentSuccess() {
         state = .loading
-
+        
         Task {
             do {
-                // ВАЖНО: для очистки корзины нужен ПУСТОЙ PUT
+                
                 _ = try await cartService.updateOrder(nftIds: [])
-
+                
                 state = .empty
             } catch {
                 state = .error("Не удалось выполнить оплату")
@@ -106,7 +116,7 @@ final class CartViewModel: ObservableObject {
     
     // MARK: - Sorting
     
-    func sortedItems(_ items: [NftItemAPI], by sort: CartSortOption) -> [NftItemAPI] {
+    func sortedItems(_ items: [CartItem], by sort: CartSortOption) -> [CartItem] {
         switch sort {
         case .byPrice:
             items.sorted { $0.price > $1.price }
@@ -124,6 +134,7 @@ final class CartViewModel: ObservableObject {
     private func loadItems() async {
         state = .loading
         
+        
         do {
             let order = try await cartService.fetchOrder()
             
@@ -132,21 +143,28 @@ final class CartViewModel: ObservableObject {
                 return
             }
             
-            var items: [NftItemAPI] = []
+            var items: [CartItem] = []
             items.reserveCapacity(order.nfts.count)
             
             for nftId in order.nfts {
                 do {
                     let request = NFTRequest(id: nftId)
                     let apiModel: NftAPI = try await networkClient.send(request: request)
-                    items.append(NftItemAPI(from: apiModel))
+                    
+                    let cartItem = CartItem(
+                        id: apiModel.id,
+                        title: apiModel.name,
+                        cover: apiModel.images.first ?? URL(string: "https://placehold.co/600x600?text=NFT")!,
+                        rating: apiModel.rating,
+                        price: apiModel.price
+                    )
+                    items.append(cartItem)
                 } catch {
 #if DEBUG
                     print("❌ Failed to load NFT \(nftId):", error)
 #endif
                 }
             }
-            
             state = items.isEmpty ? .empty : .loaded(items)
             
         } catch {
