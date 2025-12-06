@@ -22,10 +22,8 @@ struct ProfileModel: Codable, Sendable {
     let nftCount: Int
     let favoriteCount: Int
     
-    // Приватный ключ для UserDefaults
     private static let userDefaultsKey = "savedProfile"
     
-    // Приватные мок-данные
     private static let mockData = ProfileModel(
         type: .mock,
         id: "1",
@@ -37,7 +35,6 @@ struct ProfileModel: Codable, Sendable {
         favoriteCount: 11
     )
     
-    // Инициализатор для создания профиля
     init(type: ProfileType, id: String, name: String, avatar: String, description: String, website: String, nftCount: Int, favoriteCount: Int) {
         self.type = type
         self.id = id
@@ -49,34 +46,28 @@ struct ProfileModel: Codable, Sendable {
         self.favoriteCount = favoriteCount
     }
     
-    // Фабричный метод для создания мок-профиля
     static func mock() -> ProfileModel {
         return mockData
     }
     
-    // Сохранение профиля (только для real типа)
     func save() {
-        guard type == .real else { return } // Сохраняем только реальные данные
+        guard type == .real else { return }
         
         if let encoded = try? JSONEncoder().encode(self) {
             UserDefaults.standard.set(encoded, forKey: Self.userDefaultsKey)
         }
     }
     
-    // Нестатичный метод загрузки с проверкой типа
     func load() -> ProfileModel? {
-        switch type {
-        case .mock:
-            // Возвращаем приватные мок-данные
-            return Self.mockData
-            
-        case .real:
-            // Загружаем из UserDefaults
+        
+        if type == .real {
             guard let data = UserDefaults.standard.data(forKey: Self.userDefaultsKey),
                   let profile = try? JSONDecoder().decode(ProfileModel.self, from: data) else {
                 return nil
             }
             return profile
         }
+        
+        return nil
     }
 }

@@ -19,13 +19,13 @@ struct ProfileView: View {
     @State private var networkClient: NetworkClient?
     
     init() {
-        // Временная инициализация, будет перезаписана в onAppear
+        
         let tempServices = ServicesAssembly(
             networkClient: DefaultNetworkClient(),
             nftStorage: NftStorageImpl()
         )
         _viewModel = State(initialValue: ProfileViewModel(profileService: tempServices.profileService))
-        // Временная инициализация с пустым массивом, будет перезаписана в onAppear
+        
         _nftViewModel = State(initialValue: NFTViewModel(nfts: []))
     }
     
@@ -34,23 +34,19 @@ struct ProfileView: View {
             ZStack {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        // Аватар и имя
+                        
                         avatarAndNameSection
                             .padding(.top, 20)
                         
-                        // Описание
                         descriptionSection
                         
-                        // Кнопка сайта
                         websiteButton
                         
-                        // Меню
                         menuSection
                     }
                     .padding(.horizontal, 16)
                 }
                 
-                // Loader overlay
                 if viewModel.isLoading {
                     ProgressView()
                         .scaleEffect(1.5)
@@ -83,17 +79,17 @@ struct ProfileView: View {
             .onAppear {
                 setupViewModels()
                 setupMenuActions()
+                viewModel.loadOnAppear()
             }
         }
     }
     
     // MARK: - Setup ViewModels
     private func setupViewModels() {
-        // Обновляем ViewModels с правильными сервисами из Environment
+        
         let profileVM = ProfileViewModel(profileService: servicesAssembly.profileService)
         viewModel = profileVM
         
-        // Создаем NFTViewModel с сервисами и ссылкой на ProfileViewModel
         let nftVM = NFTViewModel(
             nftService: servicesAssembly.nftService,
             profileService: servicesAssembly.profileService,
@@ -101,10 +97,8 @@ struct ProfileView: View {
         )
         nftViewModel = nftVM
         
-        // Устанавливаем обратную ссылку через протокол для синхронизации NFT данных
         profileVM.menuUpdater = nftVM
         
-        // Сохраняем NetworkClient для загрузки изображений
         networkClient = DefaultNetworkClient()
     }
     
@@ -161,19 +155,17 @@ struct ProfileView: View {
             }
         }
         
-        // Загрузка изображения через NetworkClient (как и данные профиля)
         private func loadAvatarImage() async {
             guard !avatarURL.isEmpty, let url = URL(string: avatarURL) else {
                 isLoading = false
                 return
             }
             
-            // Создаем простой NetworkRequest для загрузки изображения
             let imageRequest = ImageRequest(url: url)
             
             do {
                 if let client = networkClient {
-                    // Используем NetworkClient для загрузки (как и данные профиля)
+                    
                     let imageData = try await client.send(request: imageRequest)
                     
                     if let image = UIImage(data: imageData) {
@@ -185,16 +177,15 @@ struct ProfileView: View {
                         isLoading = false
                     }
                 } else {
-                    // Fallback на обычный URLSession если NetworkClient недоступен
+                    
                     await loadWithURLSession(url: url)
                 }
             } catch {
-                // Fallback на обычный URLSession при ошибке
+                
                 await loadWithURLSession(url: url)
             }
         }
         
-        // Fallback загрузка через URLSession
         private func loadWithURLSession(url: URL) async {
             var request = URLRequest(url: url)
             request.timeoutInterval = 10.0
@@ -218,7 +209,7 @@ struct ProfileView: View {
                     await MainActor.run { isLoading = false }
                 }
             } catch {
-                // Тихая ошибка - просто показываем placeholder
+                
                 await MainActor.run { isLoading = false }
             }
         }
@@ -307,5 +298,3 @@ struct ProfileView: View {
     ProfileView()
         .environment(ServicesAssembly(networkClient: DefaultNetworkClient(), nftStorage: NftStorageImpl()))
 }
-
-

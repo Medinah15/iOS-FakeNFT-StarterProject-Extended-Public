@@ -285,4 +285,11 @@ class ProfileViewModel {
         
         nftVM.saveNFTs()
     }
+    
+    func loadOnAppear() {
+        Task {
+            await loadProfile()
+        }
+    }
+    
 }
