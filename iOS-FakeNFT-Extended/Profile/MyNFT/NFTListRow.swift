@@ -19,7 +19,7 @@ struct NFTListRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Изображение NFT
+            
             ZStack(alignment: .topTrailing) {
                 AsyncImage(url: URL(string: nft.image)) { phase in
                     switch phase {
@@ -51,7 +51,6 @@ struct NFTListRow: View {
             .frame(width: 108, height: 108)
             .cornerRadius(12)
             
-            // Иконка сердца (только если изображение загружено)
             if isImageLoaded {
                 Button(action: {
                     isFavorite.toggle()
@@ -64,14 +63,12 @@ struct NFTListRow: View {
             }
         }
             
-            // Информация о NFT
             VStack(alignment: .leading, spacing: 4) {
-                // Название
+                
                 Text(nft.name)
                     .font(.system(size: 17, weight: .bold))
                     .foregroundColor(.primary)
-                
-                // Рейтинг (звезды)
+               
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { index in
                         Image(systemName: index <= nft.rating ? "star.fill" : "star")
@@ -80,15 +77,13 @@ struct NFTListRow: View {
                     }
                 }
                 
-                // Автор
                 Text("от \(nft.author)")
                     .font(.system(size: 13, weight: .regular))
                     .foregroundColor(.black)
             }
             
             Spacer()
-            
-            // Цена
+           
             VStack(alignment: .leading, spacing: 4) {
                 Text("Цена")
                     .font(.system(size: 13, weight: .regular))

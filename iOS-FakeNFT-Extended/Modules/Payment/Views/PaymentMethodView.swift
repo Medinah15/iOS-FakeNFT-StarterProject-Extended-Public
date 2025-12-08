@@ -16,13 +16,11 @@ struct PaymentMethodView: View {
     
     // MARK: - Init
     
-    /// Стандартный init
     init(onPaymentSuccess: @escaping () -> Void) {
         self.onPaymentSuccess = onPaymentSuccess
         _viewModel = StateObject(wrappedValue: PaymentViewModel())
     }
     
-    /// Новый init — принимает внешний PaymentViewModel (например, с currencies)
     init(
         viewModel: PaymentViewModel,
         onPaymentSuccess: @escaping () -> Void

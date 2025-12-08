@@ -28,8 +28,7 @@ final class PaymentViewModel: ObservableObject {
     private func loadCurrencies() async {
         do {
             let currencies = try await paymentService.fetchCurrencies()
-            
-            // API → UI mapping
+           
             self.methods = currencies.map { currency in
                 let url = URL(string: currency.image)
                 
@@ -46,8 +45,6 @@ final class PaymentViewModel: ObservableObject {
             
         } catch {
             print("❌ Failed to load currencies:", error)
-            
-            // fallback на локальные моки (иконки из ассетов)
             self.methods = PaymentMethod.mockAll
         }
     }

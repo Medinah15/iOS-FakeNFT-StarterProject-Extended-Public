@@ -1,6 +1,5 @@
 import Foundation
 
-/// Нормализованный "item" для списка/корзины на уровне API-слоя
 struct NftItemAPI: Decodable, Identifiable, Sendable {
     let id: String
     let title: String

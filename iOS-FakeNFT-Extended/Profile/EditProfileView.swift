@@ -40,7 +40,6 @@ struct EditProfileView: View {
         self.onSave = onSave
     }
     
-    // Проверка наличия изменений
     private var hasChanges: Bool {
         name != initialName ||
         description != initialDescription ||
@@ -53,20 +52,16 @@ struct EditProfileView: View {
             ZStack(alignment: .bottom) {
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Аватар с иконкой камеры
+                       
                         avatarSection
                             .padding(.top, 20)
                         
-                        // Поле "Имя"
                         nameField
                         
-                        // Поле "Описание"
                         descriptionField
-                        
-                        // Поле "Сайт"
+                       
                         websiteField
                         
-                        // Отступ снизу для кнопки
                         Spacer()
                             .frame(height: 100)
                     }
@@ -74,7 +69,6 @@ struct EditProfileView: View {
                 }
                 .background(Color(UIColor.systemGray6))
                 
-                // Кнопка "Сохранить" внизу (только если есть изменения)
                 if hasChanges {
                     saveButton
                 }
@@ -249,7 +243,7 @@ struct EditProfileView: View {
         }
     }
     private func deletePhoto() {
-        // Устанавливаем пустую строку для удаления фото
+        
         avatarURL = ""
     }
     

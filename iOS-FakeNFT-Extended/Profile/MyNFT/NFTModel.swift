@@ -7,12 +7,10 @@
 
 import Foundation
 
-
 enum NFTType: Codable, Equatable, Sendable {
     case mock
     case real
 }
-
 
 struct NFTModel: Identifiable, Codable, Equatable, Sendable {
     let type: NFTType
@@ -23,8 +21,6 @@ struct NFTModel: Identifiable, Codable, Equatable, Sendable {
     let price: Double
     let rating: Int
     let isFavorite: Bool
-    
-    
     
     private static let userDefaultsKey = "savedNFTs"
     

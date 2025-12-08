@@ -24,12 +24,8 @@ final class LikesService {
             likes.append(nftId)
         }
         
-        if likes.isEmpty {
-            
-            return []
-        }
+        let likesString = likes.joined(separator: ",")   
         
-        let likesString = likes.joined(separator: ",")
         let updateRequest = ProfileUpdateRequest(
             likes: likesString,
             avatar: nil,

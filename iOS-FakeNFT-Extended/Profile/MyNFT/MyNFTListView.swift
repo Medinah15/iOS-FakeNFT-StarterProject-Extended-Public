@@ -14,7 +14,7 @@ struct MyNFTListView: View {
     @Environment(\.dismiss) var dismiss
     
     init(viewModel: NFTViewModel? = nil) {
-        // Используем Preview инициализатор с пустым массивом, если не передан ViewModel
+        
         _viewModel = State(initialValue: viewModel ?? NFTViewModel(nfts: []))
     }
     
