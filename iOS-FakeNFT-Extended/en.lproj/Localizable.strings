@@ -4,3 +4,10 @@
 "Error.unknown" = "Произошла неизвестная ошибка";
 "Error.repeat" = "Повторить";
 "Error.title" = "Ошибка";
+"Catalog.empty.title" = "Пока пусто";
+"Catalog.empty.subtitle" = "Здесь пока нет NFT";
+"Author of the collection:" = "Автор коллекции:";
+"Catalog.sort.title" = "Сортировка";
+"Catalog.sort.byTitle" = "По названию";
+"Catalog.sort.byNftCount" = "По количеству NFT";
+"Catalog.sort.close" = "Закрыть";
